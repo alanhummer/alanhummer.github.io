@@ -1,0 +1,199 @@
+
+<html>
+<body>
+<style>
+body{
+  font-size: 0.9em;
+  font-family: Arial;
+}
+
+table{
+  font-size: 0.9em;
+}
+
+.title{
+  font-weight: bold;
+}
+
+.red{
+	color: red;
+}
+
+.item{
+ border: 0px solid #ccc;
+ padding-left: 10px;
+ padding-right: 10px;
+ style: block;
+ float: left;
+ width: 25px;
+ text-align: center;
+}
+
+.item-matched{
+ border: 0px solid red;
+ color: red;
+ padding-left: 10px;
+ padding-right: 10px;
+ style: block;
+ float: left;
+ width: 25px;
+ text-align: center;
+}
+
+#status{
+ border: 0px solid #ccc;
+ color: #333;
+ padding: 4px;
+ margin-top: 5px;
+ margin-bottom: 5px;
+}
+
+#footer{
+ xborder-top: 0px solid #ccc;
+ font-size: 0.6em;
+ text-align: right;
+ clear: both;
+}
+input[type='text'] { font-size: 68px; font-weight: bold;}
+input[type='button'] { font-size: 68px; font-weight: bold;}
+
+p {
+  color: red;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 68px; 
+  font-weight: bold;
+}
+
+</style>
+<p align="center">
+<br>
+BIRTHDAY ODDS<br><br>
+PEOPLE: <input type="text" id="people" onChange="newStats()" size="4" ></input><br><br>
+DAYS: <input type="text" id="items" onChange="newStats()" size="4"></input><br><br>
+<input type="button" id="run" value="CALCULATE ODDS" onClick="generateRandom(); displayStats();"></input>
+</p>
+<div id="status">
+</div>
+
+<div id="output">
+</div>
+
+<script>
+var items = document.getElementById("items");
+var people = document.getElementById("people");
+var output = document.getElementById("output");
+var status_area = document.getElementById("status");
+
+var stats = {};
+newStats();
+
+items.value = 365;
+people.value = 23;
+
+function reset(){
+	newStats();
+	status_area.innerHTML = "";
+	output.innerHTML = "";
+}
+
+function newStats(){
+	stats = {};
+	stats.trials = 0;
+	stats.matches = 0;
+	stats.people = 0;
+	stats.items = 0;
+	stats.combinations = 0;
+}
+
+function getData(){
+	stats.items = parseInt(items.value);
+	stats.people = parseInt(people.value);
+	
+	stats.combinations = stats.people * (stats.people - 1) / 2;
+	stats.chance = (stats.items - 1) / stats.items;
+	stats.expected = 1 - Math.pow(stats.chance, stats.combinations);
+}
+
+var values = [];
+var matches = {};
+
+function generateRandom(){
+	getData();
+	
+	values = []; // reset
+	matches = {};
+	
+	for (var i = 0; i < stats.people; i++){
+		var random = Math.ceil(Math.random() * stats.items);
+		values[i] = random;
+	}
+	
+	stats.trials++;
+	
+	var hasMatch = false;
+	for (var i = 0; i < values.length; i++){
+		if (matches[ values[i] ]){
+			matches[ values[i] ] += 1;		// keep count
+			hasMatch = true;
+		}
+		else{
+			matches[ values[i] ] = 1;		// keep count
+		}
+	}
+	
+	if (hasMatch){
+		stats.matches++;
+	}
+}
+
+function displayValues(){
+	var str = "";
+	var match = false;
+		
+	for (var i = 0; i < values.length; i++){
+		var style = "item";
+		if (matches[ values[i] ] > 1){
+			style = "item-matched";
+			match = true;
+			
+		}
+	
+		var n = i + 1; 					// array indexing
+		str += '<span class = "' + style + '">' + values[i] + '</span>' + '';
+	}
+		
+	output.innerHTML = str;
+	
+	if (match){
+		setStatus("Match found!");
+	}
+	else{
+		setStatus("No matches.");
+	}
+	displayStats();
+}
+
+function computeStats(){
+	stats.percent = stats.matches / stats.trials;
+}
+
+function displayStats(){
+	computeStats();
+	str = "";
+	str += '<p align="center">' + formatPercent(stats.expected, 2) + "</p>";
+	setStatus(str);
+}
+
+function setStatus(str){
+	status_area.innerHTML = str;
+}
+
+function formatPercent(p, n){
+	p *= 100;
+	return p.toFixed(n) + "%";
+}
+
+</script>
+
+</body>
+</html>
