@@ -1,0 +1,288 @@
+<html>
+<body>
+<style>
+#status{
+ border: 0px solid #ccc;
+ color: #333;
+ padding: 4px;
+ margin-top: 5px;
+ margin-bottom: 5px;
+}
+
+input[type='text'] { font-size: 32px; font-weight: bold; font-family: Helvetica, Arial, sans-serif;}
+input[type='button'] { font-size: 64px; font-weight: bold; font-family: Helvetica, Arial, sans-serif;}
+textarea { font-size: 32px; font-weight: bold; border-style: inset; border-width: 2px; font-family: Helvetica, Arial, sans-serif;}
+
+p {
+  color: red;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 32px; 
+  font-weight: bold;
+}
+
+.sev1text {
+  color: red;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 38px; 
+  font-weight: bold;
+}
+
+.inputtext {
+  color: red;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 38px; 
+  font-weight: bold;
+}
+
+input[type=checkbox]
+{
+  /* Double-sized Checkboxes */
+  -ms-transform: scale(6); /* IE */
+  -moz-transform: scale(6); /* FF */
+  -webkit-transform: scale(6); /* Safari and Chrome */
+  -o-transform: scale(6); /* Opera */
+  padding: 10px;
+}
+
+</style>
+<p align="center">
+<br>
+<table class="sev1text" width="100%" valign="top">
+<tr>
+<td width="5%">&nbsp;</td>
+<td width="30%"><a href="javascript:void(0);" class="sev1text" onclick="javascript:dolink('ICMContacts');">ICM Contacts</a><br><br><a href="javascript:void(0);" class="sev1text" onclick="javascript:dolink('contacts');">ICM Calendar</a><br><br><a href="javascript:void(0);" class="sev1text" onclick="javascript:dolink('contacts');">Dept. Emails</a><br></td>
+<td width="30%" align="center"><a href="javascript:void(0);" class="sev1text" onclick="javascript:dolink('contacts');">SLA's</a><br><br><a href="javascript:void(0);" class="sev1text" onclick="javascript:dolink('contacts');">Priority List</a><br><br><a href="javascript:void(0);" class="sev1text" onclick="javascript:dolink('contacts');">Flow Diagram</a></td>
+<td width="30%" align="right"><a href="javascript:void(0);" class="sev1text" onclick="javascript:dolink('contacts');">Biz Leaders</a><br><br><a href="javascript:void(0);" class="sev1text" onclick="javascript:dolink('contacts');">SME Contacts</a><br><br><a href="javascript:void(0);" class="sev1text" onclick="javascript:dolink('contacts');">Vendor List</a></td>
+<td width="5%">&nbsp;</td>
+</tr>
+</table>
+<hr size="10" color="red">
+<p align="center">
+SEV 1 - INCIDENT NOTIFICATION<br><br>
+<a href="tel:+1-608-935-4415"><u>To Start Sev 1 Call</u><br>Dial 608-935-4415</a><br><br></a>
+OR<BR><BR>
+<a href="tel:+1-608-935-4250"><u>To Start Sev 1 Call</u><br>Dial 608-935-4250</a><br><br>Press 9 as menu is played<br>(hidden feature)</a><br><br>
+<u>To SysOps:</u><br>I need a Victor Ops / SendWordNow call out for<br> <font color="green">WHATEVER DEPT</font><br><br>
+We have a SEV 1 Incident involving<BR><font color="green">WHATEVER PRODUCT/APP/AREA</font>
+<hr size="10" color="red">
+<p align="center">DEPARTMENT/SYSTEM:<br><br></p>
+<table width="100%" class="inputtext">
+<tr><td width="5%"></td>
+<td width="40%" valign="top" class="inputtext" >
+<p>
+<input type="checkbox" id="emaillist" name="emaillist" value="ISPriorityComm-CallCenter@landsend.com" >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font class="inputtext">Call Center</font><BR><BR>
+<input type="checkbox" id="emaillist" name="emaillist" value="ISPriorityComm-DCSystems@landsend.com" >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font class="inputtext">DC Systems</font><BR><BR>
+<input type="checkbox" id="emaillist" name="emaillist" value="ISPriorityComm-ES@landsend.com" >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font class="inputtext">ES</font><BR><BR>
+<input type="checkbox" id="emaillist" name="emaillist" value="ISPriorityComm-Infrastructure@landsend.com" >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font class="inputtext">Infrastructure<BR><BR>
+</p>
+</td>
+<td width="10%">&nbsp;</td>
+<td width="40%" valign="top">
+<p>
+<input type="checkbox" id="emaillist" name="emaillist" value="ISPriorityComm-International@landsend.com" >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font class="inputtext">International</font><BR><BR>
+<input type="checkbox" id="emaillist" name="emaillist" value="ISPriorityComm-LE.com@landsend.com" >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font class="inputtext">LE.COM</font><BR><BR>
+<input type="checkbox" id="emaillist" name="emaillist" value="ISPriorityComm-LEO@landsend.com" >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font class="inputtext">LEO</font><BR><BR>
+<input type="checkbox" id="emaillist" name="emaillist" value="ISPriorityComm-Retail@landsend.com" >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font class="inputtext">Retail</font><BR><BR>
+</p>
+</td>
+<td width="5%">&nbsp;</td>
+</tr>
+</table>
+<p align="center"><input type="checkbox" id="emaillist" name="emaillist" value="ISManagers@landsend.com" >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font class="inputtext">Include IT Managers</font><BR><BR></p>
+<p align="center">
+SHORT SUBJECT DESCRIPTION:<Br>
+</p>
+<p align="center">
+<textarea rows="2" cols="40" name="problemsubject" id="problemsubject"></textarea><br><br><Br>
+</p>
+<p align="center">
+PROBLEM DESCRIPTION:<Br>
+</p>
+<p align="center">
+<textarea rows="20" cols="40" name="problemdescription" id="problemdescription"></textarea><br><br><br><br><br><br>
+</p>
+<p align="center">
+RESOLUTION STATUS / NEXT STEPS:<Br>
+</p>
+<p align="center">
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td width="10%">&nbsp;</td>
+<td width="40" align="right" valign="middle">
+	<a style="text-decoration: none" href="javascript:void(0);" onclick="javascript:document.getElementById('resolutionstatus').value = 'Being worked on. Next steps are TBD.';"><font size="80px" color="green" face="arial"><b> O&nbsp;</b></font></a>
+	<a style="text-decoration: none" href="javascript:void(0);" onclick="javascript:clearvalue('resolutionstatus');"><font size="80px" color="black" face="arial"><b> X&nbsp;</b></font></a>
+</td>
+<td width="100%" align="left" valign="middle">
+	<textarea rows="2" cols="40" name="resolutionstatus" id="resolutionstatus">Being worked on. Next steps are TBD.</textarea>
+</td>
+</tr>
+</table>
+</p>
+<p align="center">
+ISSUE TIMEFRAME:<Br>
+</p>
+<p align="center">
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td width="10%">&nbsp;</td>
+<td width="40" align="right" valign="middle">
+	<a style="text-decoration: none" href="javascript:void(0);" onclick="javascript:document.getElementById('issuetimeframe').value = 'Still being researched.';"><font size="50px" color="green" face="arial"><b> O&nbsp;</b></font></a>
+	<a style="text-decoration: none" href="javascript:void(0);" onclick="javascript:clearvalue('issuetimeframe');"><font size="80px" color="black" face="arial"><b> X&nbsp;</b></font></a>
+</td>
+<td width="100%" align="left" valign="middle">
+	<textarea rows="2" cols="40" name="issuetimeframe" id="issuetimeframe">Still being researched.</textarea>
+</td>
+</tr>
+</table>
+</p>
+<p align="center">
+CUSTOMER / BUSINESS IMPACT:<Br>
+</p>
+<p align="center">
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td width="10%">&nbsp;</td>
+<td width="40" align="right" valign="middle">
+	<a style="text-decoration: none" href="javascript:void(0);" onclick="javascript:document.getElementById('customerimpact').value = 'To be determined.';"><font size="50px" color="green" face="arial"><b> O&nbsp;</b></font></a>
+	<a style="text-decoration: none" href="javascript:void(0);" onclick="javascript:clearvalue('customerimpact');"><font size="80px" color="black" face="arial"><b> X&nbsp;</b></font></a>
+</td>
+<td width="100%" align="left" valign="middle">
+	<textarea rows="2" cols="40" name="customerimpact" id="customerimpact">To be determined.</textarea>
+</td>
+</tr>
+</table>
+</p>
+<p align="center">
+TIME TO NEXT COMMUNICATION:<Br>
+</p>
+<p align="center">
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td width="10%">&nbsp;</td>
+<td width="40" align="right" valign="middle">
+	<a style="text-decoration: none" href="javascript:void(0);" onclick="javascript:document.getElementById('timetonextcommunication').value = 'One or hour sooner if there is information.';"><font size="50px" color="green" face="arial"><b> O&nbsp;</b></font></a>
+	<a style="text-decoration: none" href="javascript:void(0);" onclick="javascript:clearvalue('timetonextcommunication');"><font size="80px" color="black" face="arial"><b> X&nbsp;</b></font></a>
+</td>
+<td width="100%" align="left" valign="middle">
+	<textarea rows="2" cols="40" name="timetonextcommunication" id="timetonextcommunication">One hour or sooner if there is information.</textarea>
+</td>
+</tr>
+</table>
+</p>
+
+
+<center><input type="button" id="run" value="Generate Email" onClick="generateEmail();"></input></center>
+<div id="status">
+</div>
+
+<script>
+var items = document.getElementById("items");
+var people = document.getElementById("people");
+var output = document.getElementById("output");
+var status_area = document.getElementById("status");
+var szSubject = 'IT ISSUE NOTIFICATION: ';
+var szEmailList;
+var szProblemDesc;
+var szBody, szResolution, szTimeframe, szImpact, szTimeToNext;
+
+function clearvalue(inputValueID)
+{
+	document.getElementById(inputValueID).value = "";
+}
+
+function reset(){
+
+	status_area.innerHTML = "";
+	output.innerHTML = "";
+}
+
+function getData(){
+	szEmailList = getCheckedCheckboxesFor("emaillist");
+	szProblemDesc = document.getElementById("problemdescription").value;
+	szSubject = szSubject + document.getElementById("problemsubject").value;
+	
+	szResolution = document.getElementById("resolutionstatus").value;
+	szTimeframe = document.getElementById("issuetimeframe").value;
+	szImpact = document.getElementById("customerimpact").value;
+	szTimeToNext = document.getElementById("timetonextcommunication").value;
+}
+
+function getCheckedCheckboxesFor(checkboxName) {
+    var checkboxes = document.querySelectorAll('input[name="' + checkboxName + '"]:checked'), values = [];
+	var returnValue = "";
+    Array.prototype.forEach.call(checkboxes, function(el) {
+        returnValue = el.value + ";" + returnValue;
+    });
+    return returnValue;
+}
+
+var values = [];
+var matches = {};
+
+function generateEmail(){
+	getData();
+	szBody = getbody(encodeURI(szProblemDesc), encodeURI(szResolution), encodeURI(szTimeframe), encodeURI(szImpact), encodeURI(szTimeToNext));
+	displayLink(szEmailList, szBody);
+}
+
+function displayLink(inputEmailList, inputEmailBody){
+	str = "";
+	str += '<p align="center"><a id="emaillink" href="mailto:' + encodeURI(inputEmailList) + '?Content-Type=text/html&subject=' + szSubject + '&body=' + inputEmailBody + '">Send The Email</A></p>'
+	setStatus(str);
+	document.getElementById('emaillink').click();
+}
+
+function setStatus(str){
+	status_area.innerHTML = str;
+}
+
+function getbody(inputDesc, inputResolution, inputTimeframe, inputImpact, inputTimeToNext)
+{
+	var mybody = "";
+	mybody += 'LANDS END IT - ISSUE MANAGEMENT%0D%0A%0D%0A';
+	mybody += 'ISSUE DESCRIPTION%0D%0A';
+	mybody += inputDesc + ' %0D%0A%0D%0A';
+ 	mybody += 'RESOLUTION STATUS AND NEXT STEPS TO RESOLVE%0D%0A';
+	mybody += inputResolution + ' %0D%0A%0D%0A';
+	mybody += 'ISSUE TIMEFRAME%0D%0A';
+	mybody += inputTimeframe + ' %0D%0A%0D%0A';
+	mybody += 'CUSTOMER / BUSINESS IMPACT%0D%0A';
+	mybody += inputImpact + ' %0D%0A%0D%0A';
+	mybody += 'TIME TO NEXT COMMUNICATION%0D%0A';
+	mybody += inputTimeToNext + ' %0D%0A%0D%0A';
+	mybody += 'Al Hummer %0D%0A';	
+	mybody += 'IT Manager - Lands End %0D%0A';	
+	mybody += 'T: 608-935-4505 %0D%0A';	
+	mybody += 'C: 608-575-3220 %0D%0A';	
+	mybody += 'alan.hummer@landsend.com %0D%0A';		
+	return mybody;
+
+}
+
+function dolink(inputType)
+{
+	if (inputType == 'ICMContacts')
+		alert('Jim Pluemer  +1 608-935-9073  +1 608-574-6844  +1 608-935-6630');
+	else
+		alert('Not yet');
+}
+	
+</script>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
