@@ -1,0 +1,69 @@
+<html>
+<head>
+<script src="RetirementCalculator.js"></script>
+<style>
+
+input[type='button'] { font-size: 64px; font-weight: bold; font-family: Helvetica, Arial, sans-serif;}
+textarea { font-size: 32px; font-weight: bold; border-style: inset; border-width: 2px; font-family: Helvetica, Arial, sans-serif;}
+
+p {
+  color: red;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 32px; 
+  font-weight: bold;
+}
+
+</style>
+</head>
+<body>
+<p align="center"><hr size="10" color="red"></p>
+<p align="center">RETIREMENT CALCULATOR<br><br></p>
+
+<!----INPUTS -->
+<div id="inputs" style="display: none;">
+<p align="center">
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+	<tr>
+		<td width="24%"><p align="center" valign="top">YEAR BORN:</p></td>
+		<td width="25%"><textarea rows="1" cols="15" name="issuetimeframe" id="issuetimeframe">1969</textarea></p></td>
+		<td width="2%">&nbsp;</td>
+		<td width="24%"><p align="center" valign="top">YEAR RETIRE:</p></td>
+		<td width="25%"><textarea rows="1" cols="15" name="issuetimeframe" id="issuetimeframe">2025</textarea></p></td>
+	</tr>
+	<tr><td colspan="5" height="15px"></td></tr>
+	<tr>
+		<td width="24%"><p align="center" valign="top">YEAR SOC SEC:</p></td>
+		<td width="25%"><textarea rows="1" cols="15" name="issuetimeframe" id="issuetimeframe">1969</textarea></p></td>
+		<td width="2%">&nbsp;</td>
+		<td width="24%"><p align="center" valign="top">YEAR MEDICARE:</p></td>
+		<td width="25%"><textarea rows="1" cols="15" name="issuetimeframe" id="issuetimeframe">2025</textarea></p></td>
+	</tr>
+</table>
+</p>
+<center><input type="button" id="run" value="Do The Math" onClick="doCalc();"></input></center>
+</div>
+
+<!----OUTPUT -->
+<div id="output" style="display: none;">
+	<center><input type="button" id="run" value="All Done" onClick="doClose();"></input></center>
+</div>
+
+</body>
+
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
