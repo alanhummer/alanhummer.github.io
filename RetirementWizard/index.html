@@ -9,9 +9,11 @@ textarea { font-size: 32px; font-weight: bold; border-style: inset; border-width
 p {
   color: red;
   font-family: Helvetica, Arial, sans-serif;
-  font-size: 32px; 
+  font-size: 44; 
   font-weight: bold;
 }
+
+textarea { font-size: 44px; }
 
 </style>
 </head>
@@ -24,19 +26,23 @@ p {
 <p align="center">
 <table border="0" cellpadding="0" cellspacing="0" width="100%">
 	<tr>
-		<td width="24%"><p align="center" valign="top">YEAR BORN:</p></td>
-		<td width="25%"><textarea rows="1" cols="15" name="issuetimeframe" id="issuetimeframe">1969</textarea></p></td>
-		<td width="2%">&nbsp;</td>
-		<td width="24%"><p align="center" valign="top">YEAR RETIRE:</p></td>
-		<td width="25%"><textarea rows="1" cols="15" name="issuetimeframe" id="issuetimeframe">2025</textarea></p></td>
+		<td width="50%"><p align="right" valign="top">YEAR BORN:&nbsp;&nbsp;</p></td>
+		<td width="50%"><textarea rows="1" cols="15" id="yearBorn">1969</textarea></td>
 	</tr>
-	<tr><td colspan="5" height="15px"></td></tr>
+	<tr><td colspan="2" height="15px"></td></tr>
 	<tr>
-		<td width="24%"><p align="center" valign="top">YEAR SOC SEC:</p></td>
-		<td width="25%"><textarea rows="1" cols="15" name="issuetimeframe" id="issuetimeframe">1969</textarea></p></td>
-		<td width="2%">&nbsp;</td>
-		<td width="24%"><p align="center" valign="top">YEAR MEDICARE:</p></td>
-		<td width="25%"><textarea rows="1" cols="15" name="issuetimeframe" id="issuetimeframe">2025</textarea></p></td>
+		<td width="50%"><p align="right" valign="top">YEAR RETIRE:&nbsp;&nbsp;</p></td>
+		<td width="50%"><textarea rows="1" cols="15" id="yearRetire">2025</textarea></td>
+	</tr>
+	<tr><td colspan="2" height="15px"></td></tr>
+	<tr>
+		<td width="50%"><p align="right" valign="top">YEAR SOC SEC:&nbsp;&nbsp;</p></td>
+		<td width="50%"><textarea rows="1" cols="15" id="yearSocSec">1969</textarea></td>
+	</tr>
+	<tr><td colspan="2" height="15px"></td></tr>
+	<tr>
+		<td width="50%"><p align="right" valign="top">YEAR MEDICARE:&nbsp;&nbsp;</p></td>
+		<td width="50%"><textarea rows="1" cols="15" id="yearMedicare">2025</textarea></td>
 	</tr>
 </table>
 </p>
@@ -45,6 +51,7 @@ p {
 
 <!----OUTPUT -->
 <div id="output" style="display: none;">
+	<div id="outputReport"><p></p></div>
 	<center><input type="button" id="run" value="All Done" onClick="doClose();"></input></center>
 </div>
 
