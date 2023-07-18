@@ -49,9 +49,9 @@ function doCalc() {
 
     //And write out results
     
-    resultReport = "<table class='output-report' border='1px'><tr><td>YEAR</td><td>START</td><td>ADD</td><td>SUBT</td><td>END</td></tr>"
+    resultReport = "<table class='output-report' border='1px' width='100%'><tr><td align='center'>YEAR</td><td align='center'>START</td><td align='center'>ADD</td><td align='center'>SUBT</td><td align='center'>END</td></tr>"
     for (let i = 2025; i < 2060; i++) {
-        resultReport = resultReport + "<tr><td>" + i + "</td><td>$5.5M</td><td>$100K</td><td>$150K</td><td>$5.5M</td></tr>";
+        resultReport = resultReport + "<tr><td width='20%'>" + i + "</td><td width='20%'>$5.5M</td><td width='20%'>$100K</td><td width='20%'>$150K</td><td width='20%'>$5.5M</td></tr>";
     }
     resultReport = resultReport + "</table>";
 
