@@ -36,6 +36,8 @@ doCalc
 function doCalc() {
 
     var myValue;
+    var i = 0;
+    resultReport = "";
 
     //Save off our data
     setDataValue("yearBorn", document.getElementById("yearBorn").value);
@@ -46,7 +48,14 @@ function doCalc() {
     setDataValue("rothIRAAl-return", document.getElementById("rothIRAAl-return").value);
 
     //And write out results
-    document.getElementById("outputReport").innerHTML = "<p>YEAR BORN: " + getDataValue("yearBorn") + "</p>";
+    
+    resultReport = "<table class='output-report' border='1px'><tr><td>YEAR</td><td>START</td><td>ADD</td><td>SUBT</td><td>END</td></tr>"
+    for (let i = 2025; i < 2060; i++) {
+        resultReport = resultReport + "<tr><td>" + i + "</td><td>$5.5M</td><td>$100K</td><td>$150K</td><td>$5.5M</td></tr>";
+    }
+    resultReport = resultReport + "</table>";
+
+    document.getElementById("outputReport").innerHTML = "<center>" + resultReport + "</center>";
     showPageView("output");
 }
 
