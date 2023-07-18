@@ -24,7 +24,7 @@ function initField(inputField) {
     var defaultValue = "2000";
 
     if (getDataValue(inputField)) {
-        yearBorn = getDataValue(inputField);
+        defaultValue = getDataValue(inputField);
     }
     document.getElementById(inputField).value = defaultValue;
 
