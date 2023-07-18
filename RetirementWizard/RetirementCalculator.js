@@ -6,16 +6,29 @@ When Page loads we start
 ****************/
 function onDOMContentLoaded() {
 
-    var yearBorn = "2000";
-
-    if (getDataValue("yearBorn")) {
-        yearBorn = getDataValue("yearBorn");
-    }
-    document.getElementById("yearBorn").value = yearBorn;
+    initField("yearBorn");
+    initField("yearRetire");    
+    initField("yearSocSec");
+    initField("yearMedicare");
+    initField("rothIRAAl");
+    initField("rothIRAAl-return");
 
     showPageView("inputs");
 }
 
+/****************
+Initialize data field
+****************/
+function initField(inputField) {
+
+    var defaultValue = "2000";
+
+    if (getDataValue(inputField)) {
+        yearBorn = getDataValue(inputField);
+    }
+    document.getElementById(inputField).value = defaultValue;
+
+}
 
 /****************
 doCalc
@@ -24,8 +37,15 @@ function doCalc() {
 
     var myValue;
 
+    //Save off our data
     setDataValue("yearBorn", document.getElementById("yearBorn").value);
+    setDataValue("yearRetire", document.getElementById("yearRetire").value);    
+    setDataValue("yearSocSec", document.getElementById("yearSocSec").value);
+    setDataValue("yearMedicare", document.getElementById("yearMedicare").value);
+    setDataValue("rothIRAAl", document.getElementById("rothIRAAl").value);
+    setDataValue("rothIRAAl-return", document.getElementById("rothIRAAl-return").value);
 
+    //And write out results
     document.getElementById("outputReport").innerHTML = "<p>YEAR BORN: " + getDataValue("yearBorn") + "</p>";
     showPageView("output");
 }
