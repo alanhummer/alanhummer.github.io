@@ -27,41 +27,12 @@ textarea { font-size: 44px; }
 </head>
 <body>
 <p align="center"><hr size="10" color="red"></p>
-<p align="center">RETIREMENT CALCULATOR<br><br></p>
-
+<p align="center">RETIREMENT CALCULATOR<br></p>
+<p id="errormessage" align="center">&nbsp;</p>
 <!----INPUTS -->
 <div id="inputs" style="display: none;">
 <p align="center">
-<table border="0" cellpadding="0" cellspacing="0" width="100%">
-	<tr>
-		<td width="50%"><p align="right" valign="top">YEAR BORN:&nbsp;&nbsp;</p></td>
-		<td width="50%"><textarea rows="1" cols="15" id="yearBorn">1969</textarea></td>
-	</tr>
-	<tr><td colspan="2" height="15px"></td></tr>
-	<tr>
-		<td width="50%"><p align="right" valign="top">YEAR RETIRE:&nbsp;&nbsp;</p></td>
-		<td width="50%"><textarea rows="1" cols="15" id="yearRetire">2025</textarea></td>
-	</tr>
-	<tr><td colspan="2" height="15px"></td></tr>
-	<tr>
-		<td width="50%"><p align="right" valign="top">YEAR SOC SEC:&nbsp;&nbsp;</p></td>
-		<td width="50%"><textarea rows="1" cols="15" id="yearSocSec">1969</textarea></td>
-	</tr>
-	<tr><td colspan="2" height="15px"></td></tr>
-	<tr>
-		<td width="50%"><p align="right" valign="top">YEAR MEDICARE:&nbsp;&nbsp;</p></td>
-		<td width="50%"><textarea rows="1" cols="15" id="yearMedicare">2025</textarea></td>
-	</tr>
-	<tr><td colspan="2"><hr></td></tr>
-	<tr>
-		<td width="50%"><p align="right" valign="top">ROTH IRA - AL:&nbsp;&nbsp;</p></td>
-		<td width="50%"><textarea rows="1" cols="15" id="rothIRAAl">0</textarea></td>
-	</tr>
-	<tr>
-		<td width="50%"><p align="right" valign="top">AVG RETURN:&nbsp;&nbsp;</p></td>
-		<td width="50%"><textarea rows="1" cols="15" id="rothIRAAl-return">0</textarea></td>
-	</tr>
-</table>
+<div id="input-fields"></div>
 </p>
 <center><input type="button" id="run" value="Do The Math" onClick="doCalc();"></input></center>
 </div>
