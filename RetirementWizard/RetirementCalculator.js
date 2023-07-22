@@ -3,6 +3,18 @@ document.addEventListener("DOMContentLoaded", onDOMContentLoaded, false);
 
 var gFieldArray = [];
 var formatter;
+var currentDate = new Date();
+
+/*What left?
+
+- X Handle year starts/stops - retire year, medicare kicks in, etc
+- X START YEAR< END YERA? Medical leive
+- handl ss
+- handle other incodme
+- IRA's need to be an age...handle that
+
+
+*/
 
 /****************
 When Page loads we start
@@ -18,22 +30,23 @@ function onDOMContentLoaded() {
     gFieldArray.push(new RetirementField("yearMedicare", "2001", "YEAR MEDICARE", "year"));
     gFieldArray.push(new RetirementField("yearDie", "2001", "YEAR DIE", "year"));
     gFieldArray.push(new RetirementField("BREAK", "", "", ""));
-    gFieldArray.push(new RetirementField("medicalExpense", "10000", "PRE-MEDICARE EXP", "money", "expense", "inflation", "yearRetire", "yearMedicar"));
-    gFieldArray.push(new RetirementField("livingExpense", "10000", "LIVING EXP", "money", "expense", "inflation", "yearRetire", "yearDie"));
-    gFieldArray.push(new RetirementField("inflation", "2", "INFLATION", "rate"));   
+    gFieldArray.push(new RetirementField("medicalExpense", "10000", "PRE-MEDCARE/MTH", "money", "expense", "monthly", "inflation", "yearRetire", "yearMedicare"));
+    gFieldArray.push(new RetirementField("livingExpense", "10000", "LIVING EXP/MTH", "money", "expense", "monthly", "inflation", "yearRetire", "yearDie"));
+    gFieldArray.push(new RetirementField("inflation", "2", "INFLATION/YR", "rate"));   
     gFieldArray.push(new RetirementField("BREAK", "", "", ""));
-    gFieldArray.push(new RetirementField("rothIRAAl", "10000", "IRA BAL 1", "money", "income", "rothIRAAl-return"));
-    gFieldArray.push(new RetirementField("rothIRAAl-return", "3", "IRA RETURN 1", "rate"));
-    gFieldArray.push(new RetirementField("rothIRAA2", "10000", "IRA BAL 2", "money", "income", "rothIRAA2-return"));
-    gFieldArray.push(new RetirementField("rothIRAA2-return", "3", "IRA RETURN 2", "rate"));
+    gFieldArray.push(new RetirementField("socSec", "1000", "SOC SEC", "money", "income", "monthly", "secsec-inflation", "yearSocSec", "yearDie"));
+    gFieldArray.push(new RetirementField("secsec-inflation", "3", "SOC SEC INFLATION", "rate"));
+    gFieldArray.push(new RetirementField("rothIRAAl", "10000", "IRA 1 BAL", "money", "income", "yearly", "rothIRAAl-return"));
+    gFieldArray.push(new RetirementField("rothIRAAl-return", "3", "IRA 1 RET/YR", "rate"));
+    gFieldArray.push(new RetirementField("rothIRAA2", "10000", "IRA 2 BAL", "money", "income", "yearly", "rothIRAA2-return"));
+    gFieldArray.push(new RetirementField("rothIRAA2-return", "3", "IRA 2 RET/YR", "rate"));
 
 
 
     //Build our display
     gFieldArray.forEach((fieldObject) => {
-        console.log("FIELD OBJECT", fieldObject);
         outputRows = outputRows + fieldObject.fieldDisplayRow();
-        console.log("ROW IS: " + outputRows);
+        //console.log("ROW IS: " + outputRows);
     });
 
     outputTable = outputTable.replace("_RETIREMENTFIELDS_", outputRows);
@@ -73,7 +86,7 @@ function doCalc() {
             else {
                 fieldObject.fieldValue = trimNumber(document.getElementById(fieldObject.fieldName).value);
                 fieldObject.setDataValue();
-                console.log("FIELD VALUE SET " + fieldObject.fieldName + " = " + fieldObject.fieldValue);
+                //console.log("FIELD VALUE SET " + fieldObject.fieldName + " = " + fieldObject.fieldValue);
             }
         }
     });
@@ -86,12 +99,13 @@ function doCalc() {
     //Data is good, lets rip thru it and apply our time algorithm..since updating, make a copy
     lFieldArray = gFieldArray;
 
-    resultReport = "<table class='output-report' border='1px' width='100%' cellpadding='10' cellspacing='10'><tr><td align='center'>YEAR</td><td align='center'>START</td><td align='center'>ADD</td><td align='center'>SUBT</td><td align='center'>END</td></tr>"
-    for (let i = getValue(lFieldArray, "yearRetire"); i < getValue(lFieldArray, "yearDie"); i++) {
-        startAmount = currency(calcYearStartAmounts(lFieldArray));
-        addAmount = currency(calcAddAmounts(lFieldArray));
-        subtractAmount = currency(calcSubtractAmounts(lFieldArray));
-        endAmount = currency(calcEndYearAmounts(lFieldArray));
+    resultReport = "<table class='output-report' border='1px' width='100%' cellpadding='10' cellspacing='10'><tr><td align='center'>YEAR</td><td align='center'>START</td><td align='center'>INCOME</td><td align='center'>EXPENSE</td><td align='center'>END</td></tr>"
+    for (let i = currentDate.getFullYear(); i < getValue(lFieldArray, "yearDie"); i++) {
+
+        startAmount = currency(calcYearStartAmounts(lFieldArray, i));
+        addAmount = currency(calcAddAmounts(lFieldArray,  i));
+        subtractAmount = currency(calcSubtractAmounts(lFieldArray, i));
+        endAmount = currency(calcEndYearAmounts(lFieldArray, i));
 
         resultReport = resultReport + "<tr><td align='center' width='20%'>" + i + "</td><td width='20%' align='right'>" + startAmount + "&nbsp;</td><td width='20%' align='right'>" + addAmount + "</td><td width='20%' align='right'>" + subtractAmount + "</td><td width='20%' align='right'>" + endAmount + "</td></tr>";
     }
@@ -115,7 +129,7 @@ function doClose(inputValue) {
 showPageView
 ****************/
 function showPageView(inputView) {
-    document.getElementById("inputs").style.display = "none";
+    //document.getElementById("inputs").style.display = "none";
     document.getElementById("output").style.display = "none";
     document.getElementById(inputView).style.display = "block";
 }
@@ -123,14 +137,39 @@ function showPageView(inputView) {
 /****************
 calcYearStartAmounts
 ****************/
-function calcYearStartAmounts(inputArray) {
+function calcYearStartAmounts(inputArray, inputYear) {
 
-    myValue = 0;
+    var myValue = 0;
+    var blnHandleIncome = false;
 
     //Build our amount set
     inputArray.forEach((fieldObject) => {
         if (fieldObject.fieldType == "money" && fieldObject.incomeOrExpense == "income") {
-            myValue = myValue + Number(fieldObject.fieldValue);
+
+            if (fieldObject.startYear && fieldObject.endYear) {
+                if (fieldObject.startYear != "" && fieldObject.endYear != "") {
+                    if (inputYear >= getValue(inputArray, fieldObject.startYear) && inputYear <= getValue(inputArray, fieldObject.endYear)) {
+                        blnHandleIncome = true;
+                    }              
+                }
+                else {
+                    blnHandleIncome = true; 
+                }
+            }
+            else {
+                blnHandleIncome = true;
+            }
+
+            if (blnHandleIncome) {
+                console.log("START OBJECT", fieldObject);
+                if (fieldObject.timePeriod == "monthly") {
+                    myValue = Number(myValue) + Number(Number(fieldObject.fieldValue) * 12);
+                }
+                else {
+                    myValue = Number(myValue) + Number(fieldObject.fieldValue);
+                }
+            }
+
         }
     });
 
@@ -141,58 +180,165 @@ function calcYearStartAmounts(inputArray) {
 /****************
 calcAddAmounts
 ****************/
-function calcAddAmounts(inputArray) {
+function calcAddAmounts(inputArray, inputYear) {
 
     var myRate = 0;
-    var totalValue = 0;
+    var totalIncome = 0;
+    var blnHandleIncome = false;
 
     //Build our amount set
     inputArray.forEach((fieldObject) => {
         if (fieldObject.fieldType == "money" && fieldObject.incomeOrExpense == "income") {
-            myRate = getValue(inputArray, fieldObject.rateField)
-            fieldObject.netChange = Number(fieldObject.fieldValue) * Number(myRate)/100;
-            totalValue = totalValue + fieldObject.netChange;
+
+            blnHandleIncome = false;
+
+            //Only if in range
+
+            if (fieldObject.startYear && fieldObject.endYear) {
+                if (fieldObject.startYear != "" && fieldObject.endYear != "") {
+                    if (inputYear >= getValue(inputArray, fieldObject.startYear) && inputYear <= getValue(inputArray, fieldObject.endYear)) {
+                        blnHandleIncome = true;
+                    }              
+                }
+                else {
+                    blnHandleIncome = true; 
+                }
+            }
+            else {
+                blnHandleIncome = true;
+            }
+
+            console.log("TESTING INCOME " + inputYear + " HANDLE IT IS " + blnHandleIncome, fieldObject);
+
+            myRate = getValue(inputArray, fieldObject.rateField);
+            fieldObject.fieldNetChange = (Number(fieldObject.fieldValue) * Number(myRate)/100);
+            fieldObject.fieldValue = Number(fieldObject.fieldValue) + Number(fieldObject.fieldNetChange);
+
+            //Handle monthly vs yearly
+            if (blnHandleIncome) {
+                
+                if (fieldObject.timePeriod == "monthly") {
+                    totalIncome = Number(totalIncome) + Number(Number(fieldObject.fieldValue) * 12);
+                }
+                else {
+                    totalIncome = Number(totalIncome) + Number(fieldObject.fieldNetChange);
+                }
+                
+            }
+
         }
     });
 
-    return totalValue;
+    return totalIncome;
 
 }
 
 /****************
 calcSubtractAmounts
 ****************/
-function calcSubtractAmounts(inputArray) {
+function calcSubtractAmounts(inputArray, inputYear) {
 
-    var myRate = 0;
-    var totalValue = 0;
+    var totalExpense = 0;
+    var returnExpense = 0;
+    var blnHandleExpense = false;
 
-    //Build our amount set
+    //Build our amount set --> MOney comes outof which ccount?
     inputArray.forEach((fieldObject) => {
         if (fieldObject.fieldType == "money" && fieldObject.incomeOrExpense == "expense") {
-            myRate = getValue(inputArray, fieldObject.rateField)
-            fieldObject.netChange = (Number(fieldObject.fieldValue) * Number(myRate)/100);
-            totalValue = totalValue + Number(fieldObject.fieldValue) + fieldObject.netChange;
+            
+            blnHandleExpense = false;
+            //Only if in range
+            if (fieldObject.startYear && fieldObject.endYear) {
+                if (inputYear >= getValue(inputArray, fieldObject.startYear) && inputYear <= getValue(inputArray, fieldObject.endYear)) {
+                    blnHandleExpense = true;
+                }
+            }
+            else {
+                blnHandleExpense = true;
+            }
+
+            //Handle monthly vs yearly
+            if (blnHandleExpense) {
+                if (fieldObject.timePeriod == "monthly") {
+                    totalExpense = Number(totalExpense) + Number(Number(fieldObject.fieldValue) * 12);
+                }
+                else {
+                    totalExpense = Number(totalExpense) + Number(Number(fieldObject.fieldValue));
+                }
+                
+            }
+
+            //Regardless of retired or not, expense go up by what rate defined
+            myRate = getValue(inputArray, fieldObject.rateField);
+            fieldObject.fieldValue = Number(fieldObject.fieldValue) + (Number(fieldObject.fieldValue) * Number(myRate)/100);
+
         }
     });
 
-    return totalValue;
+    //Save off total expense
+    returnExpense = totalExpense;
+
+    //Drain the money from accounts in order
+    inputArray.forEach((fieldObject2) => {
+
+        //Drain acount by expense cost
+        if (totalExpense > 0 ) {
+            if (fieldObject2.fieldType == "money" && fieldObject2.incomeOrExpense == "income" && fieldObject2.timePeriod != "monthly") {
+                if (Number(fieldObject2.fieldValue > 0)) {
+                    fieldObject2.fieldValue = fieldObject2.fieldValue - totalExpense;
+                    if (Number(fieldObject2.fieldValue < 0)) {
+                        totalExpense = -1 * fieldObject2.fieldValue;
+                        fieldObject2.fieldValue = 0;
+                    }
+                }
+            }
+        }
+    });
+
+    return returnExpense;
 
 }
 
 /****************
 calcEndYearAmounts
 ****************/
-function calcEndYearAmounts(inputArray) {
+function calcEndYearAmounts(inputArray, inputYear) {
 
     var myRate = 0;
     var totalValue = 0;
+    var blnHandleIncome = false;
 
     //Build our amount set
     inputArray.forEach((fieldObject) => {
-        if (fieldObject.fieldType == "money" && (fieldObject.incomeOrExpense == "income" || fieldObject.incomeOrExpense == "expense")) {
+        if (fieldObject.fieldType == "money" && (fieldObject.incomeOrExpense == "income")) {
+
             fieldObject.fieldValue = Number(fieldObject.fieldValue) + Number(fieldObject.netChange);
-            totalValue = Number(totalValue) + Number(fieldObject.fieldValue);
+
+
+            if (fieldObject.startYear && fieldObject.endYear) {
+                if (fieldObject.startYear != "" && fieldObject.endYear != "") {
+                    if (inputYear >= getValue(inputArray, fieldObject.startYear) && inputYear <= getValue(inputArray, fieldObject.endYear)) {
+                        blnHandleIncome = true;
+                    }              
+                }
+                else {
+                    blnHandleIncome = true; 
+                }
+            }
+            else {
+                blnHandleIncome = true;
+            }
+
+            if (blnHandleIncome) {
+                if (fieldObject.timePeriod == "monthly") {
+                    totalValue = Number(totalValue) + Number(Number(fieldObject.fieldValue) * 12);
+                }
+                else {
+                    totalValue = Number(totalValue) + Number(fieldObject.fieldValue);
+                }
+            }
+
+           
         }
     });
 
@@ -242,7 +388,6 @@ function isNumber(inputNumber) {
         myResponse = false;
     }
 
-    console.log("IS NUMBER FOR " + inputNumber + " = " + myResponse);
     return myResponse;
 
 }
@@ -265,7 +410,6 @@ function trimNumber(inputNumber) {
         }
     }
 
-    console.log("TRIMMED # " + myResponse);
     return myResponse;
 
 }
@@ -300,7 +444,7 @@ Retirement Field Object
 ****************/
 class RetirementField {
 
-    constructor(fieldName, fieldValue, fieldDescription, fieldType = "", incomeOrExpense = "", rateField = "", startYear = "", endYear = "") {
+    constructor(fieldName, fieldValue, fieldDescription, fieldType = "", incomeOrExpense = "", timePeriod = "", rateField = "", startYear = "", endYear = "") {
         this.fieldName = fieldName;
         if (isNumber(fieldValue)) {
             this.fieldValue = Number(trimNumber(fieldValue));
@@ -312,6 +456,7 @@ class RetirementField {
         this.fieldDescription = fieldDescription;
         this.fieldType = fieldType;
         this.incomeOrExpense = incomeOrExpense;
+        this.timePeriod = timePeriod;
         this.rateField = rateField;
         this.startYear = startYear;
         this.endYear = endYear;
@@ -337,7 +482,6 @@ class RetirementField {
             myResponse = myResponse.replace("_FIELDNAME_", this.fieldName);
             if (this.fieldType == "money") {
                 myResponse = myResponse.replace("_FIELDVALUE_", currency(this.fieldValue));
-                console.log("SHOW THIS: " + currency(this.fieldValue));
             }
             else {
                 myResponse = myResponse.replace("_FIELDVALUE_", this.fieldValue);
@@ -382,10 +526,9 @@ class RetirementField {
 
         if (dataValue) {
             this.fieldValue = trimNumber(dataValue); 
-            console.log("DID A VALUE: " + this.fieldValue);
         }
 
-        console.log("Retirement Calculator Got Value " + this.fieldName + " = " + this.fieldValue);
+        //console.log("Retirement Calculator Got Value " + this.fieldName + " = " + this.fieldValue);
 
         return this.fieldValue;
 
