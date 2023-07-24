@@ -21,6 +21,11 @@ p {
   border: 1px solid;
 }
 
+.nowrap {
+  white-space: nowrap;
+  overflow: hidden;
+}
+
 textarea { font-size: 44px; }
 
 </style>
@@ -28,7 +33,7 @@ textarea { font-size: 44px; }
 <body>
 <p align="center"><hr size="10" color="red"></p>
 <p align="center">RETIREMENT CALCULATOR<br></p>
-<p id="errormessage" align="center">&nbsp;</p>
+<p id="infomessage" align="center">&nbsp;</p>
 <!----INPUTS -->
 <div id="inputs" style="display: none;">
 <p align="center">
@@ -41,7 +46,14 @@ textarea { font-size: 44px; }
 <div id="output" style="display: none;">
 	<p align="center"><hr size="10" color="red"></p>
 	<p><div id="outputReport"></p></div>
-	<center><input type="button" id="run2" value="All Done" onClick="doClose();"></input></center>
+	<center><input type="button" id="run2" value="All Done" onClick="showPageView('inputs');"></input></center>
+</div>
+
+<!----YEAR DETAIL -->
+<div id="yeardetail" style="display: none;">
+	<p align="center"><hr size="10" color="red"></p>
+	<p><div id="yeardetailReport"></p></div>
+	<center><input type="button" id="run3" value="All Done" onClick="showPageView('output');"></input></center>
 </div>
 
 </body>
