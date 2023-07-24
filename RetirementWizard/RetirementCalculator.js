@@ -60,12 +60,19 @@ function onDOMContentLoaded() {
     gFieldArray.push(new RetirementField("regIRAA1-return", "3", "REG IRA 1 RET/YR", "rate"));
     gFieldArray.push(new RetirementField("regIRAA2", "10000", "REG IRA 2 BAL", "money", "investment", "yearly", "regIRAA2-return", "yearIRA", "yearDie"));
     gFieldArray.push(new RetirementField("regIRAA2-return", "3", "REG IRA 2 RET/YR", "rate"));
+    gFieldArray.push(new RetirementField("regIRAA3", "10000", "REG IRA 3 BAL", "money", "investment", "yearly", "regIRAA3-return", "yearIRA", "yearDie"));
+    gFieldArray.push(new RetirementField("regIRAA3-return", "3", "REG IRA 3 RET/YR", "rate"));    
     gFieldArray.push(new RetirementField("401K-1", "10000", "401K 1 BAL", "money", "investment", "yearly", "401K-1-return", "yearIRA", "yearDie"));
     gFieldArray.push(new RetirementField("401K-1-return", "3", "401K 1 RET/YR", "rate"));
     gFieldArray.push(new RetirementField("401K-2", "10000", "401K 2 BAL", "money", "investment", "yearly", "401K-2-return", "yearIRA", "yearDie"));
     gFieldArray.push(new RetirementField("401K-2-return", "3", "401K 2 RET/YR", "rate"));   
     gFieldArray.push(new RetirementField("---------", "", "", "break"));
 
+
+    gFieldArray.push(new RetirementField("coverdell-1", "0", "COVERDELL 1", "money", "investment", "yearly", "coverdell-1-return"));
+    gFieldArray.push(new RetirementField("coverdell-1-return", "0", "COVER 1 RETURN", "rate"));
+    gFieldArray.push(new RetirementField("coverdell-2", "0", "COVERDELL 2", "money", "investment", "yearly", "coverdell-2-return"));
+    gFieldArray.push(new RetirementField("coverdell-2-return", "0", "COVER 2 RETURN", "rate"));
     gFieldArray.push(new RetirementField("brokerage", "0", "BROKERAGE", "money", "investment", "yearly", "brokerage-return"));
     gFieldArray.push(new RetirementField("brokerage-return", "0", "BROKER RETURN", "rate"));
     gFieldArray.push(new RetirementField("---------", "", "", "break"));
