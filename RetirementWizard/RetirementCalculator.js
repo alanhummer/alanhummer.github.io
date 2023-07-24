@@ -29,20 +29,46 @@ function onDOMContentLoaded() {
     gFieldArray.push(new RetirementField("yearSocSec", "2001", "YEAR SOCSEC", "year"));
     gFieldArray.push(new RetirementField("yearMedicare", "2001", "YEAR MEDICARE", "year"));
     gFieldArray.push(new RetirementField("yearDie", "2001", "YEAR DIE", "year"));
-    gFieldArray.push(new RetirementField("line break", "", "", "break"));
+    gFieldArray.push(new RetirementField("---------", "", "", "break"));
+
     gFieldArray.push(new RetirementField("medicalExpense", "10000", "PRE-MEDCARE/MTH", "money", "expense", "monthly", "inflation", "yearRetire", "yearMedicare", "", "cash"));
     gFieldArray.push(new RetirementField("livingExpense", "10000", "LIVING EXP/MTH", "money", "expense", "monthly", "inflation", "yearRetire", "yearDie", "", "cash"));
     gFieldArray.push(new RetirementField("inflation", "2", "INFLATION/YR", "rate"));   
-    gFieldArray.push(new RetirementField("line break", "", "", "break"));
-    gFieldArray.push(new RetirementField("cash", "0", "CASH", "money", "investment", "yearly", "cash-return"));
-    gFieldArray.push(new RetirementField("cash-return", "0", "CASH RETURN", "rate"));
+    gFieldArray.push(new RetirementField("---------", "", "", "break"));
+
     gFieldArray.push(new RetirementField("socSec", "1000", "SOC SEC NOW", "money", "income", "monthly", "secsec-inflation", "yearSocSec", "yearDie", "cash"));
     gFieldArray.push(new RetirementField("secsec-inflation", "3", "SOC SEC INFLATION", "rate"));
-    gFieldArray.push(new RetirementField("rothIRAAl", "10000", "IRA 1 BAL", "money", "investment", "yearly", "rothIRAAl-return", "yearIRA", "yearDie"));
-    gFieldArray.push(new RetirementField("rothIRAAl-return", "3", "IRA 1 RET/YR", "rate"));
-    gFieldArray.push(new RetirementField("rothIRAA2", "10000", "IRA 2 BAL", "money", "investment", "yearly", "rothIRAA2-return", "yearIRA", "yearDie"));
-    gFieldArray.push(new RetirementField("rothIRAA2-return", "3", "IRA 2 RET/YR", "rate"));
+    gFieldArray.push(new RetirementField("pension", "1000", "PENSION NOW", "money", "income", "monthly", "pension-inflation", "yearRetire", "yearDie", "cash"));
+    gFieldArray.push(new RetirementField("pension-inflation", "3", "PENSION INFLATION", "rate"));
+    gFieldArray.push(new RetirementField("rental", "1000", "RENTAL INC", "money", "income", "monthly", "rental-inflation", "", "yearDie", "cash"));
+    gFieldArray.push(new RetirementField("rental-inflation", "3", "RENTAL INFLATION", "rate"));
+    gFieldArray.push(new RetirementField("---------", "", "", "break"));
 
+    gFieldArray.push(new RetirementField("cash", "0", "CASH", "money", "investment", "yearly", "cash-return"));
+    gFieldArray.push(new RetirementField("cash-return", "0", "CASH RETURN", "rate"));
+    gFieldArray.push(new RetirementField("mmk1", "0", "MON MKT 1", "money", "investment", "yearly", "mmk1-return"));
+    gFieldArray.push(new RetirementField("mmk1-return", "0", "MON MKT 1 RETURN", "rate"));
+    gFieldArray.push(new RetirementField("mmk2", "0", "MON MKT 2", "money", "investment", "yearly", "mmk2-return"));
+    gFieldArray.push(new RetirementField("mmk2-return", "0", "MON MKT 2 RETURN", "rate"));
+    gFieldArray.push(new RetirementField("---------", "", "", "break"));
+
+    gFieldArray.push(new RetirementField("rothIRAAl", "10000", "ROTH 1 BAL", "money", "investment", "yearly", "rothIRAAl-return", "yearIRA", "yearDie"));
+    gFieldArray.push(new RetirementField("rothIRAAl-return", "3", "ROTH 1 RET/YR", "rate"));
+    gFieldArray.push(new RetirementField("rothIRAA2", "10000", "ROTH 2 BAL", "money", "investment", "yearly", "rothIRAA2-return", "yearIRA", "yearDie"));
+    gFieldArray.push(new RetirementField("rothIRAA2-return", "3", "ROTH 2 RET/YR", "rate"));
+    gFieldArray.push(new RetirementField("regIRAA1", "10000", "REG IRA 1 BAL", "money", "investment", "yearly", "regIRAA1-return", "yearIRA", "yearDie"));
+    gFieldArray.push(new RetirementField("regIRAA1-return", "3", "REG IRA 1 RET/YR", "rate"));
+    gFieldArray.push(new RetirementField("regIRAA2", "10000", "REG IRA 2 BAL", "money", "investment", "yearly", "regIRAA2-return", "yearIRA", "yearDie"));
+    gFieldArray.push(new RetirementField("regIRAA2-return", "3", "REG IRA 2 RET/YR", "rate"));
+    gFieldArray.push(new RetirementField("401K-1", "10000", "401K 1 BAL", "money", "investment", "yearly", "401K-1-return", "yearIRA", "yearDie"));
+    gFieldArray.push(new RetirementField("401K-1-return", "3", "401K 1 RET/YR", "rate"));
+    gFieldArray.push(new RetirementField("401K-2", "10000", "401K 2 BAL", "money", "investment", "yearly", "401K-2-return", "yearIRA", "yearDie"));
+    gFieldArray.push(new RetirementField("401K-2-return", "3", "401K 2 RET/YR", "rate"));   
+    gFieldArray.push(new RetirementField("---------", "", "", "break"));
+
+    gFieldArray.push(new RetirementField("brokerage", "0", "BROKERAGE", "money", "investment", "yearly", "brokerage-return"));
+    gFieldArray.push(new RetirementField("brokerage-return", "0", "BROKER RETURN", "rate"));
+    gFieldArray.push(new RetirementField("---------", "", "", "break"));
 
     //Build our display
     gFieldArray.forEach((fieldObject) => {
