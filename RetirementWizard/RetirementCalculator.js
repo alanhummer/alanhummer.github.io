@@ -42,6 +42,10 @@ function onDOMContentLoaded() {
     gFieldArray.push(new RetirementField("travel-ent-eatout", "10000", "TRAVEL/ENT/REST/YR", "money", "expense", "yearly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
     gFieldArray.push(new RetirementField("utilities", "10000", "UTILITIES/YR", "money", "expense", "yearly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
     gFieldArray.push(new RetirementField("merchandise", "10000", "OTHER MERCH/YR", "money", "expense", "yearly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
+    gFieldArray.push(new RetirementField("condoproptax", "10000", "CONDO PROP TAX/YR", "money", "expense", "yearly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
+    gFieldArray.push(new RetirementField("condofees", "10000", "CONDO FEES/MTH", "money", "expense", "monthly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
+    gFieldArray.push(new RetirementField("condoutilities", "10000", "CONDO UTILS/MTH", "money", "expense", "monthly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
+    gFieldArray.push(new RetirementField("condoextras", "10000", "CONDO EXTRAS/MTH", "money", "expense", "monthly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
 
     //gFieldArray.push(new RetirementField("livingExpense", "10000", "LIVING EXP/YR", "money", "expense", "yearly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
     gFieldArray.push(new RetirementField("inflation", "2", "INFLATION/YR", "rate"));   
