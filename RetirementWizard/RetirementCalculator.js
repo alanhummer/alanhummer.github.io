@@ -29,11 +29,25 @@ function onDOMContentLoaded() {
     gFieldArray.push(new RetirementField("---------", "", "", "break"));
 
     gFieldArray.push(new RetirementField("medicalExpense", "10000", "PRE-MEDCARE/MTH", "money", "expense", "monthly", "inflation", "yearRetire", "yearMedicare", true, "", "cash"));
-    gFieldArray.push(new RetirementField("livingExpense", "10000", "LIVING EXP/MTH", "money", "expense", "monthly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
+    gFieldArray.push(new RetirementField("automotive", "10000", "AUTOMOTIVE/YR", "money", "expense", "yearly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
+    gFieldArray.push(new RetirementField("boat", "10000", "BOAT/YR", "money", "expense", "yearly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
+    gFieldArray.push(new RetirementField("christmas", "10000", "CHRISTMAS/YR", "money", "expense", "yearly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
+    gFieldArray.push(new RetirementField("donations", "10000", "donations/YR", "money", "expense", "yearly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
+    gFieldArray.push(new RetirementField("education", "10000", "education/YR", "money", "expense", "yearly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
+    gFieldArray.push(new RetirementField("food", "10000", "FOOD/YR", "money", "expense", "yearly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
+    gFieldArray.push(new RetirementField("home", "10000", "HOME IMP/YR", "money", "expense", "yearly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
+    gFieldArray.push(new RetirementField("inctax", "10000", "INCOME TAX/YR", "money", "expense", "yearly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
+    gFieldArray.push(new RetirementField("realestatetax", "10000", "REAL EST TAX/YR", "money", "expense", "yearly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
+    gFieldArray.push(new RetirementField("medicalservices", "10000", "MED SVCS/YR", "money", "expense", "yearly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
+    gFieldArray.push(new RetirementField("travel-ent-eatout", "10000", "TRAVEL/ENT/REST/YR", "money", "expense", "yearly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
+    gFieldArray.push(new RetirementField("utilities", "10000", "UTILITIES/YR", "money", "expense", "yearly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
+    gFieldArray.push(new RetirementField("merchandise", "10000", "OTHER MERCH/YR", "money", "expense", "yearly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
+
+    //gFieldArray.push(new RetirementField("livingExpense", "10000", "LIVING EXP/YR", "money", "expense", "yearly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
     gFieldArray.push(new RetirementField("inflation", "2", "INFLATION/YR", "rate"));   
     gFieldArray.push(new RetirementField("---------", "", "", "break"));
 
-    gFieldArray.push(new RetirementField("socSec", "1000", "SOC SEC NOW", "money", "income", "monthly", "secsec-inflation", "yearSocSec", "yearDie", false, "cash", ""));
+    gFieldArray.push(new RetirementField("socSec", "1000", "SOC AT BENE TIME", "money", "income", "monthly", "secsec-inflation", "yearSocSec", "yearDie", false, "cash", ""));
     gFieldArray.push(new RetirementField("secsec-inflation", "3", "SOC SEC INFLATION", "rate"));
     gFieldArray.push(new RetirementField("pension", "1000", "PENSION NOW", "money", "income", "monthly", "pension-inflation", "yearRetire", "yearDie", true, "cash", ""));
     gFieldArray.push(new RetirementField("pension-inflation", "3", "PENSION INFLATION", "rate"));
@@ -41,7 +55,7 @@ function onDOMContentLoaded() {
     gFieldArray.push(new RetirementField("rental-inflation", "3", "RENTAL INFLATION", "rate"));
     gFieldArray.push(new RetirementField("---------", "", "", "break"));
 
-    gFieldArray.push(new RetirementField("cash", "0", "CASH", "money", "investment", "yearly", "cash-return"));
+    gFieldArray.push(new RetirementField("cash", "0", "CHECKING", "money", "investment", "yearly", "cash-return"));
     gFieldArray.push(new RetirementField("cash-return", "0", "CASH RETURN", "rate"));
     gFieldArray.push(new RetirementField("mmk1", "0", "MON MKT 1", "money", "investment", "yearly", "mmk1-return"));
     gFieldArray.push(new RetirementField("mmk1-return", "0", "MON MKT 1 RETURN", "rate"));
@@ -153,7 +167,7 @@ function doCalc() {
         lFieldArray.forEach((fieldObject) => {
 
             //4 fields tracking: startAmount, investmentReturnAmount, incomeAmount, expenseAmount --> endAmount
-             fieldObject.yearProcessed = i;
+            fieldObject.yearProcessed = i;
             fieldObject.cycleYear(i); 
             switch(fieldObject.moneyType) {
                 case "investment":
@@ -264,11 +278,6 @@ function doCalc() {
             });
         }
 
-        //WHats left? 
-        //X Alert if run out of money
-        //X IF incomeToDeposit > 0, if expenseToWithdraw > 0
-        //Link to show detail
-
         totalIncomeToDeposit = totalIncomeToDeposit + incomeToDeposit;
         totalExpenseToWithdraw = totalExpenseToWithdraw + expenseToWithdraw;
 
@@ -287,7 +296,7 @@ function doCalc() {
         resultReport = resultReport + "<td width='20%' align='right'>" + currency(endAmount) + "</td></tr>";
     };
 
-     resultReport = resultReport + "</table>";
+    resultReport = resultReport + "</table>";
 
     //If we had problems with deposit or withdraw, lets let em know
     if (totalIncomeToDeposit > 0 && totalExpenseToWithdraw > 0) {
@@ -303,6 +312,38 @@ function doCalc() {
         }
     }   
 
+    if (endAmount < 0 ) {
+        errorMessages = errorMessages + "Not looking good for your heirs";
+    }
+    else {
+        if (endAmount <= 100000 ) {
+            errorMessages = errorMessages + "Very good. You've timed it right and can maybe take care of the service.";
+        }
+        else {
+            if (endAmount <= 1000000 ) {
+                errorMessages = errorMessages + "Nice little nest egg for your loved ones.";
+            }
+            else {
+                if (endAmount <= 10000000 ) {
+                    errorMessages = errorMessages + "Yer risking generational wealth and spoiling your heirs.";
+                }
+                else {
+                    if (endAmount <= 50000000 ) {
+                        errorMessages = errorMessages + "You should really spend this money and not save it all.";
+                    }
+                    else {
+                        if (endAmount <= 50000000 ) {
+                            errorMessages = errorMessages + "Ridiculous really.  Give your money away before you die. Or you will ruin your heirs.";
+                        }
+                        else {
+                            errorMessages = errorMessages + "This is stupid. Yer Ebineazer Scrooge. Spend your money!";
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     //If we have messages, show them
     if (errorMessages.length > 0) {
         document.getElementById("infomessage").innerHTML = errorMessages;
@@ -310,6 +351,7 @@ function doCalc() {
 
     document.getElementById("outputReport").innerHTML = "<center>" + resultReport + "</center>";
     showPageView("output");
+
 }
 
 /****************
@@ -637,7 +679,7 @@ class RetirementField {
                 this.fieldNetChange = 0;
             }
 
-            //We've add interest and figured out if in play...lets handle it
+            //We've added interest and figured out if in play...lets handle it
             if (blnHandleMoney) {
 
                 if (this.moneyType == "income") { //like investment gains, ss, other income
@@ -646,7 +688,7 @@ class RetirementField {
                         this.yearIncome = Number(Number(this.fieldValue) * 12);
                     }
                     else {
-                        this.yearIncome = Number(this.fieldNetChange);
+                        this.yearIncome = Number(this.fieldValue);
                     }
                     
                 }
@@ -657,7 +699,7 @@ class RetirementField {
                             this.yearExpense = Number(Number(this.fieldValue) * 12);
                         }
                         else {
-                            this.yearExpense = Number(this.fieldNetChange);
+                            this.yearExpense = Number(this.fieldValue);
                         }
                     }
                     else {
