@@ -1,14 +1,29 @@
 //TO DO: Add fields via a wizard, so user can build their own retirement calcualtor
 //Data entry for a field and all the settings --> stored and used then again
 
+//SCENARIOS - Loading and changing scenarios needs work
+//CALC Has issues with default scenaro...go negative but comes back
+
 //And so we begin....
 document.addEventListener("DOMContentLoaded", onDOMContentLoaded, false);
 
 var gFieldArray = [];
 var lFieldArray = [];
 var gYearDetailsArray = [];
+var gScenarioArray = [];
+//var gScenario = {scenarioName: "Default", scenarioNote: "<Add your notes here for the default scenario>"};
+var gScenario = {scenarioName: "", scenarioNote: ""};
+var gScenarioOptionsHTML = "";
 var formatter;
 var currentDate = new Date();
+
+//Initialize our scenarios
+gScenarioArray = JSON.parse(localStorage.getItem('scenarioArray'));
+if (!gScenarioArray) {
+    gScenarioArray = [];
+}
+
+//gScenarioArray.push(gScenario);
 
 /****************
 When Page loads we start
@@ -20,32 +35,51 @@ function onDOMContentLoaded() {
     gFieldArray = [];
     gYearDetailsArray = [];
 
-    gFieldArray.push(new RetirementField("yearBorn", "2001", "YEAR BORN", "year"));
-    gFieldArray.push(new RetirementField("yearRetire", "2001", "YEAR RETIRE", "year"));
-    gFieldArray.push(new RetirementField("yearIRA", "2001", "YEAR IRA WD", "year"));
-    gFieldArray.push(new RetirementField("yearSocSec", "2001", "YEAR SOCSEC", "year"));
-    gFieldArray.push(new RetirementField("yearMedicare", "2001", "YEAR MEDICARE", "year"));
-    gFieldArray.push(new RetirementField("yearDie", "2001", "YEAR DIE", "year"));
+    //Initialize our secnarios
+    gScenario.scenarioName = localStorage.getItem("scenarioSelected");
+
+    //And clear out our new scenario
+    document.getElementById("new-scenario").value = "";
+
+    loadScenarios(gScenario);
+
+    loadScenario(gScenario.scenarioName);
+
+    if (gScenarioArray.length > 0) {
+        document.getElementById("scenarioOptions").style.display = "block";
+    }
+    else {
+        document.getElementById("scenarioOptions").style.display = "none";
+    }
+
+    //Add our feilds
+    gFieldArray.push(new RetirementField("yearBorn", "1969", "YEAR BORN", "year"));
+    gFieldArray.push(new RetirementField("yearRetire", "2025", "YEAR RETIRE", "year"));
+    gFieldArray.push(new RetirementField("yearIRA", "2031", "YEAR IRA WD", "year"));
+    gFieldArray.push(new RetirementField("yearSocSec", "2034", "YEAR SOCSEC", "year"));
+    gFieldArray.push(new RetirementField("yearMedicare", "2034", "YEAR MEDICARE", "year"));
+    gFieldArray.push(new RetirementField("yearDie", "2059", "YEAR DIE", "year"));
     gFieldArray.push(new RetirementField("---------", "", "", "break"));
 
-    gFieldArray.push(new RetirementField("medicalExpense", "10000", "PRE-MEDCARE/MTH", "money", "expense", "monthly", "inflation", "yearRetire", "yearMedicare", true, "", "cash"));
-    gFieldArray.push(new RetirementField("automotive", "10000", "AUTOMOTIVE/YR", "money", "expense", "yearly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
-    gFieldArray.push(new RetirementField("boat", "10000", "BOAT/YR", "money", "expense", "yearly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
-    gFieldArray.push(new RetirementField("christmas", "10000", "CHRISTMAS/YR", "money", "expense", "yearly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
-    gFieldArray.push(new RetirementField("donations", "10000", "donations/YR", "money", "expense", "yearly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
-    gFieldArray.push(new RetirementField("education", "10000", "education/YR", "money", "expense", "yearly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
-    gFieldArray.push(new RetirementField("food", "10000", "FOOD/YR", "money", "expense", "yearly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
-    gFieldArray.push(new RetirementField("home", "10000", "HOME IMP/YR", "money", "expense", "yearly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
-    gFieldArray.push(new RetirementField("inctax", "10000", "INCOME TAX/YR", "money", "expense", "yearly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
-    gFieldArray.push(new RetirementField("realestatetax", "10000", "REAL EST TAX/YR", "money", "expense", "yearly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
-    gFieldArray.push(new RetirementField("medicalservices", "10000", "MED SVCS/YR", "money", "expense", "yearly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
-    gFieldArray.push(new RetirementField("travel-ent-eatout", "10000", "TRAVEL/ENT/REST/YR", "money", "expense", "yearly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
-    gFieldArray.push(new RetirementField("utilities", "10000", "UTILITIES/YR", "money", "expense", "yearly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
-    gFieldArray.push(new RetirementField("merchandise", "10000", "OTHER MERCH/YR", "money", "expense", "yearly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
-    gFieldArray.push(new RetirementField("condoproptax", "10000", "CONDO PROP TAX/YR", "money", "expense", "yearly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
-    gFieldArray.push(new RetirementField("condofees", "10000", "CONDO FEES/MTH", "money", "expense", "monthly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
-    gFieldArray.push(new RetirementField("condoutilities", "10000", "CONDO UTILS/MTH", "money", "expense", "monthly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
-    gFieldArray.push(new RetirementField("condoextras", "10000", "CONDO EXTRAS/MTH", "money", "expense", "monthly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
+    gFieldArray.push(new RetirementField("medicalExpense", "1000", "PRE-MEDCARE/MTH", "money", "expense", "monthly", "inflation", "yearRetire", "yearMedicare", true, "", "cash"));
+    gFieldArray.push(new RetirementField("costOfLiving", "10000", "PRE-MEDCARE/MTH", "money", "expense", "monthly", "inflation", "yearRetire", "yearMedicare", true, "", "cash"));
+    gFieldArray.push(new RetirementField("automotive", "0", "AUTOMOTIVE/YR", "money", "expense", "yearly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
+    gFieldArray.push(new RetirementField("boat", "0", "BOAT/YR", "money", "expense", "yearly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
+    gFieldArray.push(new RetirementField("christmas", "0", "CHRISTMAS/YR", "money", "expense", "yearly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
+    gFieldArray.push(new RetirementField("donations", "0", "DONATIONS/YR", "money", "expense", "yearly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
+    gFieldArray.push(new RetirementField("education", "0", "EDUCATION/YR", "money", "expense", "yearly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
+    gFieldArray.push(new RetirementField("food", "0", "FOOD/YR", "money", "expense", "yearly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
+    gFieldArray.push(new RetirementField("home", "0", "HOME IMP/YR", "money", "expense", "yearly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
+    gFieldArray.push(new RetirementField("inctax", "0", "INCOME TAX/YR", "money", "expense", "yearly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
+    gFieldArray.push(new RetirementField("realestatetax", "0", "REAL EST TAX/YR", "money", "expense", "yearly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
+    gFieldArray.push(new RetirementField("medicalservices", "0", "MED SVCS/YR", "money", "expense", "yearly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
+    gFieldArray.push(new RetirementField("travel-ent-eatout", "0", "TRAVEL/ENT/REST/YR", "money", "expense", "yearly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
+    gFieldArray.push(new RetirementField("utilities", "0", "UTILITIES/YR", "money", "expense", "yearly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
+    gFieldArray.push(new RetirementField("merchandise", "0", "OTHER MERCH/YR", "money", "expense", "yearly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
+    gFieldArray.push(new RetirementField("condoproptax", "0", "CONDO PROP TAX/YR", "money", "expense", "yearly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
+    gFieldArray.push(new RetirementField("condofees", "0", "CONDO FEES/MTH", "money", "expense", "monthly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
+    gFieldArray.push(new RetirementField("condoutilities", "0", "CONDO UTILS/MTH", "money", "expense", "monthly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
+    gFieldArray.push(new RetirementField("condoextras", "0", "CONDO EXTRAS/MTH", "money", "expense", "monthly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
 
     //gFieldArray.push(new RetirementField("livingExpense", "10000", "LIVING EXP/YR", "money", "expense", "yearly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
     gFieldArray.push(new RetirementField("inflation", "2", "INFLATION/YR", "rate"));   
@@ -53,9 +87,9 @@ function onDOMContentLoaded() {
 
     gFieldArray.push(new RetirementField("socSec", "1000", "SOC AT BENE TIME", "money", "income", "monthly", "secsec-inflation", "yearSocSec", "yearDie", false, "cash", ""));
     gFieldArray.push(new RetirementField("secsec-inflation", "3", "SOC SEC INFLATION", "rate"));
-    gFieldArray.push(new RetirementField("pension", "1000", "PENSION NOW", "money", "income", "monthly", "pension-inflation", "yearRetire", "yearDie", true, "cash", ""));
+    gFieldArray.push(new RetirementField("pension", "0", "PENSION NOW", "money", "income", "monthly", "pension-inflation", "yearRetire", "yearDie", true, "cash", ""));
     gFieldArray.push(new RetirementField("pension-inflation", "3", "PENSION INFLATION", "rate"));
-    gFieldArray.push(new RetirementField("rental", "1000", "RENTAL INC", "money", "income", "monthly", "rental-inflation", "", "yearDie", true, "cash", ""));
+    gFieldArray.push(new RetirementField("rental", "0", "RENTAL INC", "money", "income", "monthly", "rental-inflation", "", "yearDie", true, "cash", ""));
     gFieldArray.push(new RetirementField("rental-inflation", "3", "RENTAL INFLATION", "rate"));
     gFieldArray.push(new RetirementField("---------", "", "", "break"));
 
@@ -98,7 +132,7 @@ function onDOMContentLoaded() {
         //console.log("ROW IS: " + outputRows);
     });
 
-    outputTable = outputTable.replace("_RETIREMENTFIELDS_", outputRows);
+    outputTable = outputTable.replace(/_RETIREMENTFIELDS_/gi, outputRows);
     document.getElementById("input-fields").innerHTML = outputTable;
 
     showPageView("inputs");
@@ -109,7 +143,6 @@ doCalc
 ****************/
 function doCalc() {
 
-    var myValue;
     var i = 0;
     var blnBogus = false;
     var startAmount = 0;
@@ -123,6 +156,28 @@ function doCalc() {
     var totalExpenseToWithdraw = 0;
 
     var errorMessages = "";
+
+    //Grab scenario - if new one, add it
+    if (document.getElementById("new-scenario").value.length > 0) {
+        gScenario.scenarioName = document.getElementById("new-scenario").value;
+        gScenario.scenarioNote = "";
+        addScenario(gScenario);
+     }
+    else {
+        if (document.getElementById('scenario').value.length > 0) {
+            gScenario.scenarioName = document.getElementById("scenario").value;
+            loadScenario(gScenario.scenarioName);
+        }
+        else {
+            //We have no scenario
+            alert("You must have a name for this scenario");
+            gScenario.scenarioName = "";
+            return;
+        }
+    }
+
+    //Store the choice
+    localStorage.setItem("scenarioSelected", gScenario.scenarioName);
 
     lFieldArray = [];
 
@@ -359,6 +414,144 @@ function doCalc() {
 }
 
 /****************
+addScenario
+****************/
+function addScenario(inputScenario) {
+
+    var blnFound = false;
+
+    gScenarioArray.forEach((scenarioEntry) => { 
+        if (scenarioEntry.scenarioName == inputScenario.scenarioName) {
+            //alreay exists
+            blnFound = true;
+        }
+    });
+  
+    if (!blnFound) { 
+        gScenarioArray.push({scenarioName: inputScenario.scenarioName, scenarioNote: inputScenario.scenarioNote});
+        
+        //And store it
+        localStorage.setItem('scenarioArray', JSON.stringify(gScenarioArray));
+
+    }
+}
+
+/****************
+loadScenarios
+****************/
+function loadScenarios(inputScenario) {
+
+    var myScenarioOption = "<option value='_SCENARIONAME_' _SCENARIOSELECTED_>_SCENARIONAME_</option>";
+    var myScenarioOptions = "";
+
+    gScenarioArray.forEach((scenarioEntry) => { 
+        myScenarioOptions = myScenarioOptions + myScenarioOption.replace(/_SCENARIONAME_/gi, scenarioEntry.scenarioName );
+        if (scenarioEntry.scenarioName == inputScenario.scenarioName) {
+            myScenarioOptions = myScenarioOptions.replace(/_SCENARIOSELECTED_/gi, "selected");
+        }
+        else {
+            myScenarioOptions = myScenarioOptions.replace(/_SCENARIOSELECTED_/gi, "");
+        }
+    });
+
+    //save original 
+    if (gScenarioOptionsHTML == "") {
+        gScenarioOptionsHTML = document.getElementById("scenarioOptions").innerHTML; 
+    }
+
+    document.getElementById("scenarioOptions").innerHTML = gScenarioOptionsHTML.replace(/_SCENARIOLIST_/gi, myScenarioOptions);
+
+}
+
+/****************
+loadScenario
+****************/
+function loadScenario(inputScenarioName) {
+
+    gScenarioArray.forEach((scenarioEntry) => { 
+        if (scenarioEntry.scenarioName == inputScenarioName) {
+            gScenario = JSON.parse(JSON.stringify(scenarioEntry));
+            //Store the choice
+            localStorage.setItem("scenarioSelected", gScenario.scenarioName);
+        }
+    });
+
+}
+
+/****************
+loadNote
+****************/
+function loadNote(inputScenarioName) {
+
+    gScenarioArray.forEach((scenarioEntry) => { 
+        if (scenarioEntry.scenarioName == inputScenarioName) {
+            gScenario = JSON.parse(JSON.stringify(scenarioEntry));;
+            showPageView("scenarioNote");
+        }
+    });
+
+    var resultReport = "<p align='center'>Note for Scenario: " + gScenario.scenarioName + "</p>";
+    resultReport = resultReport + "<textarea rows='15' cols='40' id='note-detail'>" + gScenario.scenarioNote + "</textarea><br><br>";
+    document.getElementById("scenarioNoteDetail").innerHTML = "<center>" + resultReport + "</center>";
+    showPageView("scenarioNote");
+
+}
+
+/****************
+loadNote
+****************/
+function updateNote() {
+
+    //Update note for this scenario
+    gScenario.scenarioNote = document.getElementById("note-detail").value;
+    gScenarioArray.forEach((scenarioEntry) => { 
+        if (scenarioEntry.scenarioName == gScenario.scenarioName) {
+            scenarioEntry.scenarioNote = gScenario.scenarioNote;
+        }
+    });
+   
+    localStorage.setItem('scenarioArray', JSON.stringify(gScenarioArray));
+
+}
+
+/****************
+showFieldDetails
+****************/
+function showFieldDetails(inputFieldName) {
+
+    var displayField;
+    var fieldDetailOutput = "";
+
+    //Build our display
+    gFieldArray.forEach((fieldObject) => {
+        if (fieldObject.fieldName == inputFieldName) {
+            displayField = fieldObject;
+        }
+    });
+
+    if (displayField) {
+        var fieldDetailOutput = "<p align='center'>Details for Field: " + displayField.fieldDescription + "</p>";
+        fieldDetailOutput = fieldDetailOutput + "<table class='output-report' border='1px' width='100%' cellpadding='10' cellspacing='10'>";
+        fieldDetailOutput = fieldDetailOutput + "<tr><td>Name:</td><td>" + displayField.fieldName + "</td></tr>";
+        fieldDetailOutput = fieldDetailOutput + "<tr><td>Description:</td><td>" + displayField.fieldDescription + "</td></tr>";
+        fieldDetailOutput = fieldDetailOutput + "<tr><td>Value:</td><td>" + displayField.fieldValue + "</td></tr>";
+        fieldDetailOutput = fieldDetailOutput + "<tr><td>Money Type:</td><td>" + displayField.moneyType + "</td></tr>";
+        fieldDetailOutput = fieldDetailOutput + "<tr><td>Time Period:</td><td>" + displayField.timePeriod + "</td></tr>";
+        fieldDetailOutput = fieldDetailOutput + "<tr><td>Rate Field:</td><td>" + displayField.rateField + "</td></tr>";
+        fieldDetailOutput = fieldDetailOutput + "<tr><td>Start Year:</td><td>" + displayField.startYear + "</td></tr>";
+        fieldDetailOutput = fieldDetailOutput + "<tr><td>End Year:</td><td>" + displayField.endYear + "</td></tr>";
+        fieldDetailOutput = fieldDetailOutput + "<tr><td>Accrue B4 Start:</td><td>" + displayField.accrueBeforeStart + "</td></tr>";
+        fieldDetailOutput = fieldDetailOutput + "<tr><td>Deposit Acct:</td><td>" + displayField.depositAccount + "</td></tr>";
+        fieldDetailOutput = fieldDetailOutput + "<tr><td>Withdraw Acct:</td><td>" + displayField.withdrawAccount + "</td></tr>";
+        fieldDetailOutput = fieldDetailOutput + "</table>"; 
+
+        document.getElementById("fieldDetailsDetail").innerHTML = "<center>" + fieldDetailOutput + "</center>";
+        showPageView("fieldDetails");
+    }
+
+}
+
+/****************
 doClose
 ****************/
 function doClose(inputValue) {
@@ -379,6 +572,8 @@ function showPageView(inputView) {
     }
     document.getElementById("output").style.display = "none";
     document.getElementById("yeardetail").style.display = "none";
+    document.getElementById("scenarioNote").style.display = "none";
+    document.getElementById("fieldDetails").style.display = "none";
     document.getElementById(inputView).style.display = "block";
 }
 
@@ -427,7 +622,7 @@ getValue
 ****************/
 function getValue(inputArray, inputFieldName) {
 
-    myValue = "";
+    var myValue = "";
 
     //Build our display
     inputArray.forEach((fieldObject) => {
@@ -582,18 +777,19 @@ class RetirementField {
         if (this.fieldType != "break") {
 
             myResponse = myResponse + "<tr>";
-            myResponse = myResponse + "<td width='50%'><p align='right' valign='top'>_FIELDDESCRIPTION_:&nbsp;&nbsp;</p></td>";
+            myResponse = myResponse + "<td width='50%'><p align='right' valign='top'><a onclick='showFieldDetails(_FIELDNAMEPARM_);'>_FIELDDESCRIPTION_:</a>&nbsp;&nbsp;</p></td>";
             myResponse = myResponse + "<td width='50%'><textarea rows='1' cols='15' id='_FIELDNAME_'>_FIELDVALUE_</textarea></td>";
             myResponse = myResponse + "</tr>";
     
-            myResponse = myResponse.replace("_FIELDNAME_", this.fieldName);
+            myResponse = myResponse.replace(/_FIELDNAME_/gi, this.fieldName);
+            myResponse = myResponse.replace(/_FIELDNAMEPARM_/gi, '"' + this.fieldName + '"');
             if (this.fieldType == "money") {
-                myResponse = myResponse.replace("_FIELDVALUE_", currency(this.fieldValue));
+                myResponse = myResponse.replace(/_FIELDVALUE_/gi, currency(this.fieldValue));
             }
             else {
-                myResponse = myResponse.replace("_FIELDVALUE_", this.fieldValue);
+                myResponse = myResponse.replace(/_FIELDVALUE_/gi, this.fieldValue);
             }
-            myResponse = myResponse.replace("_FIELDDESCRIPTION_", this.fieldDescription);
+            myResponse = myResponse.replace(/_FIELDDESCRIPTION_/gi, this.fieldDescription);
         }
         else {
             myResponse = myResponse + "<tr><td colspan='2'><hr></td></tr>";
@@ -618,7 +814,12 @@ class RetirementField {
     setDataValue() {
 
         if (this.fieldType != "break") {
-            localStorage.setItem(this.fieldName, trimNumber(this.fieldValue));
+            if (gScenario.scenarioName != "") {
+                localStorage.setItem(gScenario.scenarioName + "-" + this.fieldName, trimNumber(this.fieldValue));
+            }
+            else {
+                localStorage.setItem(this.fieldName, trimNumber(this.fieldValue));
+            }
             //console.log("Retirement Calculator Set " + this.fieldName + " to " + this.fieldValue);
         }
     }
@@ -629,7 +830,14 @@ class RetirementField {
     ****************/
     getDataValue() {
 
-        var dataValue = localStorage.getItem(this.fieldName);
+        var dataValue;
+        
+        if (gScenario.scenarioName != "") {
+            dataValue= localStorage.getItem(gScenario.scenarioName + "-" + this.fieldName);
+        }
+        else {
+            dataValue= localStorage.getItem(this.fieldName);
+        }
 
         if (dataValue) {
             this.fieldValue = trimNumber(dataValue); 
@@ -731,6 +939,10 @@ class RetirementField {
 
 
 /*
+
+//Useful code for dealing with local storage
+// GET: chrome.storage.local.get(function(result){console.log(result)})
+// DELETE: chrome.storage.local.clear(function(result){console.log(result)})
 
 Year Born
 Year Retire

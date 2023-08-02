@@ -4,7 +4,10 @@
 <style>
 
 input[type='button'] { font-size: 64px; font-weight: bold; font-family: Helvetica, Arial, sans-serif;}
+input[type='text'] { font-size: 44px; font-weight: bold; font-family: Helvetica, Arial, sans-serif;}
 textarea { font-size: 32px; font-weight: bold; border-style: inset; border-width: 2px; font-family: Helvetica, Arial, sans-serif;}
+select { font-size: 44px; font-weight: bold; border-style: inset; border-width: 0px; font-family: Helvetica, Arial, sans-serif;}
+option { font-size: 44px; font-weight: bold; border-style: inset; border-width: 0px; font-family: Helvetica, Arial, sans-serif;}
 
 p {
   color: red;
@@ -12,6 +15,8 @@ p {
   font-size: 44; 
   font-weight: bold;
 }
+
+
 
 .output-report {
   color: blue;
@@ -34,6 +39,34 @@ textarea { font-size: 44px; }
 <p align="center"><hr size="10" color="red"></p>
 <p align="center">RETIREMENT CALCULATOR<br></p>
 <p id="infomessage" align="center">&nbsp;</p>
+<!--SCENARIO PICKER-->
+<p align="center">
+<div id="scenarioOptions">
+<table border="0" width="100%" cellpadding="10" cellspacing="10">
+ <tr>
+    <td width="50%"><p align='right' valign='top'>Scenario:</p></td>
+    <td width="50%"><p align='left' valign='top'>
+      <select name="scenario" id="scenario" onchange="loadScenario(this.value);onDOMContentLoaded();">
+        _SCENARIOLIST_
+      </select>&nbsp;<img src="note.png" height="50px" valign="bottom" onclick="loadNote(document.getElementById('scenario').value);"></p>
+    </td>
+  </tr>
+  <tr><td colspan="2"><p align="center">OR</p></td></tr>
+</table>
+</div>
+
+<div id="newscenario">
+<table border="0" width="100%" cellpadding="10" cellspacing="10">
+  <tr>
+    <td width="50%"><p align='right' valign='top'>New Scenario:</p></td>
+    <td width="50%">
+      <p align='left' valign='top'><input type="text" id="new-scenario" name="new-scenario"></p>
+    </td>
+  </tr>
+</table>
+</div>
+</p>
+<hr>
 <!----INPUTS -->
 <div id="inputs" style="display: none;">
 <p align="center">
@@ -54,6 +87,20 @@ textarea { font-size: 44px; }
 	<p align="center"><hr size="10" color="red"></p>
 	<p><div id="yeardetailReport"></p></div>
 	<center><input type="button" id="run3" value="All Done" onClick="showPageView('output');"></input></center>
+</div>
+
+<!----SCENARIO NOTE -->
+<div id="scenarioNote" style="display: none;">
+	<p align="center"><hr size="10" color="red"></p>
+	<p><div id="scenarioNoteDetail">_SCENARIONOTE_</p></div>
+	<center><input type="button" id="run4" value="Update" onClick="updateNote();showPageView('output');"></input>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" id="run5" value="Cancel" onClick="showPageView('output');"></input></center>
+</div>
+
+<!----FIELD DETAILS -->
+<div id="fieldDetails" style="display: none;">
+	<p align="center"><hr size="10" color="red"></p>
+	<p><div id="fieldDetailsDetail">_FIELDDETAILS_</p></div>
+	<center><input type="button" id="run6" value="All Done" onClick="showPageView('output');"></input></center>
 </div>
 
 </body>
