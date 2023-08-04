@@ -1,9 +1,10 @@
 //TO DO: Add fields via a wizard, so user can build their own retirement calcualtor
 //Data entry for a field and all the settings --> stored and used then again
-
-//SCENARIOS - Loading and changing scenarios needs work
-//CALC Has issues with default scenaro...go negative but comes back
-
+//
+//Remote storage of data so can be reused again....from diff device
+//
+//How to manage taxes? Build in tax rates for taxable accounts...but lots of investment income is already taxed
+//
 //And so we begin....
 document.addEventListener("DOMContentLoaded", onDOMContentLoaded, false);
 
@@ -56,19 +57,20 @@ function onDOMContentLoaded() {
 
 
     //Add our feilds - Setup the time horizon
+    gFieldArray.push(new RetirementField("", "", "----TIME HORIZON----", "break"));
     gFieldArray.push(new RetirementField("yearBorn", "1969", "YEAR BORN", "year"));
     gFieldArray.push(new RetirementField("yearRetire", "2025", "YEAR RETIRE", "year"));
     gFieldArray.push(new RetirementField("yearIRA", "2031", "YEAR IRA WD", "year"));
     gFieldArray.push(new RetirementField("yearSocSec", "2034", "YEAR SOCSEC", "year"));
     gFieldArray.push(new RetirementField("yearMedicare", "2034", "YEAR MEDICARE", "year"));
     gFieldArray.push(new RetirementField("yearDie", "2059", "YEAR DIE", "year"));
-    gFieldArray.push(new RetirementField("---------", "", "", "break"));
+
 
     //Our expenses
+    gFieldArray.push(new RetirementField("", "", "----EXPENSES----", "break"));
     gFieldArray.push(new RetirementField("medicalExpense", "0", "PRE-MEDCARE/MTH", "money", "expense", "monthly", "inflation", "yearRetire", "yearMedicare", true, "", "cash"));
     gFieldArray.push(new RetirementField("livingExpense", "0", "LIVING EXP/YR", "money", "expense", "yearly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
     gFieldArray.push(new RetirementField("inflation", "0", "INFLATION/YR", "rate")); 
-    gFieldArray.push(new RetirementField("---------", "", "", "break"));
 
     /*
     gFieldArray.push(new RetirementField("automotive", "0", "AUTOMOTIVE/YR", "money", "expense", "yearly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
@@ -92,28 +94,30 @@ function onDOMContentLoaded() {
 */
 
     //Income
+    gFieldArray.push(new RetirementField("", "", "----INCOME----", "break"));
     gFieldArray.push(new RetirementField("socSec", "0", "SOC AT BENE TIME", "money", "income", "monthly", "secsec-inflation", "yearSocSec", "yearDie", false, "cash", ""));
     gFieldArray.push(new RetirementField("secsec-inflation", "0", "SOC SEC INFLATION", "rate"));
     gFieldArray.push(new RetirementField("pension", "0", "PENSION NOW", "money", "income", "monthly", "pension-inflation", "yearRetire", "yearDie", true, "cash", ""));
     gFieldArray.push(new RetirementField("pension-inflation", "0", "PENSION INFLATION", "rate"));
     gFieldArray.push(new RetirementField("rental", "0", "RENTAL INC", "money", "income", "monthly", "rental-inflation", "", "yearDie", true, "cash", ""));
     gFieldArray.push(new RetirementField("rental-inflation", "0", "RENTAL INFLATION", "rate"));
-    gFieldArray.push(new RetirementField("---------", "", "", "break"));
 
     //Cash/savings
+    gFieldArray.push(new RetirementField("", "", "----CASH/SAVINGS----", "break"));
     gFieldArray.push(new RetirementField("cash", "0", "CHECKING", "money", "investment", "yearly", "cash-return", "", "", true, "", "", true));
     gFieldArray.push(new RetirementField("cash-return", "0", "CASH RETURN", "rate"));
     gFieldArray.push(new RetirementField("mmk1", "0", "MON MKT 1", "money", "investment", "yearly", "mmk1-return"));
     gFieldArray.push(new RetirementField("mmk1-return", "0", "MON MKT 1 RETURN", "rate"));
     gFieldArray.push(new RetirementField("mmk2", "0", "MON MKT 2", "money", "investment", "yearly", "mmk2-return"));
     gFieldArray.push(new RetirementField("mmk2-return", "0", "MON MKT 2 RETURN", "rate"));
-    gFieldArray.push(new RetirementField("---------", "", "", "break"));
 
     //Regular investments
+    gFieldArray.push(new RetirementField("", "", "----NON-RET INVESTMENTS----", "break"));
     gFieldArray.push(new RetirementField("brokerage", "0", "BROKERAGE", "money", "investment", "yearly", "brokerage-return"));
     gFieldArray.push(new RetirementField("brokerage-return", "0", "BROKER RETURN", "rate"));
 
     //Retirment accounts
+    gFieldArray.push(new RetirementField("", "", "----RET INVESTMENTS----", "break"));
     gFieldArray.push(new RetirementField("rothIRAAl", "0", "ROTH 1 BAL", "money", "investment", "yearly", "rothIRAAl-return", "yearIRA", "yearDie"));
     gFieldArray.push(new RetirementField("rothIRAAl-return", "0", "ROTH 1 RET/YR", "rate"));
     gFieldArray.push(new RetirementField("rothIRAA2", "0", "ROTH 2 BAL", "money", "investment", "yearly", "rothIRAA2-return", "yearIRA", "yearDie"));
@@ -128,9 +132,9 @@ function onDOMContentLoaded() {
     gFieldArray.push(new RetirementField("401K-1-return", "0", "401K 1 RET/YR", "rate"));
     gFieldArray.push(new RetirementField("401K-2", "0", "401K 2 BAL", "money", "investment", "yearly", "401K-2-return", "yearIRA", "yearDie"));
     gFieldArray.push(new RetirementField("401K-2-return", "0", "401K 2 RET/YR", "rate"));   
-    gFieldArray.push(new RetirementField("---------", "", "", "break"));
 
     //Education accounts
+    gFieldArray.push(new RetirementField("", "", "----EDUCATION ACCTS----", "break"));
     gFieldArray.push(new RetirementField("coverdell-1", "0", "COVERDELL 1", "money", "investment", "yearly", "coverdell-1-return"));
     gFieldArray.push(new RetirementField("coverdell-1-return", "0", "COVER 1 RETURN", "rate"));
     gFieldArray.push(new RetirementField("coverdell-2", "0", "COVERDELL 2", "money", "investment", "yearly", "coverdell-2-return"));
@@ -617,6 +621,8 @@ function showFieldDetails(inputFieldName) {
         }
     });
 
+    //    //Fields are -fieldName, fieldValue, fieldDescription, fieldType, moneyType, timePeriod, rateField, startYear, endYear, accrueBeforeStart, depositAccount, withdrawAccount, defaultCashAccount)
+
     if (displayField) {
         var fieldDetailOutput = "<p align='center'>Details for Field: " + displayField.fieldDescription + "</p>";
         fieldDetailOutput = fieldDetailOutput + "<table class='output-report' border='1px' width='100%' cellpadding='10' cellspacing='10'>";
@@ -631,6 +637,7 @@ function showFieldDetails(inputFieldName) {
         fieldDetailOutput = fieldDetailOutput + "<tr><td>Accrue B4 Start:</td><td>" + displayField.accrueBeforeStart + "</td></tr>";
         fieldDetailOutput = fieldDetailOutput + "<tr><td>Deposit Acct:</td><td>" + displayField.depositAccount + "</td></tr>";
         fieldDetailOutput = fieldDetailOutput + "<tr><td>Withdraw Acct:</td><td>" + displayField.withdrawAccount + "</td></tr>";
+        fieldDetailOutput = fieldDetailOutput + "<tr><td>Default Cash Account:</td><td>" + displayField.defaultCashAccount + "</td></tr>";
         fieldDetailOutput = fieldDetailOutput + "</table>"; 
 
         document.getElementById("fieldDetailsDetail").innerHTML = "<center>" + fieldDetailOutput + "</center>";
@@ -645,6 +652,23 @@ doClose
 function doClose(inputValue) {
 
     showPageView("inputs");
+
+}
+
+/****************
+resetData
+****************/
+function resetData() {
+
+    var myAnswer;
+    
+    myAnswer = confirm('Are you sure you want to reset everything, erasing data?');
+
+    if (myAnswer) {
+        //Clear all storage and reload
+        localStorage.clear();
+        location.reload();
+    }
 
 }
 
@@ -686,7 +710,7 @@ function showYearDetail(inputYear) {
         nextYearButton = "<img src='next-arrow.png' valign='middle' height='50' onclick='showYearDetail(" + (inputYear + 1) + ")'>";
     }          
 
-    var resultReport = "<p align='center' valign='bottom'>" + priorYearButton + "&nbsp&nbsp;&nbsp&nbsp;Showing Results for " + inputYear + "&nbsp&nbsp;&nbsp&nbsp;" + nextYearButton + "</p>";
+    var resultReport = "<p align='center' valign='bottom'>" + priorYearButton + "&nbsp&nbsp;&nbsp&nbsp;Results for " + inputYear + "&nbsp&nbsp;&nbsp&nbsp;" + nextYearButton + "</p>";
     resultReport = resultReport + "<table class='output-report' border='1px' width='100%' cellpadding='10' cellspacing='10'><tr><td align='center'>ACCT</td><td align='center'>STRT</td><td align='center'>RET</td><td align='center'>INC</td><td align='center'>EXP</td><td align='center'>END</td></tr>"
     
     gYearDetailsArray.forEach((arrayObjects) => {
@@ -891,7 +915,7 @@ class RetirementField {
             myResponse = myResponse.replace(/_FIELDDESCRIPTION_/gi, this.fieldDescription);
         }
         else {
-            myResponse = myResponse + "<tr><td colspan='2'><hr></td></tr>";
+            myResponse = myResponse + "<tr><td colspan='2' align='center'><hr><p>-------" + this.fieldDescription + "-------</p></td></tr>";
         }
         
         return myResponse;
@@ -1035,7 +1059,7 @@ class RetirementField {
 
             //console.log("END YEAR CYCLE ", this);
 
-        } 
+        }
     }
 }
 
