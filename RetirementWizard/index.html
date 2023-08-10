@@ -58,7 +58,7 @@ textarea { font-size: 44px; }
 <div id="newscenario">
 <table border="0" width="100%" cellpadding="10" cellspacing="10">
   <tr>
-    <td width="30%"><p align='right' valign='middle'>NEW:</p></td>
+    <td width="30%"><p align='right' valign='middle'>SCENARIO:</p></td>
     <td width="70%">
       <p align='left' valign='middle'><input type="text" id="new-scenario" name="new-scenario"></p>
     </td>
@@ -104,7 +104,11 @@ textarea { font-size: 44px; }
 	<p align="center"><hr size="10" color="red"></p>
 	<p><div id="fieldDetailsDetail">_FIELDDETAILS_</p></div>
   <BR><BR>
-	<center><input type="button" id="run6" value="All Done" onClick="showPageView('output');"></input></center>
+  <center>
+    <input type="button" id="run6" value="Update" onClick="updateField();showPageView('output');"></input>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <input type="button" id="run7" value="Cancel" onClick="showPageView('output');"></input>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <input type="button" id="run8" value="Delete" onClick="deleteField();showPageView('output');"></input>
+  </center>
 </div>
 
 <BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR>
