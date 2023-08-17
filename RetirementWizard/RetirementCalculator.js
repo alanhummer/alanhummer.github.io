@@ -533,7 +533,7 @@ function doCalc() {
                                 errorMessages = errorMessages + "Ridiculous really.  Give your money away before you die. Or you will ruin your heirs. A needy family could use some of the " + currency(endAmount) + " you've been hording";
                             }
                             else {
-                                errorMessages = errorMessages + "This is stupid. Yer Ebineazer Scrooge. Spend your money! But an island or a private jet with the " + currency(endAmount) + " before you die!";
+                                errorMessages = errorMessages + "This is stupid. Yer Ebineazer Scrooge. Spend your money! Buy an island or a private jet with the " + currency(endAmount) + " before you die!";
                             }
                         }
                     }
