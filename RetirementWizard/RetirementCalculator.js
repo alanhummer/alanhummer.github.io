@@ -264,7 +264,7 @@ function doCalc() {
 
 
 
-    resultReport = "<table class='output-report' border='1px' width='100%' cellpadding='10' cellspacing='10'><tr><td align='center'>YEAR</td><td align='center'>START</td><td align='center'>RETURN</td><td align='center'>INCOME</td><td align='center'>EXPENSE</td><td align='center'>END</td></tr>"
+    resultReport = "<table class='output-report' border='1px' width='100%' cellpadding='5' cellspacing='5'><tr><td align='center'>YEAR</td><td align='center'>START</td><td align='center'>RETURN</td><td align='center'>INCOME</td><td align='center'>EXPENSE</td><td align='center'>END</td></tr>"
     for (let i = currentDate.getFullYear(); i <= getValue(lFieldArray, "yearDie"); i++) {
 
         startAmount = 0;
@@ -505,35 +505,42 @@ function doCalc() {
         }
     }   
 
+    //Lets calculate what is left in todays sollar PV = FV/((1+(r/100))^yrs)
+    //Need the rate from inflations rate
+
+    var totalYears = getValue(lFieldArray, "yearDie") - currentDate.getFullYear();
+    var inflationRate = 1 + (getValue(lFieldArray, "inflation") / 100);
+    var presentDayValueOfEndAmount = endAmount / ( (inflationRate)**totalYears ); //Need rate and years from fields
+
     if (endAmount < 0 ) {
-        errorMessages = errorMessages + "Not looking good for your heirs. You are " + currency(endAmount) + " in the hole";
+        errorMessages = errorMessages + "Not looking good for your heirs. You are " + currency(endAmount) + " (" + currency(presentDayValueOfEndAmount) + ") in the hole";
     }
     else {
         if (endAmount <= 1000 ) {
-            errorMessages = errorMessages + "Not great. You have haven't left hardly anything:  " + currency(endAmount) + " - Yuck.";
+            errorMessages = errorMessages + "Not great. You have haven't left hardly anything:  " + currency(endAmount) + " (" + currency(presentDayValueOfEndAmount) + ") - Yuck.";
         }
         else {
             if (endAmount <= 100000 ) {
-                errorMessages = errorMessages + "Very good. You've timed it right and can maybe take care of the service with " + currency(endAmount) + " left";
+                errorMessages = errorMessages + "Very good. You've timed it right and can maybe take care of the service with " + currency(endAmount) + " (" + currency(presentDayValueOfEndAmount) + ") left";
             }
             else {
                 if (endAmount <= 1000000 ) {
-                    errorMessages = errorMessages + "Nice little nest egg for your loved ones of " + currency(endAmount) + " will be appreciated";
+                    errorMessages = errorMessages + "Nice little nest egg for your loved ones of " + currency(endAmount) + " (" + currency(presentDayValueOfEndAmount) + ") will be appreciated";
                 }
                 else {
                     if (endAmount <= 10000000 ) {
-                        errorMessages = errorMessages + "Yer risking generational wealth and spoiling your heirs with this " + currency(endAmount) + " windfall";
+                        errorMessages = errorMessages + "Yer risking generational wealth and spoiling your heirs with this " + currency(endAmount) + " (" + currency(presentDayValueOfEndAmount) + ") windfall";
                     }
                     else {
                         if (endAmount <= 50000000 ) {
-                            errorMessages = errorMessages + "You should really spend this money and not save it all. Seriously, " + currency(endAmount) + " is too much to leave behind";
+                            errorMessages = errorMessages + "You should really spend this money and not save it all. Seriously, " + currency(endAmount) + " (" + currency(presentDayValueOfEndAmount) + ") is too much to leave behind";
                         }
                         else {
                             if (endAmount <= 50000000 ) {
-                                errorMessages = errorMessages + "Ridiculous really.  Give your money away before you die. Or you will ruin your heirs. A needy family could use some of the " + currency(endAmount) + " you've been hording";
+                                errorMessages = errorMessages + "Ridiculous really.  Give your money away before you die. Or you will ruin your heirs. A needy family could use some of the " + currency(endAmount) + " (" + currency(presentDayValueOfEndAmount) + ") you've been hording";
                             }
                             else {
-                                errorMessages = errorMessages + "This is stupid. Yer Ebineazer Scrooge. Spend your money! Buy an island or a private jet with the " + currency(endAmount) + " before you die!";
+                                errorMessages = errorMessages + "This is stupid. Yer Ebenezer Scrooge. Spend your money! Buy an island or a private jet with the " + currency(endAmount) + " (" + currency(presentDayValueOfEndAmount) + ") before you die!";
                             }
                         }
                     }
