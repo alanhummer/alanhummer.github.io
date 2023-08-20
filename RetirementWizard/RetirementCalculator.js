@@ -1139,6 +1139,8 @@ function storeData(inputDataStream) {
         alert("Bad data, try again.");
     }
 
+    //All set, but we need to reload everything
+    onDOMContentLoaded();
 
 }
 
