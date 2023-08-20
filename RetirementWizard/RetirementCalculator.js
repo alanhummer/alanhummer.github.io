@@ -1,14 +1,10 @@
-//TO DO: Add fields via a wizard, so user can build their own retirement calcualtor
-//Data entry for a field and all the settings --> stored and used then again
-//
-//Remote storage of data so can be reused again....from diff device
+//To Do:
+// Remote storage of fields, sencarios, data so can be reused again....from diff device
 //
 //How to manage taxes? Build in tax rates for taxable accounts...but lots of investment income is already taxed
 //
-//*** ISSUE WITH UPDATING FIELDS, CANT SEEM TO GET IT TO STICK, AND LOCALSTORAGE IS STORING TOO MUCH
-//*** SEE updateField and onDOMContentLoaded
-//
 //And so we begin....
+//
 document.addEventListener("DOMContentLoaded", onDOMContentLoaded, false);
 
 var gFieldArray = [];
@@ -261,8 +257,6 @@ function doCalc() {
 
     //Data is good, lets rip thru it and apply our time algorithm..since updating, make a copy
     lFieldArray = gFieldArray;
-
-
 
     resultReport = "<table class='output-report' border='1px' width='100%' cellpadding='5' cellspacing='5'><tr><td align='center'>YEAR</td><td align='center'>START</td><td align='center'>RETURN</td><td align='center'>INCOME</td><td align='center'>EXPENSE</td><td align='center'>END</td></tr>"
     for (let i = currentDate.getFullYear(); i <= getValue(lFieldArray, "yearDie"); i++) {
@@ -1059,6 +1053,97 @@ function resetData() {
 }
 
 /****************
+saveData
+****************/
+function saveData() {
+
+    const link = document.createElement("a");
+    const content = JSON.stringify(localStorage);
+    const file = new Blob([content], { type: 'text/plain' });
+    link.href = URL.createObjectURL(file);
+    link.download = "RetirementPlannerData.txt";
+    link.click();
+    URL.revokeObjectURL(link.href);
+
+}
+
+/****************
+ParseJSON
+****************/
+function ParseJSON(inputSet) {
+
+    var newSet = {};
+
+    for (let i = 0; i < inputSet.length; i++) {
+        var key = inputSet.key(i);
+        var json = inputSet.getItem(key);
+        try {
+            newSet[key] = JSON.parse(json);
+        }
+        catch (execption) {
+            newSet[key] = json;
+        }
+    }
+
+    return newSet;
+
+}
+
+/****************
+loadData
+****************/
+function loadData() {
+
+    const [file] = document.querySelector("input[type=file]").files;
+    const reader = new FileReader();
+  
+    reader.addEventListener("load", () => {storeData(reader.result);}, false);
+  
+    if (file) {
+      reader.readAsText(file);
+    }
+}
+
+/****************
+storeData
+****************/
+function storeData(inputDataStream) {
+
+    var dataToStore;
+    var valueToStore;
+
+    try {
+        dataToStore = JSON.parse(inputDataStream);
+    } catch (e) {
+        alert("Bad data, try again.");
+        return;
+    }
+
+    if (dataToStore) {
+        if (dataToStore.fieldArray) {
+            //OK, it is legit...rip thru everything and store it
+
+            for (const key in dataToStore){
+                if(dataToStore.hasOwnProperty(key)){
+                    localStorage.setItem(key, dataToStore[key]);
+                }
+            }
+            alert("Data loaded!");
+            showPageView('inputs');
+        }
+        else {
+            alert("Bad data, try again.");
+        }
+    }
+    else {
+        alert("Bad data, try again.");
+    }
+
+
+}
+
+
+/****************
 showPageView
 ****************/
 function showPageView(inputView) {
@@ -1072,6 +1157,7 @@ function showPageView(inputView) {
     document.getElementById("yeardetail").style.display = "none";
     document.getElementById("scenarioNote").style.display = "none";
     document.getElementById("fieldDetails").style.display = "none";
+    document.getElementById("loadData").style.display = "none";
     document.getElementById(inputView).style.display = "block";
 }
 

@@ -4,6 +4,7 @@
 <style>
 
 input[type='button'] { font-size: 64px; font-weight: bold; font-family: Helvetica, Arial, sans-serif;}
+input[type='file'] { font-size: 44px; font-weight: bold; font-family: Helvetica, Arial, sans-serif;}
 input[type='text'] { font-size: 44px; font-weight: bold; font-family: Helvetica, Arial, sans-serif;}
 textarea { font-size: 32px; font-weight: bold; border-style: inset; border-width: 2px; font-family: Helvetica, Arial, sans-serif;}
 select { font-size: 44px; font-weight: bold; border-style: inset; border-width: 0px; font-family: Helvetica, Arial, sans-serif;}
@@ -15,8 +16,6 @@ p {
   font-size: 44; 
   font-weight: bold;
 }
-
-
 
 .output-report {
   color: blue;
@@ -39,8 +38,10 @@ body{ margin:0 auto; }
 </head>
 <body>
 <p align="center"><hr size="10" color="red"></p>
-<p align="center" valign="top">RETIREMENT CALCULATOR&nbsp;&nbsp;&nbsp;<img src="reset.png" height="60" valign="bottom" onclick="resetData();"><br></p>
-<p id="infomessage" align="center">&nbsp;</p>
+<p align="center" valign="top">
+RETIREMENT CALCULATOR<br><br><img src="reset.png" height="60" valign="bottom" onclick="resetData();">&nbsp;<img src="save.png" height="60" valign="bottom" onclick="saveData();">&nbsp;<img src="load.png" height="60" valign="bottom" onclick="showPageView('loadData');">
+<p id="infomessage" align="center"></p>
+</p>
 <!--SCENARIO PICKER-->
 <p align="center">
 <div id="scenarioOptions">
@@ -69,6 +70,16 @@ body{ margin:0 auto; }
 </div>
 </p>
 <hr>
+
+<!----LOAD DATA SELECTOR -->
+<div id="loadData" style="display: none;" align="center">
+  <center>
+    <p><input type="file" id="inputfile"></input></p>
+    <input type="button" id="load-data-button" value="Load Data" onClick="loadData();"></input>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <input type="button" id="load-data-close" value="Close This" onClick="showPageView('inputs');"></input>
+  </center>
+</div>
+
 <!----INPUTS -->
 <div id="inputs" style="display: none;">
 <p align="center">
