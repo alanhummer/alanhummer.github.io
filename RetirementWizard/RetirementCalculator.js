@@ -158,8 +158,9 @@ function onDOMContentLoaded() {
         gFieldArray.push(new RetirementField("---------", "", "", "break"));
         
         //And since it is all fresh, pre-load scenario name
-        document.getElementById("new-scenario").value = "My First Scenario";
+        document.getElementById("new-scenario").value = "Default Scenario Name";
 
+        //Save initial data if we need to
         blnDoStartupHelp = true;
     }
 
@@ -175,6 +176,10 @@ function onDOMContentLoaded() {
     document.getElementById("input-fields").innerHTML = outputTable;
 
     if (blnDoStartupHelp) {
+        //Save the defualt data
+        doCalc(true);
+
+        //And show help
         showPageView("help");
     }
     else {
@@ -185,7 +190,7 @@ function onDOMContentLoaded() {
 /****************
 doCalc
 ****************/
-function doCalc() {
+function doCalc(inputSaveOnly) {
 
     var i = 0;
     var blnBogus = false;
@@ -254,6 +259,10 @@ function doCalc() {
             }
         }
     });
+
+    if (inputSaveOnly) {
+        return;
+    }
 
     if (blnBogus) {
         alert("Invalid data.  Must be money, rate, year --> Numeric")
@@ -1105,11 +1114,11 @@ function showDropDown(inputFieldName, inputFieldOptions, inputFieldValue) {
 }
 
 /****************
-doClose
+clearDefaultScenario
 ****************/
 function clearDefaultScenario() {
 
-    if (document.getElementById('new-scenario').value == "My First Scenario") {
+    if (document.getElementById('new-scenario').value == "Default Scenario Name") {
         document.getElementById('new-scenario').value = "";
     }
 
