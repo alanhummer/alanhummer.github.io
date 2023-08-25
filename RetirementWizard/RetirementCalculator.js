@@ -41,7 +41,7 @@ function onDOMContentLoaded() {
     gScenario.scenarioName = localStorage.getItem("scenarioSelected");
 
     //And clear out our new scenario
-    document.getElementById("new-scenario").value = "My First Scenario";
+    document.getElementById("new-scenario").value = gScenario.scenarioName;
 
     loadScenarios(gScenario);
 
