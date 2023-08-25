@@ -17,6 +17,35 @@ p {
   font-weight: bold;
 }
 
+p.help {
+  color: black;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 22; 
+  font-weight: bold;
+  padding-left: 50px;
+  padding-right: 50px;
+}
+
+ul.help {
+  color: black;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 22; 
+  font-weight: bold;
+  margin-left:50px;
+  margin-right:50px;
+  padding-left: 50px;
+  padding-right: 50px;
+}
+
+table.help {
+  color: black;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 33; 
+  font-weight: bold;
+  padding-left: 50px;
+  padding-right: 50px;
+}
+
 .output-report {
   color: blue;
   font-family: Helvetica, Arial, sans-serif;
@@ -30,6 +59,16 @@ p {
   overflow: hidden;
 }
 
+.nowrap-green {
+  color: green;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.li-indent {
+  padding-left: 50px;
+}
+
 textarea { font-size: 44px; }
 
 body{ margin:0 auto; }
@@ -38,10 +77,15 @@ body{ margin:0 auto; }
 </head>
 <body>
 <p align="center"><hr size="10" color="red"></p>
-<p align="center" valign="top">
-RETIREMENT CALCULATOR<br><br><img src="reset.png" height="60" valign="bottom" onclick="resetData();">&nbsp;<img src="save.png" height="60" valign="bottom" onclick="saveData();">&nbsp;<img src="load.png" height="60" valign="bottom" onclick="showPageView('loadData');">
-<p id="infomessage" align="center"></p>
+
+<div id="calculatorHeader" style="display: none;">
+<p align="center" valign="bottom">
+RETIREMENT CALCULATOR<img src="help_button.png" height="75" valign="top" align="right" onclick="showPageView('help');">
 </p>
+<p align="center"><img src="reset.png" height="60" valign="bottom" onclick="resetData();">&nbsp;<img src="save.png" height="60" valign="bottom" onclick="saveData();">&nbsp;<img src="load.png" height="60" valign="bottom" onclick="showPageView('loadData');"></p>
+<p id="infomessage" align="center"></p>
+
+
 <!--SCENARIO PICKER-->
 <p align="center">
 <div id="scenarioOptions">
@@ -54,7 +98,7 @@ RETIREMENT CALCULATOR<br><br><img src="reset.png" height="60" valign="bottom" on
       </select>&nbsp;&nbsp;<img src="note.png" height="60px" valign="bottom" onclick="loadNote(document.getElementById('scenario').value);"></p>
     </td>
   </tr>
-  <tr><td colspan="2"><p align="center">OR</p></td></tr>
+  <tr><td colspan="2"><p align="center">OR NEW</p></td></tr>
 </table>
 </div>
 
@@ -63,65 +107,213 @@ RETIREMENT CALCULATOR<br><br><img src="reset.png" height="60" valign="bottom" on
   <tr>
     <td width="30%"><p align='right' valign='middle'>SCENARIO:</p></td>
     <td width="70%">
-      <p align='left' valign='middle'><input type="text" id="new-scenario" name="new-scenario"></p>
+      <p align='left' valign='middle'><input type="text" id="new-scenario" name="new-scenario" onselect="clearDefaultScenario();" onclick="clearDefaultScenario();"></p>
     </td>
   </tr>
 </table>
 </div>
 </p>
 <hr>
+</div>
 
 <!----LOAD DATA SELECTOR -->
 <div id="loadData" style="display: none;" align="center">
+  <img src="close_button.png" height="75" valign="top" align="right" onclick="showPageView('inputs');">
+  <img src="help_button.png" height="75" valign="top" align="right" onclick="showPageView('loadData-help');">
   <center>
     <p><input type="file" id="inputfile"></input></p>
-    <input type="button" id="load-data-button" value="Load Data" onClick="loadData();"></input>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    <input type="button" id="load-data-close" value="Close This" onClick="showPageView('inputs');"></input>
+    <input type="button" id="load-data-button" value="Load Data" onClick="loadData();"></input>
   </center>
+</div>
+
+<!----LOAD DATA SELECTOR HELP -->
+<div id="loadData-help" style="display: none;">
+  <img src="close_button.png" height="75" valign="top" align="right" onclick="showPageView('loadData');">
+  <p align="center">
+    Load data from a file!<br><br>
+    <ul class="help">
+      <li>Choose a previously saved file, or one passed to you from a friend or family member.<br><br></li>
+      <li>Then the "Load Data" button and it will import your save file!<br><br></li>
+      <li><u>Note:</u> File must have been saved with the Retirement Calculator previously and be in correct format.</li>
+    </ul>    
+  </p>
 </div>
 
 <!----INPUTS -->
 <div id="inputs" style="display: none;">
-<p align="center">
-<div id="input-fields"></div>
-</p>
+<p align="center">FIELD AND VALUE ENTRIES<img src="help_button.png" height="75" valign="top" align="right" onclick="showPageView('inputs-help');"></p>
+<p align="center"><div id="input-fields"></div></p>
 <center><input type="button" id="run" value="Do The Math" onClick="doCalc();"></input></center>
 </div>
 
+<!----INPUTS HELP -->
+<div id="inputs-help" style="display: none;">
+  <img src="close_button.png" height="75" valign="top" align="right" onclick="showPageView('inputs');">
+  <p align="center">
+    Enter your fields and values!<br><br>
+    <ul class="help">
+      <li>Enter values for fields defined - they can be money, interest or inflation rate, year or assets.<br><br></li>
+      <li>Entries are numeric, years must be 4 digit year and rates are full % numbers (example: for 3% return, enter 3)<br><br></li>
+      <li>Fields are grouped be section (ex: Income, Expense, Investments, etc.)<br><br></li>
+      <li>Click on a field prompt to see its definition or to change its definition<br><br></li>
+      <li>Push the ADD FIELD button to create a new field</li>
+    </ul>    
+  </p>
+</div>
+
+
 <!----OUTPUT -->
 <div id="output" style="display: none;">
-	<p align="center"><hr size="10" color="red"></p>
-	<p><div id="outputReport"></p></div>
+  <p align="center"><hr size="10" color="red"></p>
+  <p align="center">YOUR NET WORTH RESULTS
+  <img src="close_button.png" height="75" valign="top" align="right" onclick="showPageView('inputs');">
+  <img src="help_button.png" height="75" valign="top" align="right" onclick="showPageView('output-help');">
+  </p>
+  <p align="center"><div id="outputReport"></div></p>
   <BR><BR>
-	<center><input type="button" id="run2" value="All Done" onClick="showPageView('inputs');"></input></center>
 </div>
+
+<!----OUTPUT HELP -->
+<div id="output-help" style="display: none;">
+  <img src="close_button.png" height="75" valign="top" align="right" onclick="showPageView('output');">
+  <p align="center">
+    Here is the Math!<br><br>
+    <ul class="help">
+      <li>This is a year by year breakdown of your finances. <br><br></li>
+      <li>Where the year started, all of the income and investment returns, the expense and how the year ends.<br><br></li>
+      <li>Press one of the rows (years) and you will see detail breakdown by account for that year.<br><br></li>
+    </ul>    
+  </p>
+</div>
+
 
 <!----YEAR DETAIL -->
 <div id="yeardetail" style="display: none;">
-	<p align="center"><hr size="10" color="red"></p>
-	<p><div id="yeardetailReport"></p></div>
+  <img src="close_button.png" height="75" valign="top" align="right" onclick="showPageView('output');">
+  <img src="help_button.png" height="75" valign="top" align="right" onclick="showPageView('yeardetail-help');">
+  <p align="center"><div id="yeardetailReport"></div></p>
   <BR><BR>
-	<center><input type="button" id="run3" value="All Done" onClick="showPageView('output');"></input></center>
 </div>
+
+<!----YEAR DETIAL HELP -->
+<div id="yeardetail-help" style="display: none;">
+  <img src="close_button.png" height="75" valign="top" align="right" onclick="showPageView('yeardetail');">
+  <p align="center">
+    Checkout the year details!<br><br>
+    <ul class="help">
+      <li>For the selected year, this is the detailed breakdown of each of your accounts. <br><br></li>
+      <li>Each account is listed and you can see the starting balance, return, income, expenses that went into or out of the account and the total at the end of the year.<br><br></li>
+    </ul>    
+  </p>
+</div>
+
 
 <!----SCENARIO NOTE -->
 <div id="scenarioNote" style="display: none;">
-	<p align="center"><hr size="10" color="red"></p>
-	<p><div id="scenarioNoteDetail">_SCENARIONOTE_</p></div>
+  <img src="close_button.png" height="75" valign="top" align="right" onclick="showPageView('inputs');">
+  <img src="help_button.png" height="75" valign="top" align="right" onclick="showPageView('scenarioNote-help');">
+  <p align="center"><div id="scenarioNoteDetail">_SCENARIONOTE_</div></p>
   <BR><BR>
-	<center><input type="button" id="run4" value="Update" onClick="updateNote();showPageView('output');"></input>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" id="run5" value="Cancel" onClick="showPageView('output');"></input></center>
+	<center><input type="button" id="run4" value="Update" onClick="updateNote();showPageView('inputs');"></input></center>
 </div>
+
+<!----SCENARIO NOTE HELP -->
+<div id="scenarioNote-help" style="display: none;">
+  <img src="close_button.png" height="75" valign="top" align="right" onclick="showPageView('scenarioNote');">
+  <p align="center">
+    Describe your Scenario!<br><br>
+    <ul class="help">
+      <li>Add notes to the scenario you selected to give detail to what you are trying.<br><br></li>
+      <li>For example: "If we lived like we do now but bought a condo and rented it out 9 months out of the year"<br><br></li>
+    </ul>    
+  </p>
+</div>
+
 
 <!----FIELD DETAILS -->
 <div id="fieldDetails" style="display: none;">
-	<p align="center"><hr size="10" color="red"></p>
-	<p><div id="fieldDetailsDetail">_FIELDDETAILS_</p></div>
+  <img src="close_button.png" height="75" valign="top" align="right" onclick="showPageView('inputs');">
+  <img src="help_button.png" height="75" valign="top" align="right" onclick="showPageView('fieldDetails-help');">
+  <p align="center"><div id="fieldDetailsDetail">_FIELDDETAILS_</div></p>
   <BR><BR>
   <center>
-    <input type="button" id="run6" value="Update" onClick="updateField();showPageView('output');"></input>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    <input type="button" id="run7" value="Cancel" onClick="showPageView('output');"></input>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    <input type="button" id="run8" value="Delete" onClick="deleteField();showPageView('output');"></input>
+    <input type="button" id="run6" value="Update" onClick="updateField();showPageView('inputs');"></input>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <input type="button" id="run8" value="Delete" onClick="deleteField();showPageView('inputs');"></input>
   </center>
+</div>
+
+<!----FIELD DETAILS  HELP -->
+<div id="fieldDetails-help" style="display: none;">
+  <img src="close_button.png" height="75" valign="top" align="right" onclick="showPageView('fieldDetails');">
+  <p align="center">
+    Field Definition Details!<br><br>
+    <ul class="help">
+      <li>The field definition describes a piece of data to manage and track. <br><br></li>
+      <li>Each field has a unique "name" which is used in referencing it when connecting fields together. For example, yearSocSec is field name of year to start taking social security. It would be referenced by Social Security income field as what Start Year to use.<br><br></li>
+      <li>The "description" is the value prompt used in the list where you enter values<br><br></li>
+      <li>A field can be one of 4 "field types": Year, Rate, Asset or Money<br><br>
+      <u>Year</u> --> 4 digit year, used for setting your time horizon. Retirement year, year you start taking social security, etc.<br><br>
+      <u>Rate</u> --> Numeric (ex: 7.5) representation of a rate of return or interest rate.  Also inflation or appreciation rate. Rates are full % numbers (example: for 7.5% return, enter 7.5)<br><br> 
+      <u>Asset</u> --> Dollar value of the asset. (ex: House is $400000) Assets have appreciate rate and optional start and end years.<br><br> 
+      <u>Money</u> --> Dollar amount for expenses, income or investment money. <br><br>
+      <p align="center"><hr size="5" color="red"></p>
+      Money fields have these additional attributes:<br><br>
+      <li><u>For Money Fields:</u><br><br></li>
+        <u>Money Type:</u> Refers to the type of money this is --> Investment balance, income or an expense.<br><br>
+        <u>Time Period:</u> Indicates whether this money field is a monthly or yearly value (ie: rent is $1500 per month)<br><br>
+        <u>Rate Field:</u> Specifies what "rate" field you have setup to use in accruing ro appreciating value (ie: rent goes up by 3% inflation rate)<br><br>
+        <u>Start Year and End Year:</u> Specify what "year" fields indicate the expense, income or investment value is active for (ex: Secial Scurity income value from when you are 65 til when you die)<br><br>
+        <u>Accrue B4 Start:</u> Indicates whether appreciation or interest rate should apply to the value before the start year (ex: IRA value should accrue now, but start year isnt until 62)<br><br>
+        <u>Deposit Account:</u> Specifies what "money" field to put the income or earnings into. For investments, default is to reinvest so "(none)"<br><br>
+        <u>Withdrawal Account:</u> Specifies what "money" field to take the expense out of. Really this is for expenses only. When account specified is empty, will drain from other accounts<br><br>
+        <u>Default Cash Account:</u> Indicator that this account is the default money account where transactions happen. Like a chcking account. Is the default then when no other account is specified or other accounts are drained<br><br>
+      </li>   
+    </ul>
+  </p>
+
+</div>
+
+<!----HELP -->
+<div id="help" style="display: none;">
+<table class="help">
+  <tr>
+    <td>Welcome to the Retirement Calculator!<br><br>This tool will allow you to test various simulations of your retirement financing model.</p></td>
+    <td valign="top"><img src="close_button.png" height="75" valign="top" align="right" onclick="showPageView('inputs');"></td>
+  </tr>
+</table>
+<ul class="help">
+  <li>Income, expenses, investments, retirement savings, your time horizon, assets, return and inflations rates can all be managed here.<br><br></li>
+  <li>You can add or remove fields in this model and customize the entire thing to meet your specific situation<br><br>
+    <ul>
+      <li>Time Horizon</li>
+      <li>Expenses</li>
+      <li>Income</li>
+      <li>Interest and Inflation Rates</li>
+      <li>Investments</li>
+      <li>Retirement Savings</li>
+      <li>Assets</li>         
+    </ul>  
+  <br>
+  </li>
+  <li>Then adjust the dates or numbers and see what happens. See how your retirement is effected, year by year and how much you'll end up giving to your heirs.<br><br>
+    <ul>
+      <li>What if you bought that condo on the beach?<br><br></li>
+      <li>What if you toured the world in your first 5 years of retirment?<br><br></li>
+      <li>Or purchased that rental unit and became a landlord.  What would happen?<br><br></li>
+      <li>Plug it in and see!!</li>
+    </ul>
+    <br>
+  </li>
+</ul>
+<p>
+  <img src="help-get-started.png" width="1000px">
+</p>
+<p class="help">
+  You can create varied scenerios, each with a unique name, and they will all save on your local device to view again later. <br><br>
+  You can <img src="save.png"> scenerio models to a file to archive or share them with other devices. <br><br>
+  You can <img src="load.png"> scenario models that have been saved by you or a friend or family member.<br><br>
+  You can <img src="reset.png"> to clear out everthing that was done or saved and start again fresh
+</p>
 </div>
 
 <BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR>

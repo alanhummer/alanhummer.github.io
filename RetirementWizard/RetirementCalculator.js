@@ -1,7 +1,6 @@
-//To Do:
-// Remote storage of fields, sencarios, data so can be reused again....from diff device
-//
 //How to manage taxes? Build in tax rates for taxable accounts...but lots of investment income is already taxed
+//
+//ONE MORE THING: Color code background rows on year detail to highlight expense, vs income vs investment vs assets
 //
 //And so we begin....
 //
@@ -33,6 +32,7 @@ function onDOMContentLoaded() {
     var outputTable = "<table border='0' cellpadding='0' cellspacing='0' width='100%'>_RETIREMENTFIELDS_</table>";
     var outputRows = "";
     var storedFieldArray = [];
+    var blnDoStartupHelp = false;
 
     gFieldArray = [];
     gYearDetailsArray = [];
@@ -41,7 +41,7 @@ function onDOMContentLoaded() {
     gScenario.scenarioName = localStorage.getItem("scenarioSelected");
 
     //And clear out our new scenario
-    document.getElementById("new-scenario").value = "";
+    document.getElementById("new-scenario").value = "My First Scenario";
 
     loadScenarios(gScenario);
 
@@ -74,23 +74,23 @@ function onDOMContentLoaded() {
     else {
 
         //Add our feilds - Setup the time horizon
-        gFieldArray.push(new RetirementField("timeBreak", "", "----TIME HORIZON----", "break"));
-        gFieldArray.push(new RetirementField("yearBorn", "1969", "YEAR BORN", "year"));
-        gFieldArray.push(new RetirementField("yearRetire", "2025", "YEAR RETIRE", "year"));
-        gFieldArray.push(new RetirementField("yearIRA", "2031", "YEAR IRA WD", "year"));
-        gFieldArray.push(new RetirementField("yearSocSec", "2034", "YEAR SOCSEC", "year"));
-        gFieldArray.push(new RetirementField("yearMedicare", "2034", "YEAR MEDICARE", "year"));
-        gFieldArray.push(new RetirementField("yearDie", "2059", "YEAR DIE", "year"));
+        gFieldArray.push(new RetirementField("timeBreak", "", "---TIME HORIZON---", "break"));
+        gFieldArray.push(new RetirementField("yearBorn", "1969", "Born Year", "year"));
+        gFieldArray.push(new RetirementField("yearRetire", "2025", "Retire Year", "year"));
+        gFieldArray.push(new RetirementField("yearIRA", "2031", "IRA Withdraw Year", "year"));
+        gFieldArray.push(new RetirementField("yearSocSec", "2034", "Social Security Year", "year"));
+        gFieldArray.push(new RetirementField("yearMedicare", "2034", "Meidcare Year", "year"));
+        gFieldArray.push(new RetirementField("yearDie", "2059", "Die Year", "year"));
         gFieldArray.push(new RetirementField("addTime", "year", "ADD FIELD", "add-field"));
 
         //Our expenses
-        gFieldArray.push(new RetirementField("expenseBreak", "", "----EXPENSES----", "break"));
-        gFieldArray.push(new RetirementField("medicalExpense", "0", "PRE-MEDCARE/MTH", "money", "expense", "monthly", "inflation", "yearRetire", "yearMedicare", true, "", "cash"));
-        gFieldArray.push(new RetirementField("livingExpense", "0", "LIVING EXP/YR", "money", "expense", "yearly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
-        gFieldArray.push(new RetirementField("inflation", "0", "INFLATION/YR", "rate")); 
+        gFieldArray.push(new RetirementField("expenseBreak", "", "---EXPENSES---", "break"));
+        gFieldArray.push(new RetirementField("medicalExpense", "1500", "Pre-Medicare/Mth", "money", "expense", "monthly", "inflation", "yearRetire", "yearMedicare", true, "", "cash"));
+        gFieldArray.push(new RetirementField("livingExpense", "50000", "Living Expense/Yr", "money", "expense", "yearly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
+        gFieldArray.push(new RetirementField("inflation", "3", "Inflation/Yr", "rate")); 
         gFieldArray.push(new RetirementField("addExpense", "money", "ADD FIELD", "add-field"));
 
-        /*
+        /* If wanted to do real expense break down, do this
         gFieldArray.push(new RetirementField("automotive", "0", "AUTOMOTIVE/YR", "money", "expense", "yearly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
         gFieldArray.push(new RetirementField("boat", "0", "BOAT/YR", "money", "expense", "yearly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
         gFieldArray.push(new RetirementField("christmas", "0", "CHRISTMAS/YR", "money", "expense", "yearly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
@@ -112,61 +112,54 @@ function onDOMContentLoaded() {
     */
 
         //Income
-        gFieldArray.push(new RetirementField("incomeBreak", "", "----INCOME----", "break"));
-        gFieldArray.push(new RetirementField("socSec", "0", "SOC AT BENE TIME", "money", "income", "monthly", "secsec-inflation", "yearSocSec", "yearDie", false, "cash", ""));
-        gFieldArray.push(new RetirementField("secsec-inflation", "0", "SOC SEC INFLATION", "rate"));
-        gFieldArray.push(new RetirementField("pension", "0", "PENSION NOW", "money", "income", "monthly", "pension-inflation", "yearRetire", "yearDie", true, "cash", ""));
-        gFieldArray.push(new RetirementField("pension-inflation", "0", "PENSION INFLATION", "rate"));
-        gFieldArray.push(new RetirementField("rental", "0", "RENTAL INC", "money", "income", "monthly", "rental-inflation", "", "yearDie", true, "cash", ""));
-        gFieldArray.push(new RetirementField("rental-inflation", "0", "RENTAL INFLATION", "rate"));
+        gFieldArray.push(new RetirementField("incomeBreak", "", "---INCOME---", "break"));
+        gFieldArray.push(new RetirementField("socSec", "500", "Social Security/Mth", "money", "income", "monthly", "inflation", "yearSocSec", "yearDie", false, "cash", ""));
+        gFieldArray.push(new RetirementField("pension", "100", "Pension/Mth", "money", "income", "monthly", "inflation", "yearRetire", "yearDie", true, "cash", ""));
+        gFieldArray.push(new RetirementField("rental", "0", "Rental Income/Mth", "money", "income", "monthly", "inflation", "", "yearDie", true, "cash", ""));
         gFieldArray.push(new RetirementField("addIncome", "money", "ADD FIELD", "add-field"));
 
         //Cash/savings
-        gFieldArray.push(new RetirementField("cashBreak", "", "----CASH/SAVINGS----", "break"));
-        gFieldArray.push(new RetirementField("cash", "0", "CHECKING", "money", "investment", "yearly", "cash-return", "", "", true, "", "", true));
-        gFieldArray.push(new RetirementField("cash-return", "0", "CASH RETURN", "rate"));
-        gFieldArray.push(new RetirementField("mmk1", "0", "MON MKT 1", "money", "investment", "yearly", "mmk1-return"));
-        gFieldArray.push(new RetirementField("mmk1-return", "0", "MON MKT 1 RETURN", "rate"));
-        gFieldArray.push(new RetirementField("mmk2", "0", "MON MKT 2", "money", "investment", "yearly", "mmk2-return"));
-        gFieldArray.push(new RetirementField("mmk2-return", "0", "MON MKT 2 RETURN", "rate"));
+        gFieldArray.push(new RetirementField("cashBreak", "", "---CASH/SAVINGS---", "break"));
+        gFieldArray.push(new RetirementField("cash", "10000", "Checking", "money", "investment", "yearly", "cash-return", "", "", true, "", "", true));
+        gFieldArray.push(new RetirementField("cash-return", "0.5", "Checking Return", "rate"));
+        gFieldArray.push(new RetirementField("savings", "10000", "Savings", "money", "investment", "yearly", "savings-return"));
+        gFieldArray.push(new RetirementField("savings-return", "2", "Savings Return", "rate"));
+        gFieldArray.push(new RetirementField("mmk", "10000", "Money Market", "money", "investment", "yearly", "mmk-return"));
+        gFieldArray.push(new RetirementField("mmk-return", "4.3", "Money Mkt Return", "rate"));
         gFieldArray.push(new RetirementField("addCash", "money", "ADD FIELD", "add-field"));
 
         //Regular investments
-        gFieldArray.push(new RetirementField("investBreak", "", "----NON-RET INVESTMENTS----", "break"));
-        gFieldArray.push(new RetirementField("brokerage", "0", "BROKERAGE", "money", "investment", "yearly", "brokerage-return"));
-        gFieldArray.push(new RetirementField("brokerage-return", "0", "BROKER RETURN", "rate"));
+        gFieldArray.push(new RetirementField("investBreak", "", "---INVESTMENTS---", "break"));
+        gFieldArray.push(new RetirementField("brokerage", "10000", "Brokerage", "money", "investment", "yearly", "brokerage-return"));
+        gFieldArray.push(new RetirementField("brokerage-return", "7", "Brokerage Return", "rate"));
         gFieldArray.push(new RetirementField("addInvestment", "money", "ADD FIELD", "add-field"));
 
         //Retirment accounts
-        gFieldArray.push(new RetirementField("retInvestBreak", "", "----RET INVESTMENTS----", "break"));
-        gFieldArray.push(new RetirementField("rothIRAAl", "0", "ROTH 1 BAL", "money", "investment", "yearly", "rothIRAAl-return", "yearIRA", "yearDie"));
-        gFieldArray.push(new RetirementField("rothIRAAl-return", "0", "ROTH 1 RET/YR", "rate"));
-        gFieldArray.push(new RetirementField("rothIRAA2", "0", "ROTH 2 BAL", "money", "investment", "yearly", "rothIRAA2-return", "yearIRA", "yearDie"));
-        gFieldArray.push(new RetirementField("rothIRAA2-return", "0", "ROTH 2 RET/YR", "rate"));
-        gFieldArray.push(new RetirementField("regIRAA1", "0", "REG IRA 1 BAL", "money", "investment", "yearly", "regIRAA1-return", "yearIRA", "yearDie"));
-        gFieldArray.push(new RetirementField("regIRAA1-return", "0", "REG IRA 1 RET/YR", "rate"));
-        gFieldArray.push(new RetirementField("regIRAA2", "0", "REG IRA 2 BAL", "money", "investment", "yearly", "regIRAA2-return", "yearIRA", "yearDie"));
-        gFieldArray.push(new RetirementField("regIRAA2-return", "0", "REG IRA 2 RET/YR", "rate"));
-        gFieldArray.push(new RetirementField("regIRAA3", "0", "REG IRA 3 BAL", "money", "investment", "yearly", "regIRAA3-return", "yearIRA", "yearDie"));
-        gFieldArray.push(new RetirementField("regIRAA3-return", "0", "REG IRA 3 RET/YR", "rate"));    
-        gFieldArray.push(new RetirementField("401K-1", "0", "401K 1 BAL", "money", "investment", "yearly", "401K-1-return", "yearIRA", "yearDie"));
-        gFieldArray.push(new RetirementField("401K-1-return", "0", "401K 1 RET/YR", "rate"));
-        gFieldArray.push(new RetirementField("401K-2", "0", "401K 2 BAL", "money", "investment", "yearly", "401K-2-return", "yearIRA", "yearDie"));
-        gFieldArray.push(new RetirementField("401K-2-return", "0", "401K 2 RET/YR", "rate"));
+        gFieldArray.push(new RetirementField("retInvestBreak", "", "--RETIREMENT ACCOUNTS--", "break"));
+        gFieldArray.push(new RetirementField("rothIRAAl", "10000", "Roth IRA", "money", "investment", "yearly", "brokerage-return", "yearIRA", "yearDie"));
+        gFieldArray.push(new RetirementField("regIRAA1", "10000", "Traditional IRA", "money", "investment", "yearly", "brokerage-return", "yearIRA", "yearDie"));
+        gFieldArray.push(new RetirementField("rolloverIRAA1", "10000", "Rollover IRA", "money", "investment", "yearly", "brokerage-return", "yearIRA", "yearDie"));
+        gFieldArray.push(new RetirementField("401K-1", "10000", "401K", "money", "investment", "yearly", "brokerage-return", "yearIRA", "yearDie"));
         gFieldArray.push(new RetirementField("addRetirement", "money", "ADD FIELD", "add-field"));
 
         //Education accounts
-        gFieldArray.push(new RetirementField("educationBreak", "", "----EDUCATION ACCTS----", "break"));
-        gFieldArray.push(new RetirementField("coverdell-1", "0", "COVERDELL 1", "money", "investment", "yearly", "coverdell-1-return"));
-        gFieldArray.push(new RetirementField("coverdell-1-return", "0", "COVER 1 RETURN", "rate"));
-        gFieldArray.push(new RetirementField("coverdell-2", "0", "COVERDELL 2", "money", "investment", "yearly", "coverdell-2-return"));
-        gFieldArray.push(new RetirementField("coverdell-2-return", "0", "COVER 2 RETURN", "rate"));
+        gFieldArray.push(new RetirementField("educationBreak", "", "--EDUCATION ACCOUNTS--", "break"));
+        gFieldArray.push(new RetirementField("coverdell-1", "1000", "Coverdell", "money", "investment", "yearly", "brokerage-return"));
+        gFieldArray.push(new RetirementField("529-1", "1000", "529 Plan", "money", "investment", "yearly", "brokerage-return"));        
         gFieldArray.push(new RetirementField("addEducation", "money", "ADD FIELD", "add-field"));
         gFieldArray.push(new RetirementField("---------", "", "", "break"));
-        
-        //And store it
-        localStorage.setItem('fieldArray', JSON.stringify(gFieldArray));
 
+        //Property Assets
+        gFieldArray.push(new RetirementField("propertyBreak", "", "--PROPERTY ASSETS--", "break"));
+        gFieldArray.push(new RetirementField("house", "300000", "House", "asset", "", "", "houseAppreciationRate"));
+        gFieldArray.push(new RetirementField("houseAppreciationRate", "4", "House Apprec Rate", "rate", "", "", ""));
+        gFieldArray.push(new RetirementField("addAsset", "asset", "ADD FIELD", "add-field"));
+        gFieldArray.push(new RetirementField("---------", "", "", "break"));
+        
+        //And since it is all fresh, pre-load scenario name
+        document.getElementById("new-scenario").value = "My First Scenario";
+
+        blnDoStartupHelp = true;
     }
 
     //Build our display
@@ -180,7 +173,12 @@ function onDOMContentLoaded() {
     outputTable = outputTable.replace(/_RETIREMENTFIELDS_/gi, outputRows);
     document.getElementById("input-fields").innerHTML = outputTable;
 
-    showPageView("inputs");
+    if (blnDoStartupHelp) {
+        showPageView("help");
+    }
+    else {
+        showPageView("inputs");   
+    }
 }
 
 /****************
@@ -191,7 +189,9 @@ function doCalc() {
     var i = 0;
     var blnBogus = false;
     var startAmount = 0;
+    var assetStartAmount = 0;
     var investmentReturnAmount = 0;
+    var assetReturnAmount = 0;
     var incomeAmount = 0;
     var expenseAmount = 0;
     var changeAmount = 0;
@@ -200,6 +200,7 @@ function doCalc() {
     var incomeToDeposit = 0;
     var totalIncomeToDeposit = 0;
     var totalExpenseToWithdraw = 0;
+    var blnHaveDefaultCashAccount = false;
 
     var errorMessages = "";
 
@@ -217,6 +218,7 @@ function doCalc() {
         else {
             //We have no scenario
             alert("You must have a name for this scenario");
+            document.getElementById("new-scenario").focus();
             gScenario.scenarioName = "";
             return;
         }
@@ -244,13 +246,30 @@ function doCalc() {
                 fieldObject.setDataValue();
                 //console.log("FIELD VALUE SET " + fieldObject.fieldName + " = " + fieldObject.fieldValue);
             }
+
+            //Need a default account
+            if (fieldObject.fieldType == "money" && fieldObject.defaultCashAccount) {
+                blnHaveDefaultCashAccount = true;
+            }
         }
     });
 
     if (blnBogus) {
-        document.getElementById("infomessage").innerHTML = "Numbers Only";
+        alert("Invalid data.  Must be money, rate, year --> Numeric")
+        document.getElementById("infomessage").innerHTML = "Invalid Data. Try again.";
         return;
     }
+    
+    //Validate we have defualt account to take money from or put money into  
+    if (!blnHaveDefaultCashAccount) {
+        alert("A default cash account is required for managing income/expenses.")
+        document.getElementById("infomessage").innerHTML = "Default Cash Account is required. Set one up by editing or adding a field.";
+        return;
+    }
+    
+    
+    //Store the fields
+    localStorage.setItem('fieldArray', JSON.stringify(gFieldArray));
 
     //Reset everything
     onDOMContentLoaded();
@@ -262,8 +281,10 @@ function doCalc() {
     for (let i = currentDate.getFullYear(); i <= getValue(lFieldArray, "yearDie"); i++) {
 
         startAmount = 0;
+        assetStartAmount = 0;
         incomeAmount = 0;
         investmentReturnAmount = 0;
+        assetReturnAmount = 0;
         expenseAmount = 0;
         expenseToWithdraw = 0;
         changeAmount = 0;
@@ -275,26 +296,37 @@ function doCalc() {
             fieldObject.yearProcessed = i;
             fieldObject.cycleYear(i); 
 
-            switch(fieldObject.moneyType) {
-                case "investment":
+            if (fieldObject.fieldType == "money") {
+                switch(fieldObject.moneyType) {
+                    case "investment":
+                        startAmount = startAmount + fieldObject.yearStartAmount;
+                        investmentReturnAmount = investmentReturnAmount + fieldObject.yearInvestmentReturnAmount;
+                        //endAmount = endAmount + fieldObject.yearEndAmount;
+                        changeAmount = changeAmount + fieldObject.yearInvestmentReturnAmount;
+                      break;
+                    case "income":
+                        //collect the income, deposit it into cash
+                        incomeAmount = incomeAmount + fieldObject.yearIncome;
+                        changeAmount = changeAmount + fieldObject.yearIncome;
+                      break;
+                    case "expense":
+                        //collect the income, deposit it into cash
+                        expenseAmount = expenseAmount + fieldObject.yearExpense;
+                        changeAmount = changeAmount - fieldObject.yearExpense;
+                      break;
+                    default:
+                      // else, do nothing
+                }
+            }
+            else {
+                if (fieldObject.fieldType == "asset") {
                     startAmount = startAmount + fieldObject.yearStartAmount;
                     investmentReturnAmount = investmentReturnAmount + fieldObject.yearInvestmentReturnAmount;
                     //endAmount = endAmount + fieldObject.yearEndAmount;
                     changeAmount = changeAmount + fieldObject.yearInvestmentReturnAmount;
-                  break;
-                case "income":
-                    //collect the income, deposit it into cash
-                    incomeAmount = incomeAmount + fieldObject.yearIncome;
-                    changeAmount = changeAmount + fieldObject.yearIncome;
-                  break;
-                case "expense":
-                    //collect the income, deposit it into cash
-                    expenseAmount = expenseAmount + fieldObject.yearExpense;
-                    changeAmount = changeAmount - fieldObject.yearExpense;
-                    break;
-                default:
-                  // else, do nothing
+                }
             }
+
         });     
         
         //Deposit income into account
@@ -690,18 +722,31 @@ function updateField() {
                 }
             }
             else {
+                if (fieldObject.fieldType == "asset") {
 
-                fieldObject.moneyType = "";
-                fieldObject.timePeriod = "";
-                fieldObject.rateField = "";
-                fieldObject.startYear = "";
-                fieldObject.endYear = "";
-                fieldObject.depositAccount = "";
-                fieldObject.withdrawAccount = "";
-                fieldObject.accrueBeforeStart = true;
-                fieldObject.defaultCashAccount = false;
+                    fieldObject.moneyType = "";
+                    fieldObject.timePeriod = "";
+                    fieldObject.rateField = document.getElementById("assetRateField").value;
+                    fieldObject.startYear = document.getElementById("assetStartYear").value;
+                    fieldObject.endYear = document.getElementById("assetEndYear").value;
+                    fieldObject.depositAccount = "";
+                    fieldObject.withdrawAccount = "";
+                    fieldObject.accrueBeforeStart = true;
+                    fieldObject.defaultCashAccount = false;
+                }
+                else {
+
+                    fieldObject.moneyType = "";
+                    fieldObject.timePeriod = "";
+                    fieldObject.rateField = "";
+                    fieldObject.startYear = "";
+                    fieldObject.endYear = "";
+                    fieldObject.depositAccount = "";
+                    fieldObject.withdrawAccount = "";
+                    fieldObject.accrueBeforeStart = true;
+                    fieldObject.defaultCashAccount = false;
+                }
             }
-           
         }
     });
    
@@ -839,6 +884,11 @@ function addField(inputFieldtype, inputSequenceNumber) {
             addPrefix = "education";
             addSuffix = "Something";
             break;
+        case "addAsset":
+            addType = "property asset";
+            addPrefix = "asset";
+            addSuffix = "Something";
+            break;
         default:          
     }
     var newFieldName = prompt("Please enter name of this " + addType + " field", addPrefix + addSuffix);
@@ -865,6 +915,9 @@ function addField(inputFieldtype, inputSequenceNumber) {
                 break;
             case "addEducation":
                 newFieldObject = new RetirementField(newFieldName, "0", "", "money", "investment", "yearly", "");
+                break;
+            case "addAsset":
+                newFieldObject = new RetirementField(newFieldName, "0", "", "asset", "", "yearly", "");
                 break;
             default:          
         }
@@ -919,7 +972,7 @@ function showFieldDetails(inputFieldName) {
         fieldDetailOutput = fieldDetailOutput + "<table class='output-report' border='1px' width='100%' cellpadding='10' cellspacing='10'>";
         fieldDetailOutput = fieldDetailOutput + "<tr><td>Name:</td><td>" + displayField.fieldName + "</td></tr>";
         fieldDetailOutput = fieldDetailOutput + "<tr><td>Description:</td><td><input type='text' id='fieldDescription' value='" + displayField.fieldDescription + "'></td></tr>";
-        fieldDetailOutput = fieldDetailOutput + "<tr><td>Field Type:</td><td>" + showDropDown("fieldType", "money|year|rate", displayField.fieldType) + "</td></tr>";
+        fieldDetailOutput = fieldDetailOutput + "<tr><td>Field Type:</td><td>" + showDropDown("fieldType", "money|year|rate|asset", displayField.fieldType) + "</td></tr>";
         fieldDetailOutput = fieldDetailOutput + "<tr><td>Value:</td><td>" + displayField.fieldValue + "</td></tr>";
         fieldDetailOutput = fieldDetailOutput + "</table>";
         fieldDetailOutput = fieldDetailOutput + "<div id='" + displayField.fieldName + "-moneyfields'>";
@@ -934,12 +987,19 @@ function showFieldDetails(inputFieldName) {
         fieldDetailOutput = fieldDetailOutput + "<tr><td>Withdraw Acct:</td><td>" + showDropDown("withdrawAccount", "moneyFields", displayField.withdrawAccount) + "</td></tr>";
         fieldDetailOutput = fieldDetailOutput + "<tr><td>Default Cash Account:</td><td>" + showDropDown("defaultCashAccount", "true|false", displayField.defaultCashAccount) + "</td></tr>";
         fieldDetailOutput = fieldDetailOutput + "</table>"; 
-        fieldDetailOutput = fieldDetailOutput + "</div>";       
+        fieldDetailOutput = fieldDetailOutput + "</div>";
+        fieldDetailOutput = fieldDetailOutput + "<div id='" + displayField.fieldName + "-assetfields'>";
+        fieldDetailOutput = fieldDetailOutput + "<table class='output-report' border='1px' width='100%' cellpadding='10' cellspacing='10'>";
+        fieldDetailOutput = fieldDetailOutput + "<tr><td>Rate Field:</td><td>" + showDropDown("assetRateField", "rateFields", displayField.rateField) + "</td></tr>";
+        fieldDetailOutput = fieldDetailOutput + "<tr><td>Start Year:</td><td>" + showDropDown("assetStartYear", "yearFields", displayField.startYear) + "</td></tr>";
+        fieldDetailOutput = fieldDetailOutput + "<tr><td>End Year:</td><td>" + showDropDown("assetEndYear", "yearFields", displayField.endYear) + "</td></tr>";
+         fieldDetailOutput = fieldDetailOutput + "</table>"; 
+        fieldDetailOutput = fieldDetailOutput + "</div>";     
 
         document.getElementById("fieldDetailsDetail").innerHTML = "<center>" + fieldDetailOutput + "</center>";
         showPageView("fieldDetails");
 
-        toggleMoneyDisplay(displayField.fieldType);
+        toggleFieldDetailDisplay(displayField.fieldType);
     }
     else {
         // it is a new field
@@ -949,17 +1009,26 @@ function showFieldDetails(inputFieldName) {
 }
 
 /****************
-toggleMoneyDisplay
+toggleFieldDetailDisplay
 ****************/
-function toggleMoneyDisplay(inputValue) {
+function toggleFieldDetailDisplay(inputValue) {
 
     var myMoneyDiv = document.getElementById("fieldName").value + "-moneyfields";
+    var myAssetDiv = document.getElementById("fieldName").value + "-assetfields";
 
     if (inputValue == "money") {
-        document.getElementById(myMoneyDiv).style.display = "block"
+        document.getElementById(myMoneyDiv).style.display = "block";
+        document.getElementById(myAssetDiv).style.display = "none";
     }
     else {
-        document.getElementById(myMoneyDiv).style.display = "none"
+        if (inputValue == "asset") {
+            document.getElementById(myMoneyDiv).style.display = "none";
+            document.getElementById(myAssetDiv).style.display = "block";
+        }
+        else {
+            document.getElementById(myMoneyDiv).style.display = "none";
+            document.getElementById(myAssetDiv).style.display = "none";
+        }
     }
     
 }
@@ -974,7 +1043,7 @@ function showDropDown(inputFieldName, inputFieldOptions, inputFieldValue) {
     var optionArray;
 
     if (inputFieldName == "fieldType") {
-        myResponse = myResponse.replace("_ONCHANGE_", "onChange='toggleMoneyDisplay(this.value);'");      
+        myResponse = myResponse.replace("_ONCHANGE_", "onChange='toggleFieldDetailDisplay(this.value);'");      
     }
     else {
         myResponse = myResponse.replace("_ONCHANGE_", "");
@@ -1006,6 +1075,14 @@ function showDropDown(inputFieldName, inputFieldOptions, inputFieldValue) {
                     options = options + "<option value='" + fieldObject.fieldName + "'>" + fieldObject.fieldName + "</option>";
                 }
             }
+            if (fieldObject.fieldType == "asset" && inputFieldOptions == "assetFields") {
+                if (fieldObject.fieldName == inputFieldValue) {
+                    options = options + "<option value='" + fieldObject.fieldName + "' selected>" + fieldObject.fieldName + "</option>";
+                }
+                else {
+                    options = options + "<option value='" + fieldObject.fieldName + "'>" + fieldObject.fieldName + "</option>";
+                }
+            }
         });
     } 
     else {
@@ -1023,6 +1100,17 @@ function showDropDown(inputFieldName, inputFieldOptions, inputFieldValue) {
     myResponse = myResponse.replace("_OPTIONS_", options);    
 
     return myResponse;
+
+}
+
+/****************
+doClose
+****************/
+function clearDefaultScenario() {
+
+    if (document.getElementById('new-scenario').value == "My First Scenario") {
+        document.getElementById('new-scenario').value = "";
+    }
 
 }
 
@@ -1064,6 +1152,7 @@ function saveData() {
     link.download = "RetirementPlannerData.txt";
     link.click();
     URL.revokeObjectURL(link.href);
+    alert("Data saved and downloaded! Check your download files.")
 
 }
 
@@ -1139,6 +1228,9 @@ function storeData(inputDataStream) {
         alert("Bad data, try again.");
     }
 
+    //Store the fields
+    localStorage.setItem('fieldArray', JSON.stringify(gFieldArray));
+
     //All set, but we need to reload everything
     onDOMContentLoaded();
 
@@ -1149,17 +1241,34 @@ function storeData(inputDataStream) {
 showPageView
 ****************/
 function showPageView(inputView) {
+
+    document.getElementById("output").style.display = "none";
+    document.getElementById("output-help").style.display = "none";
+    document.getElementById("yeardetail").style.display = "none";
+    document.getElementById("yeardetail-help").style.display = "none";
+    document.getElementById("scenarioNote").style.display = "none";
+    document.getElementById("scenarioNote-help").style.display = "none";
+    document.getElementById("fieldDetails").style.display = "none";
+    document.getElementById("fieldDetails-help").style.display = "none";
+    document.getElementById("loadData").style.display = "none";
+    document.getElementById("loadData-help").style.display = "none";
+    document.getElementById("help").style.display = "none";
+    document.getElementById("calculatorHeader").style.display = "none";
+
     if (inputView != "output") {
+        if (inputView == "inputs") {
+            document.getElementById("calculatorHeader").style.display = "block";
+        }
         document.getElementById("inputs").style.display = "none";
+        document.getElementById("inputs-help").style.display = "none";
     }
     else {
         document.getElementById("inputs").style.display = "block";
+        document.getElementById("inputs-help").style.display = "none";
+        document.getElementById("calculatorHeader").style.display = "block";  
+
     }
-    document.getElementById("output").style.display = "none";
-    document.getElementById("yeardetail").style.display = "none";
-    document.getElementById("scenarioNote").style.display = "none";
-    document.getElementById("fieldDetails").style.display = "none";
-    document.getElementById("loadData").style.display = "none";
+
     document.getElementById(inputView).style.display = "block";
 }
 
@@ -1175,6 +1284,7 @@ function showYearDetail(inputYear) {
     var totalEndAmount = 0;
     var priorYearButton = "";
     var nextYearButton = "";
+    var displayClass = "";
 
     if (inputYear != currentDate.getFullYear()) {
         priorYearButton = "<img src='prior-arrow.png' valign='middle' height='50' onclick='showYearDetail(" + (inputYear - 1) + ")'>";
@@ -1192,13 +1302,19 @@ function showYearDetail(inputYear) {
         arrayObjects.forEach((fieldObject) => {
 
             if (fieldObject.yearProcessed == inputYear) {
-                if (fieldObject.fieldType == "money") {
+                if (fieldObject.fieldType == "money" || fieldObject.fieldType == "asset") {
+                    if (fieldObject.fieldType == "asset") {
+                        displayClass = "nowrap-green";
+                    }
+                    else {
+                        displayClass = "nowrap";
+                    }
                     totalStartAmount = totalStartAmount + fieldObject.yearStartAmount;
                     totalInvestmentReturnAmount = totalInvestmentReturnAmount + fieldObject.yearInvestmentReturnAmount;
                     totalIncome = totalIncome + fieldObject.yearIncome;
                     totalExpense = totalExpense + fieldObject.yearExpense;
                     totalEndAmount = totalEndAmount + fieldObject.yearEndAmount;
-                    resultReport = resultReport + "<tr><td width='30%'><div class='nowrap'>" + fieldObject.fieldDescription + "</div></td><td width='14%'>" + currency(fieldObject.yearStartAmount) + "</td><td width='14%'>" + currency(fieldObject.yearInvestmentReturnAmount) + "</td><td width='14%'>" + currency(fieldObject.yearIncome) + "</td><td width='14%'>" + currency(fieldObject.yearExpense, "expense") + "</td><td width='14%'>" + currency(fieldObject.yearEndAmount) + "</td></tr>";  
+                    resultReport = resultReport + "<tr class='" + displayClass + "'><td width='30%'>" + fieldObject.fieldDescription + "</div></td><td width='14%'>" + currency(fieldObject.yearStartAmount) + "</td><td width='14%'>" + currency(fieldObject.yearInvestmentReturnAmount) + "</td><td width='14%'>" + currency(fieldObject.yearIncome) + "</td><td width='14%'>" + currency(fieldObject.yearExpense, "expense") + "</td><td width='14%'>" + currency(fieldObject.yearEndAmount) + "</td></tr>";  
                 }           
             }
         });        
@@ -1242,7 +1358,7 @@ isNumber
 function isNumber(inputNumber) {
 
     var myResponse = true;
-    var validChars = "0123456789$,."
+    var validChars = "0123456789$%,."
 
     if (inputNumber) {
         for (var i = 0; i < inputNumber.length; i++) {
@@ -1325,6 +1441,73 @@ function currency(inputNumber, inputType="") {
 
 }
 
+/****************
+validateField
+****************/
+function validateField(inputFieldType, inputFieldName, inputFieldValue) {
+
+    var today = new Date();
+    var cleanedValue;
+
+    if (isNumber(inputFieldValue)) {
+        cleanedValue  = trimNumber(inputFieldValue);
+    }
+    else {
+        cleanedValue  = inputFieldValue;
+    }
+
+    switch(inputFieldType) {
+        case "year":
+            if (isNumber(inputFieldValue)) {
+                if (Number(cleanedValue) > 1900 && Number(cleanedValue) < today.getFullYear()) {
+                    //Its valid
+                }
+                else {
+                    alert("Sorry, " + inputFieldValue + " is not a valid year (1900 to " + today.getFullYear() + ")");
+                    document.getElementById(inputFieldName).focus();
+                }
+            }
+            else {
+                alert("Sorry, " + inputFieldValue + " is not a valid year (1900 to " + today.getFullYear() + ")");
+                document.getElementById(inputFieldName).focus();
+            }
+            break;
+        case "rate":
+            if (isNumber(inputFieldValue)) {
+                if (Number(cleanedValue) >= 0 && Number(cleanedValue) <= 100) {
+                    //Its valid
+                }
+                else {
+                    alert("Sorry, " + inputFieldValue + " is not a valid rate (0 to 100)");
+                    document.getElementById(inputFieldName).focus();
+                }
+            }
+            else {
+                alert("Sorry, " + inputFieldValue + " is not a valid rate (0 to 100)");
+                document.getElementById(inputFieldName).focus();
+            }
+            break;
+        case "money":
+        case "asset":
+            if (isNumber(inputFieldValue)) {
+                if (Number(cleanedValue) >= 0 && Number(cleanedValue) <= 999999999) {
+                    //Its valid
+                }
+                else {
+                    alert("Sorry, " + inputFieldValue + " is not a valid amount (0 to 1 billion)");
+                    document.getElementById(inputFieldName).focus();
+                }
+            }
+            else {
+                alert("Sorry, " + inputFieldValue + " is not a valid amount (0 to 1 billion)");
+                document.getElementById(inputFieldName).focus();
+            }
+            break;
+        default:
+          // else, do nothing
+    }
+
+}
 
 /****************
 Retirement Field Object
@@ -1370,6 +1553,7 @@ class RetirementField {
     fieldDisplayRow(inputSequenceNumber) {
 
         var myResponse = "";
+        var changeFunction = 'validateField("' + this.fieldType + '", "' + this.fieldName + '", this.value)';
 
         inputSequenceNumber = inputSequenceNumber - 1; //Before the button
 
@@ -1377,17 +1561,22 @@ class RetirementField {
 
             myResponse = myResponse + "<tr>";
             myResponse = myResponse + "<td width='50%'><p align='right' valign='top'><a onclick='showFieldDetails(_FIELDNAMEPARM_);'>_FIELDDESCRIPTION_:</a>&nbsp;&nbsp;</p></td>";
-            myResponse = myResponse + "<td width='50%'><textarea rows='1' cols='15' id='_FIELDNAME_'>_FIELDVALUE_</textarea></td>";
+            myResponse = myResponse + "<td width='50%'><textarea rows='1' cols='15' id='_FIELDNAME_' onchange='" + changeFunction +  "'>_FIELDVALUE_</textarea></td>";
             myResponse = myResponse + "</tr>";
     
             myResponse = myResponse.replace(/_FIELDNAME_/gi, this.fieldName);
             myResponse = myResponse.replace(/_FIELDNAMEPARM_/gi, '"' + this.fieldName + '"');
 
-            if (this.fieldType == "money") {
+            if (this.fieldType == "money" || this.fieldType == "asset") {
                 myResponse = myResponse.replace(/_FIELDVALUE_/gi, currency(this.fieldValue));
             }
             else {
-                myResponse = myResponse.replace(/_FIELDVALUE_/gi, this.fieldValue);
+                if (this.fieldType == "rate") {
+                    myResponse = myResponse.replace(/_FIELDVALUE_/gi, this.fieldValue + "%");
+                }
+                else {
+                    myResponse = myResponse.replace(/_FIELDVALUE_/gi, this.fieldValue);
+                }
             }
             myResponse = myResponse.replace(/_FIELDDESCRIPTION_/gi, this.fieldDescription);
         }
@@ -1472,7 +1661,7 @@ class RetirementField {
         this.yearEndAmount = 0;
  
         //Increase by rate of growth 
-        if (this.fieldType == "money" && Number(this.fieldValue) != 0) {
+        if ((this.fieldType == "money" || this.fieldType == "asset") && Number(this.fieldValue) != 0) {
 
             //See if this money is in play for this year range
             if (this.startYear && this.endYear) {
@@ -1528,7 +1717,7 @@ class RetirementField {
             }
 
             //For investments, they will always grow.
-            if (this.fieldType == "money" && this.moneyType == "investment") {
+            if (((this.fieldType == "money" && this.moneyType == "investment") || this.fieldType == "asset") ) {
                 this.yearStartAmount = Number(this.fieldValue);
                 this.yearInvestmentReturnAmount = Number(this.fieldNetChange);
                 this.yearEndAmount = Number(this.fieldValue) + Number(this.fieldNetChange);
