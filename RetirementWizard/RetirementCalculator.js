@@ -85,9 +85,9 @@ function onDOMContentLoaded() {
 
         //Our expenses
         gFieldArray.push(new RetirementField("expenseBreak", "", "---EXPENSES---", "break"));
-        gFieldArray.push(new RetirementField("medicalExpense", "1500", "Pre-Medicare/Mth", "money", "expense", "monthly", "inflation", "yearRetire", "yearMedicare", true, "", "cash"));
-        gFieldArray.push(new RetirementField("livingExpense", "50000", "Living Expense/Yr", "money", "expense", "yearly", "inflation", "yearRetire", "yearDie", true, "", "cash"));
-        gFieldArray.push(new RetirementField("inflation", "3", "Inflation/Yr", "rate")); 
+        gFieldArray.push(new RetirementField("expenseMedicalPreMedicare", "1500", "Pre-Medicare/Mth", "money", "expense", "monthly", "rateInflation", "yearRetire", "yearMedicare", true, "", "cash"));
+        gFieldArray.push(new RetirementField("expenseLiving", "50000", "Living Expense/Yr", "money", "expense", "yearly", "rateInflation", "yearRetire", "yearDie", true, "", "cash"));
+        gFieldArray.push(new RetirementField("rateInflation", "3", "Inflation Rate %", "rate")); 
         gFieldArray.push(new RetirementField("addExpense", "money", "ADD FIELD", "add-field"));
 
         /* If wanted to do real expense break down, do this
@@ -113,46 +113,47 @@ function onDOMContentLoaded() {
 
         //Income
         gFieldArray.push(new RetirementField("incomeBreak", "", "---INCOME---", "break"));
-        gFieldArray.push(new RetirementField("socSec", "500", "Social Security/Mth", "money", "income", "monthly", "inflation", "yearSocSec", "yearDie", false, "cash", ""));
-        gFieldArray.push(new RetirementField("pension", "100", "Pension/Mth", "money", "income", "monthly", "inflation", "yearRetire", "yearDie", true, "cash", ""));
-        gFieldArray.push(new RetirementField("rental", "0", "Rental Income/Mth", "money", "income", "monthly", "inflation", "", "yearDie", true, "cash", ""));
+        gFieldArray.push(new RetirementField("incomeSocialSecurity", "500", "Social Security/Mth", "money", "income", "monthly", "rateInflation", "yearSocSec", "yearDie", false, "cash", ""));
+        gFieldArray.push(new RetirementField("incomePension", "100", "Pension/Mth", "money", "income", "monthly", "rateInflation", "yearRetire", "yearDie", true, "cash", ""));
+        gFieldArray.push(new RetirementField("incomeRental", "0", "Rental Income/Mth", "money", "income", "monthly", "rateInflation", "", "yearDie", true, "cash", ""));
         gFieldArray.push(new RetirementField("addIncome", "money", "ADD FIELD", "add-field"));
 
         //Cash/savings
         gFieldArray.push(new RetirementField("cashBreak", "", "---CASH/SAVINGS---", "break"));
-        gFieldArray.push(new RetirementField("cash", "10000", "Checking", "money", "investment", "yearly", "cash-return", "", "", true, "", "", true));
-        gFieldArray.push(new RetirementField("cash-return", "0.5", "Checking Return", "rate"));
-        gFieldArray.push(new RetirementField("savings", "10000", "Savings", "money", "investment", "yearly", "savings-return"));
-        gFieldArray.push(new RetirementField("savings-return", "2", "Savings Return", "rate"));
-        gFieldArray.push(new RetirementField("mmk", "10000", "Money Market", "money", "investment", "yearly", "mmk-return"));
-        gFieldArray.push(new RetirementField("mmk-return", "4.3", "Money Mkt Return", "rate"));
+        gFieldArray.push(new RetirementField("moneyChecking", "10000", "Checking", "money", "investment-savings", "yearly", "rateChecking", "", "", true, "", "", true));
+        gFieldArray.push(new RetirementField("rateChecking", "0.5", "Checking Return %", "rate"));
+        gFieldArray.push(new RetirementField("moneySavings", "10000", "Savings", "money", "investment-savings", "yearly", "rateSavings"));
+        gFieldArray.push(new RetirementField("rateSavings", "2", "Savings Return %", "rate"));
+        gFieldArray.push(new RetirementField("moneyMoneyMarket", "10000", "Money Market", "money", "investment-savings", "yearly", "rateMoneyMarket"));
+        gFieldArray.push(new RetirementField("rateMoneyMarket", "4.3", "Money Mkt Return %", "rate"));
         gFieldArray.push(new RetirementField("addCash", "money", "ADD FIELD", "add-field"));
 
         //Regular investments
         gFieldArray.push(new RetirementField("investBreak", "", "---INVESTMENTS---", "break"));
-        gFieldArray.push(new RetirementField("brokerage", "10000", "Brokerage", "money", "investment", "yearly", "brokerage-return"));
-        gFieldArray.push(new RetirementField("brokerage-return", "7", "Brokerage Return", "rate"));
+        gFieldArray.push(new RetirementField("investmentBrokerage", "10000", "Brokerage", "money", "investment-savings", "yearly", "rateBrokerage"));
+        gFieldArray.push(new RetirementField("rateBrokerage", "7", "Brokerage Return %", "rate"));
         gFieldArray.push(new RetirementField("addInvestment", "money", "ADD FIELD", "add-field"));
 
         //Retirment accounts
         gFieldArray.push(new RetirementField("retInvestBreak", "", "--RETIREMENT ACCOUNTS--", "break"));
-        gFieldArray.push(new RetirementField("rothIRAAl", "10000", "Roth IRA", "money", "investment", "yearly", "brokerage-return", "yearIRA", "yearDie"));
-        gFieldArray.push(new RetirementField("regIRAA1", "10000", "Traditional IRA", "money", "investment", "yearly", "brokerage-return", "yearIRA", "yearDie"));
-        gFieldArray.push(new RetirementField("rolloverIRAA1", "10000", "Rollover IRA", "money", "investment", "yearly", "brokerage-return", "yearIRA", "yearDie"));
-        gFieldArray.push(new RetirementField("401K-1", "10000", "401K", "money", "investment", "yearly", "brokerage-return", "yearIRA", "yearDie"));
+        gFieldArray.push(new RetirementField("retirementRothIRA", "10000", "Roth IRA", "money", "investment-savings", "yearly", "rateRetirement", "yearIRA", "yearDie"));
+        gFieldArray.push(new RetirementField("retirementRolloverIRA", "10000", "Rollover IRA", "money", "investment-savings", "yearly", "rateRetirement", "yearIRA", "yearDie"));
+        gFieldArray.push(new RetirementField("retirementTraditionalIRA", "10000", "401K", "money", "investment-savings", "yearly", "rateRetirement", "yearIRA", "yearDie"));
+        gFieldArray.push(new RetirementField("retirement401K", "10000", "401K", "money", "investment-savings", "yearly", "rateRetirement", "yearIRA", "yearDie"));
+        gFieldArray.push(new RetirementField("rateRetirement", "7", "Retirement Return %", "rate"));
         gFieldArray.push(new RetirementField("addRetirement", "money", "ADD FIELD", "add-field"));
 
         //Education accounts
         gFieldArray.push(new RetirementField("educationBreak", "", "--EDUCATION ACCOUNTS--", "break"));
-        gFieldArray.push(new RetirementField("coverdell-1", "1000", "Coverdell", "money", "investment", "yearly", "brokerage-return"));
-        gFieldArray.push(new RetirementField("529-1", "1000", "529 Plan", "money", "investment", "yearly", "brokerage-return"));        
+        gFieldArray.push(new RetirementField("educationCoverdell", "1000", "Coverdell", "money", "investment-savings", "yearly", "rateRetirement"));
+        gFieldArray.push(new RetirementField("education529", "1000", "529 Plan", "money", "investment-savings", "yearly", "rateRetirement"));        
         gFieldArray.push(new RetirementField("addEducation", "money", "ADD FIELD", "add-field"));
         gFieldArray.push(new RetirementField("---------", "", "", "break"));
 
         //Property Assets
         gFieldArray.push(new RetirementField("propertyBreak", "", "--PROPERTY ASSETS--", "break"));
-        gFieldArray.push(new RetirementField("house", "300000", "House", "asset", "", "", "houseAppreciationRate"));
-        gFieldArray.push(new RetirementField("houseAppreciationRate", "4", "House Apprec Rate", "rate", "", "", ""));
+        gFieldArray.push(new RetirementField("propertyHouse", "300000", "House", "asset", "", "", "rateHoueAppreciation"));
+        gFieldArray.push(new RetirementField("rateHoueAppreciation", "4", "House Appr Rate %", "rate", "", "", ""));
         gFieldArray.push(new RetirementField("addAsset", "asset", "ADD FIELD", "add-field"));
         gFieldArray.push(new RetirementField("---------", "", "", "break"));
         
@@ -298,7 +299,7 @@ function doCalc() {
 
             if (fieldObject.fieldType == "money") {
                 switch(fieldObject.moneyType) {
-                    case "investment":
+                    case "investment-savings":
                         startAmount = startAmount + fieldObject.yearStartAmount;
                         investmentReturnAmount = investmentReturnAmount + fieldObject.yearInvestmentReturnAmount;
                         //endAmount = endAmount + fieldObject.yearEndAmount;
@@ -339,7 +340,7 @@ function doCalc() {
 
                 //Deposit income into designated account
                 lFieldArray.forEach((fieldObject2) => {
-                    if (fieldObject2.fieldName == fieldObject.depositAccount && fieldObject2.fieldType == "money" && fieldObject2.moneyType == "investment") {
+                    if (fieldObject2.fieldName == fieldObject.depositAccount && fieldObject2.fieldType == "money" && fieldObject2.moneyType == "investment-savings") {
                         fieldObject2.fieldValue = fieldObject2.fieldValue + fieldObject.yearIncome;
                         fieldObject2.yearEndAmount = fieldObject2.fieldValue;
 
@@ -382,7 +383,7 @@ function doCalc() {
 
                 //Withdraw expense from designated account
                 lFieldArray.forEach((fieldObject2) => {
-                    if (fieldObject2.fieldName == fieldObject.withdrawAccount && fieldObject2.fieldType == "money" && fieldObject2.moneyType == "investment") {
+                    if (fieldObject2.fieldName == fieldObject.withdrawAccount && fieldObject2.fieldType == "money" && fieldObject2.moneyType == "investment-savings") {
                         if (fieldObject2.fieldValue >= fieldObject.yearExpense) {
 
                             fieldObject2.fieldValue = fieldObject2.fieldValue - fieldObject.yearExpense;
@@ -411,7 +412,7 @@ function doCalc() {
             lFieldArray.forEach((fieldObject) => {
                 if (expenseToWithdraw > 0) {
                     //Still more to go
-                    if (fieldObject.fieldType == "money" && fieldObject.moneyType == "investment") {
+                    if (fieldObject.fieldType == "money" && fieldObject.moneyType == "investment-savings") {
 
                         //Should pull from IRA's based on IRA year...   .
                         var blnHandleMoney = false
@@ -453,7 +454,7 @@ function doCalc() {
             lFieldArray.forEach((fieldObject) => {
                 if (expenseToWithdraw > 0) {
                     //Still more to go
-                    if (fieldObject.fieldType == "money" && fieldObject.moneyType == "investment") {
+                    if (fieldObject.fieldType == "money" && fieldObject.moneyType == "investment-savings") {
 
                         if (fieldObject.fieldValue >= expenseToWithdraw) {
                             fieldObject.fieldValue = fieldObject.fieldValue - expenseToWithdraw;
@@ -535,7 +536,7 @@ function doCalc() {
     //Need the rate from inflations rate
 
     var totalYears = getValue(lFieldArray, "yearDie") - currentDate.getFullYear();
-    var inflationRate = 1 + (getValue(lFieldArray, "inflation") / 100);
+    var inflationRate = 1 + (getValue(lFieldArray, "rateInflation") / 100);
     var presentDayValueOfEndAmount = endAmount / ( (inflationRate)**totalYears ); //Need rate and years from fields
 
     if (endAmount < 0 ) {
@@ -852,42 +853,42 @@ function addField(inputFieldtype, inputSequenceNumber) {
         case "addTime":
             addType = "time in years";
             addPrefix = "year";
-            addSuffix = "Something";
+            addSuffix = "Field";
              break;
         case "addExpense":
             addType = "expense";
-            addPrefix = "something";
-            addSuffix = "Expense";
+            addPrefix = "expense";
+            addSuffix = "Field";
             break;
         case "addIncome":
             addType = "income";
-            addPrefix = "something";
-            addSuffix = "Income";
+            addPrefix = "income";
+            addSuffix = "Field";
             break;
         case "addCash":
             addType = "cash";
-            addPrefix = "something";
-            addSuffix = "Cash";
+            addPrefix = "money";
+            addSuffix = "Field";
             break;
         case "addInvestment":
-            addType = "investment";
-            addPrefix = "something";
-            addSuffix = "Investment";
+            addType = "investment savings";
+            addPrefix = "investementSavings";
+            addSuffix = "Field";
             break;
         case "addRetirement":
             addType = "retirement acount";
             addPrefix = "retirement";
-            addSuffix = "Something";
+            addSuffix = "Field";
             break;
         case "addEducation":
             addType = "education account";
             addPrefix = "education";
-            addSuffix = "Something";
+            addSuffix = "Field";
             break;
         case "addAsset":
             addType = "property asset";
             addPrefix = "asset";
-            addSuffix = "Something";
+            addSuffix = "Field";
             break;
         default:          
     }
@@ -905,16 +906,16 @@ function addField(inputFieldtype, inputSequenceNumber) {
                 newFieldObject = new RetirementField(newFieldName, "0", "", "money", "income", "monthly", "", "", "", true, "", "");
                 break;
             case "addCash":
-                newFieldObject = new RetirementField(newFieldName, "0", "", "money", "investment", "yearly", "");
+                newFieldObject = new RetirementField(newFieldName, "0", "", "money", "investment-savings", "yearly", "");
                 break;
             case "addInvestment":
-                newFieldObject = new RetirementField(newFieldName, "0", "", "money", "investment", "yearly", "");
+                newFieldObject = new RetirementField(newFieldName, "0", "", "money", "investment-savings", "yearly", "");
                 break;
             case "addRetirement":
-                newFieldObject = new RetirementField(newFieldName, "0", "", "money", "investment", "yearly", "", "", "");
+                newFieldObject = new RetirementField(newFieldName, "0", "", "money", "investment-savings", "yearly", "", "", "");
                 break;
             case "addEducation":
-                newFieldObject = new RetirementField(newFieldName, "0", "", "money", "investment", "yearly", "");
+                newFieldObject = new RetirementField(newFieldName, "0", "", "money", "investment-savings", "yearly", "");
                 break;
             case "addAsset":
                 newFieldObject = new RetirementField(newFieldName, "0", "", "asset", "", "yearly", "");
@@ -977,7 +978,7 @@ function showFieldDetails(inputFieldName) {
         fieldDetailOutput = fieldDetailOutput + "</table>";
         fieldDetailOutput = fieldDetailOutput + "<div id='" + displayField.fieldName + "-moneyfields'>";
         fieldDetailOutput = fieldDetailOutput + "<table class='output-report' border='1px' width='100%' cellpadding='10' cellspacing='10'>";
-        fieldDetailOutput = fieldDetailOutput + "<tr><td>Money Type:</td><td>" + showDropDown("moneyType", "expense|income|investment", displayField.moneyType) + "</td></tr>";
+        fieldDetailOutput = fieldDetailOutput + "<tr><td>Money Type:</td><td>" + showDropDown("moneyType", "expense|income|investment-savings", displayField.moneyType) + "</td></tr>";
         fieldDetailOutput = fieldDetailOutput + "<tr><td>Time Period:</td><td>" + showDropDown("timePeriod", "monthly|yearly", displayField.timePeriod) + "</td></tr>";
         fieldDetailOutput = fieldDetailOutput + "<tr><td>Rate Field:</td><td>" + showDropDown("rateField", "rateFields", displayField.rateField) + "</td></tr>";
         fieldDetailOutput = fieldDetailOutput + "<tr><td>Start Year:</td><td>" + showDropDown("startYear", "yearFields", displayField.startYear) + "</td></tr>";
@@ -1285,6 +1286,9 @@ function showYearDetail(inputYear) {
     var priorYearButton = "";
     var nextYearButton = "";
     var displayClass = "";
+    var displayReturn;
+    var displayIncome;
+    var displayExpense;
 
     if (inputYear != currentDate.getFullYear()) {
         priorYearButton = "<img src='prior-arrow.png' valign='middle' height='50' onclick='showYearDetail(" + (inputYear - 1) + ")'>";
@@ -1313,8 +1317,52 @@ function showYearDetail(inputYear) {
                     totalInvestmentReturnAmount = totalInvestmentReturnAmount + fieldObject.yearInvestmentReturnAmount;
                     totalIncome = totalIncome + fieldObject.yearIncome;
                     totalExpense = totalExpense + fieldObject.yearExpense;
+
+                    if (fieldObject.fieldType == "asset") {
+                        displayReturn = currency(fieldObject.yearInvestmentReturnAmount);
+                        displayExpense = "----";    
+                        displayIncome = "----";  
+
+                        if (fieldObject.yearStartAmount + fieldObject.yearInvestmentReturnAmount > fieldObject.yearEndAmount) {
+                            //We took money out
+                            displayExpense = "<font color='red'>(W/D)</font>";      
+                        }
+                        if (fieldObject.yearStartAmount + fieldObject.yearInvestmentReturnAmount < fieldObject.yearEndAmount) {
+                            //We put money in
+                            displayExpense = "(DEP)";
+                        }                      
+
+                    }
+                    else {
+                        switch(fieldObject.moneyType) {
+                            case "expense":
+                                displayExpense = currency(fieldObject.yearExpense, "expense");    
+                                displayIncome = "----";    
+                                displayReturn = "----";                      
+                                break;
+                            case "income":
+                                displayIncome = currency(fieldObject.yearIncome);
+                                displayExpense = "----";  
+                                displayReturn = "----";         
+                                break;
+                            case "investment-savings":
+                                displayReturn = currency(fieldObject.yearInvestmentReturnAmount);
+                                displayExpense = "----";    
+                                displayIncome = "----";     
+                                if (fieldObject.yearStartAmount + fieldObject.yearInvestmentReturnAmount > fieldObject.yearEndAmount) {
+                                    //We took money out
+                                    displayExpense = "<font color='red'>(W/D)</font>";   
+                                }
+                                if (fieldObject.yearStartAmount + fieldObject.yearInvestmentReturnAmount < fieldObject.yearEndAmount) {
+                                    //We put money in
+                                    displayExpense = "(DEP)";
+                                }      
+                                break;
+                        }
+                    }
+
                     totalEndAmount = totalEndAmount + fieldObject.yearEndAmount;
-                    resultReport = resultReport + "<tr class='" + displayClass + "'><td width='30%'>" + fieldObject.fieldDescription + "</div></td><td width='14%'>" + currency(fieldObject.yearStartAmount) + "</td><td width='14%'>" + currency(fieldObject.yearInvestmentReturnAmount) + "</td><td width='14%'>" + currency(fieldObject.yearIncome) + "</td><td width='14%'>" + currency(fieldObject.yearExpense, "expense") + "</td><td width='14%'>" + currency(fieldObject.yearEndAmount) + "</td></tr>";  
+                    resultReport = resultReport + "<tr class='" + displayClass + "'><td width='30%'>" + fieldObject.fieldDescription + "</div></td><td width='14%'>" + currency(fieldObject.yearStartAmount) + "</td><td width='14%'>" + displayReturn + "</td><td width='14%'>" + displayIncome + "</td><td width='14%'>" + displayExpense + "</td><td width='14%'>" + currency(fieldObject.yearEndAmount) + "</td></tr>";  
                 }           
             }
         });        
@@ -1525,7 +1573,7 @@ class RetirementField {
 
         this.fieldDescription = fieldDescription;
         this.fieldType = fieldType;
-        this.moneyType = moneyType; //income, expense, investment
+        this.moneyType = moneyType; //income, expense, investment-savings
         this.timePeriod = timePeriod;
         this.rateField = rateField;
         this.startYear = startYear;
@@ -1717,7 +1765,7 @@ class RetirementField {
             }
 
             //For investments, they will always grow.
-            if (((this.fieldType == "money" && this.moneyType == "investment") || this.fieldType == "asset") ) {
+            if (((this.fieldType == "money" && this.moneyType == "investment-savings") || this.fieldType == "asset") ) {
                 this.yearStartAmount = Number(this.fieldValue);
                 this.yearInvestmentReturnAmount = Number(this.fieldNetChange);
                 this.yearEndAmount = Number(this.fieldValue) + Number(this.fieldNetChange);
