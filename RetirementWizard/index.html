@@ -98,7 +98,7 @@ RETIREMENT CALCULATOR<img src="help_button.png" height="75" valign="top" align="
       </select>&nbsp;&nbsp;<img src="note.png" height="60px" valign="bottom" onclick="loadNote(document.getElementById('scenario').value);"></p>
     </td>
   </tr>
-  <tr><td colspan="2"><p align="center">OR NEW</p></td></tr>
+  <tr><td colspan="2"><p align="center">OR ENTER NEW NAME</p></td></tr>
 </table>
 </div>
 
@@ -214,7 +214,10 @@ RETIREMENT CALCULATOR<img src="help_button.png" height="75" valign="top" align="
   <img src="help_button.png" height="75" valign="top" align="right" onclick="showPageView('scenarioNote-help');">
   <p align="center"><div id="scenarioNoteDetail">_SCENARIONOTE_</div></p>
   <BR><BR>
-	<center><input type="button" id="run4" value="Update" onClick="updateNote();showPageView('inputs');"></input></center>
+	<center>
+    <input type="button" id="run4" value="Update" onClick="updateNote();showPageView('inputs');"></input>&nbsp;&nbsp;&nbsp;&nbsp;
+    <input type="button" id="runNoteCancel" value="Cancel" onClick="showPageView('inputs');"></input><br><br><br><hr><br><br><br>
+    <input type="button" id="runScenDel" value="Delete This Scenario" onClick="deleteScenario();showPageView('inputs');"></input></center>
 </div>
 
 <!----SCENARIO NOTE HELP -->

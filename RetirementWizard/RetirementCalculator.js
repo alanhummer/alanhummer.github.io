@@ -1,6 +1,6 @@
 //How to manage taxes? Build in tax rates for taxable accounts...but lots of investment income is already taxed
 //
-//ONE MORE THING: Color code background rows on year detail to highlight expense, vs income vs investment vs assets
+//Could clean up lacal storage so not so many "scenario-field" things, could be arrays.
 //
 //And so we begin....
 //
@@ -179,6 +179,9 @@ function onDOMContentLoaded() {
         //Save the defualt data
         doCalc(true);
 
+        //And since it is all fresh, pre-load scenario name
+        document.getElementById("new-scenario").value = "";
+
         //And show help
         showPageView("help");
     }
@@ -207,6 +210,7 @@ function doCalc(inputSaveOnly) {
     var totalIncomeToDeposit = 0;
     var totalExpenseToWithdraw = 0;
     var blnHaveDefaultCashAccount = false;
+    var bogusField = "";
 
     var errorMessages = "";
 
@@ -246,6 +250,7 @@ function doCalc(inputSaveOnly) {
             if (!isNumber(document.getElementById(fieldObject.fieldName).value)) {
                 //bogus
                 blnBogus = true;
+                bogusField = fieldObject.fieldName;
             }
             else {
                 fieldObject.fieldValue = trimNumber(document.getElementById(fieldObject.fieldName).value);
@@ -260,13 +265,10 @@ function doCalc(inputSaveOnly) {
         }
     });
 
-    if (inputSaveOnly) {
-        return;
-    }
-
     if (blnBogus) {
         alert("Invalid data.  Must be money, rate, year --> Numeric")
         document.getElementById("infomessage").innerHTML = "Invalid Data. Try again.";
+        document.getElementById(bogusField).focus();
         return;
     }
     
@@ -276,13 +278,16 @@ function doCalc(inputSaveOnly) {
         document.getElementById("infomessage").innerHTML = "Default Cash Account is required. Set one up by editing or adding a field.";
         return;
     }
-    
-    
+        
     //Store the fields
     localStorage.setItem('fieldArray', JSON.stringify(gFieldArray));
 
     //Reset everything
     onDOMContentLoaded();
+
+    if (inputSaveOnly) {
+        return;
+    }
 
     //Data is good, lets rip thru it and apply our time algorithm..since updating, make a copy
     lFieldArray = gFieldArray;
@@ -675,6 +680,9 @@ function loadNote(inputScenarioName) {
     var resultReport = "<p align='center'>Note for Scenario: " + gScenario.scenarioName + "</p>";
     resultReport = resultReport + "<textarea rows='15' cols='40' id='note-detail'>" + gScenario.scenarioNote + "</textarea><br><br>";
     document.getElementById("scenarioNoteDetail").innerHTML = "<center>" + resultReport + "</center>";
+
+    document.getElementById("note-detail").focus();
+
     showPageView("scenarioNote");
 
 }
@@ -693,6 +701,48 @@ function updateNote() {
     });
    
     localStorage.setItem('scenarioArray', JSON.stringify(gScenarioArray));
+
+}
+
+
+/****************
+deleteScenario
+****************/
+function deleteScenario() {
+
+    var tempArray = [];
+
+    myAnswer = confirm('Are you sure you want to delete this ' + gScenario.scenarioName + ' scenario?');
+
+    if (!myAnswer) {
+        return;
+    }
+
+    //Delete the scenario
+    gScenarioArray.forEach((scenarioEntry) => { 
+        if (scenarioEntry.scenarioName == gScenario.scenarioName) {
+            //Delete this one..by not copying it
+        }        
+        else {
+            tempArray.push(scenarioEntry);
+        }
+    });
+
+    gScenarioArray = tempArray;
+    localStorage.setItem('scenarioArray', JSON.stringify(gScenarioArray));
+
+    gScenario = {scenarioName: "", scenarioNote: ""};
+    gScenarioArray.forEach((scenarioEntry) => { 
+        if (gScenario.scenarioName == "") {
+            gScenario = scenarioEntry;
+        }
+    });
+    
+    //Store the choice
+    localStorage.setItem("scenarioSelected", gScenario.scenarioName);
+
+    //And start again
+    onDOMContentLoaded();
 
 }
 
@@ -902,56 +952,59 @@ function addField(inputFieldtype, inputSequenceNumber) {
         default:          
     }
     var newFieldName = prompt("Please enter name of this " + addType + " field", addPrefix + addSuffix);
-    if (newFieldName.length > 0) {
+    if (newFieldName) {
+        if (newFieldName.length > 0) {
        
-        switch(inputFieldtype) {
-            case "addTime":
-                newFieldObject = new RetirementField(newFieldName, "", "", "year");
-                break;
-            case "addExpense":
-                newFieldObject = new RetirementField(newFieldName, "0", "", "money", "expense", "monthly", "", "", "", true, "", "");
-                break;
-            case "addIncome":
-                newFieldObject = new RetirementField(newFieldName, "0", "", "money", "income", "monthly", "", "", "", true, "", "");
-                break;
-            case "addCash":
-                newFieldObject = new RetirementField(newFieldName, "0", "", "money", "investment-savings", "yearly", "");
-                break;
-            case "addInvestment":
-                newFieldObject = new RetirementField(newFieldName, "0", "", "money", "investment-savings", "yearly", "");
-                break;
-            case "addRetirement":
-                newFieldObject = new RetirementField(newFieldName, "0", "", "money", "investment-savings", "yearly", "", "", "");
-                break;
-            case "addEducation":
-                newFieldObject = new RetirementField(newFieldName, "0", "", "money", "investment-savings", "yearly", "");
-                break;
-            case "addAsset":
-                newFieldObject = new RetirementField(newFieldName, "0", "", "asset", "", "yearly", "");
-                break;
-            default:          
-        }
-
-        //See if we have it, else add it
-        gFieldArray.forEach((fieldObject) => {
-            if (fieldObject.fieldName == newFieldObject.fieldName) {
-                //Field already exists
-                 blnExists = true;
+            switch(inputFieldtype) {
+                case "addTime":
+                    newFieldObject = new RetirementField(newFieldName, "", "", "year");
+                    break;
+                case "addExpense":
+                    newFieldObject = new RetirementField(newFieldName, "0", "", "money", "expense", "monthly", "", "", "", true, "", "");
+                    break;
+                case "addIncome":
+                    newFieldObject = new RetirementField(newFieldName, "0", "", "money", "income", "monthly", "", "", "", true, "", "");
+                    break;
+                case "addCash":
+                    newFieldObject = new RetirementField(newFieldName, "0", "", "money", "investment-savings", "yearly", "");
+                    break;
+                case "addInvestment":
+                    newFieldObject = new RetirementField(newFieldName, "0", "", "money", "investment-savings", "yearly", "");
+                    break;
+                case "addRetirement":
+                    newFieldObject = new RetirementField(newFieldName, "0", "", "money", "investment-savings", "yearly", "", "", "");
+                    break;
+                case "addEducation":
+                    newFieldObject = new RetirementField(newFieldName, "0", "", "money", "investment-savings", "yearly", "");
+                    break;
+                case "addAsset":
+                    newFieldObject = new RetirementField(newFieldName, "0", "", "asset", "", "yearly", "");
+                    break;
+                default:          
             }
-        });
-
-        //New field to add
-        if (!blnExists) {
-  
-            //Put it in the right sequencey
-            gFieldArray.splice(inputSequenceNumber, 0, newFieldObject);
-
-            //And store it
-            localStorage.setItem('fieldArray', JSON.stringify(gFieldArray));
+    
+            //See if we have it, else add it
+            gFieldArray.forEach((fieldObject) => {
+                if (fieldObject.fieldName == newFieldObject.fieldName) {
+                    //Field already exists
+                     blnExists = true;
+                }
+            });
+    
+            //New field to add
+            if (!blnExists) {
+      
+                //Put it in the right sequencey
+                gFieldArray.splice(inputSequenceNumber, 0, newFieldObject);
+    
+                //And store it
+                localStorage.setItem('fieldArray', JSON.stringify(gFieldArray));
+            }
+    
+            showFieldDetails(newFieldObject.fieldName);
         }
-
-        showFieldDetails(newFieldObject.fieldName);
     }
+
 }
 
 /****************
@@ -1118,7 +1171,7 @@ clearDefaultScenario
 ****************/
 function clearDefaultScenario() {
 
-    if (document.getElementById('new-scenario').value == "Default Scenario Name") {
+    if (document.getElementById('new-scenario').value == "Default Scenario Name" || document.getElementById('new-scenario').value == "New Scenario Name") {
         document.getElementById('new-scenario').value = "";
     }
 
@@ -1516,16 +1569,16 @@ function validateField(inputFieldType, inputFieldName, inputFieldValue) {
     switch(inputFieldType) {
         case "year":
             if (isNumber(inputFieldValue)) {
-                if (Number(cleanedValue) > 1900 && Number(cleanedValue) < today.getFullYear()) {
+                if (Number(cleanedValue) > 1900 && Number(cleanedValue) < (today.getFullYear() + 100)) {
                     //Its valid
                 }
                 else {
-                    alert("Sorry, " + inputFieldValue + " is not a valid year (1900 to " + today.getFullYear() + ")");
+                    alert("Sorry, " + inputFieldValue + " is not a valid year (1900 to " + (today.getFullYear() + 100) + ")");
                     document.getElementById(inputFieldName).focus();
                 }
             }
             else {
-                alert("Sorry, " + inputFieldValue + " is not a valid year (1900 to " + today.getFullYear() + ")");
+                alert("Sorry, " + inputFieldValue + " is not a valid year (1900 to " + (today.getFullYear() + 100) + ")");
                 document.getElementById(inputFieldName).focus();
             }
             break;
