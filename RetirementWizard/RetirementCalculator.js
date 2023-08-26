@@ -39,6 +39,10 @@ function onDOMContentLoaded() {
 
     //Initialize our secnarios
     gScenario.scenarioName = localStorage.getItem("scenarioSelected");
+    gScenarioArray = JSON.parse(localStorage.getItem('scenarioArray'));
+    if (!gScenarioArray) {
+        gScenarioArray = [];
+    }        
 
     //And clear out our new scenario
     document.getElementById("new-scenario").value = gScenario.scenarioName;
@@ -85,9 +89,9 @@ function onDOMContentLoaded() {
 
         //Our expenses
         gFieldArray.push(new RetirementField("expenseBreak", "", "---EXPENSES---", "break"));
+        gFieldArray.push(new RetirementField("rateInflation", "3", "Inflation Rate %", "rate")); 
         gFieldArray.push(new RetirementField("expenseMedicalPreMedicare", "1500", "Pre-Medicare/Mth", "money", "expense", "monthly", "rateInflation", "yearRetire", "yearMedicare", true, "", "cash"));
         gFieldArray.push(new RetirementField("expenseLiving", "50000", "Living Expense/Yr", "money", "expense", "yearly", "rateInflation", "yearRetire", "yearDie", true, "", "cash"));
-        gFieldArray.push(new RetirementField("rateInflation", "3", "Inflation Rate %", "rate")); 
         gFieldArray.push(new RetirementField("addExpense", "money", "ADD FIELD", "add-field"));
 
         /* If wanted to do real expense break down, do this
@@ -113,9 +117,10 @@ function onDOMContentLoaded() {
 
         //Income
         gFieldArray.push(new RetirementField("incomeBreak", "", "---INCOME---", "break"));
-        gFieldArray.push(new RetirementField("incomeSocialSecurity", "500", "Social Security/Mth", "money", "income", "monthly", "rateInflation", "yearSocSec", "yearDie", false, "cash", ""));
-        gFieldArray.push(new RetirementField("incomePension", "100", "Pension/Mth", "money", "income", "monthly", "rateInflation", "yearRetire", "yearDie", true, "cash", ""));
-        gFieldArray.push(new RetirementField("incomeRental", "0", "Rental Income/Mth", "money", "income", "monthly", "rateInflation", "", "yearDie", true, "cash", ""));
+        gFieldArray.push(new RetirementField("rateIncomeInflation", "3", "Income Inflation %", "rate")); 
+        gFieldArray.push(new RetirementField("incomeSocialSecurity", "500", "Social Security/Mth", "money", "income", "monthly", "rateIncomeInflation", "yearSocSec", "yearDie", false, "cash", ""));
+        gFieldArray.push(new RetirementField("incomePension", "100", "Pension/Mth", "money", "income", "monthly", "rateIncomeInflation", "yearRetire", "yearDie", true, "cash", ""));
+        gFieldArray.push(new RetirementField("incomeRental", "0", "Rental Income/Mth", "money", "income", "monthly", "rateIncomeInflation", "", "yearDie", true, "cash", ""));
         gFieldArray.push(new RetirementField("addIncome", "money", "ADD FIELD", "add-field"));
 
         //Cash/savings
@@ -130,30 +135,31 @@ function onDOMContentLoaded() {
 
         //Regular investments
         gFieldArray.push(new RetirementField("investBreak", "", "---INVESTMENTS---", "break"));
-        gFieldArray.push(new RetirementField("investmentBrokerage", "10000", "Brokerage", "money", "investment-savings", "yearly", "rateBrokerage"));
-        gFieldArray.push(new RetirementField("rateBrokerage", "7", "Brokerage Return %", "rate"));
+        gFieldArray.push(new RetirementField("rateInvestment", "7", "Brokerage Return %", "rate"));
+        gFieldArray.push(new RetirementField("investmentBrokerage", "10000", "Brokerage", "money", "investment-savings", "yearly", "rateInvestment"));
         gFieldArray.push(new RetirementField("addInvestment", "money", "ADD FIELD", "add-field"));
 
         //Retirment accounts
         gFieldArray.push(new RetirementField("retInvestBreak", "", "--RETIREMENT ACCOUNTS--", "break"));
+        gFieldArray.push(new RetirementField("rateRetirement", "7", "Retirement Return %", "rate"));
         gFieldArray.push(new RetirementField("retirementRothIRA", "10000", "Roth IRA", "money", "investment-savings", "yearly", "rateRetirement", "yearIRA", "yearDie"));
         gFieldArray.push(new RetirementField("retirementRolloverIRA", "10000", "Rollover IRA", "money", "investment-savings", "yearly", "rateRetirement", "yearIRA", "yearDie"));
         gFieldArray.push(new RetirementField("retirementTraditionalIRA", "10000", "401K", "money", "investment-savings", "yearly", "rateRetirement", "yearIRA", "yearDie"));
         gFieldArray.push(new RetirementField("retirement401K", "10000", "401K", "money", "investment-savings", "yearly", "rateRetirement", "yearIRA", "yearDie"));
-        gFieldArray.push(new RetirementField("rateRetirement", "7", "Retirement Return %", "rate"));
         gFieldArray.push(new RetirementField("addRetirement", "money", "ADD FIELD", "add-field"));
 
         //Education accounts
         gFieldArray.push(new RetirementField("educationBreak", "", "--EDUCATION ACCOUNTS--", "break"));
-        gFieldArray.push(new RetirementField("educationCoverdell", "1000", "Coverdell", "money", "investment-savings", "yearly", "rateRetirement"));
-        gFieldArray.push(new RetirementField("education529", "1000", "529 Plan", "money", "investment-savings", "yearly", "rateRetirement"));        
+        gFieldArray.push(new RetirementField("rateEducation", "7", "Education Return %", "rate"));
+        gFieldArray.push(new RetirementField("educationCoverdell", "1000", "Coverdell", "money", "investment-savings", "yearly", "rateEducation"));
+        gFieldArray.push(new RetirementField("education529", "1000", "529 Plan", "money", "investment-savings", "yearly", "rateEducation"));        
         gFieldArray.push(new RetirementField("addEducation", "money", "ADD FIELD", "add-field"));
         gFieldArray.push(new RetirementField("---------", "", "", "break"));
 
         //Property Assets
         gFieldArray.push(new RetirementField("propertyBreak", "", "--PROPERTY ASSETS--", "break"));
-        gFieldArray.push(new RetirementField("propertyHouse", "300000", "House", "asset", "", "", "rateHoueAppreciation"));
-        gFieldArray.push(new RetirementField("rateHoueAppreciation", "4", "House Appr Rate %", "rate", "", "", ""));
+        gFieldArray.push(new RetirementField("ratePropertyAppreciation", "4", "House Appr Rate %", "rate", "", "", ""));
+        gFieldArray.push(new RetirementField("propertyHouse", "300000", "House", "asset", "", "", "ratePropertyAppreciation"));
         gFieldArray.push(new RetirementField("addAsset", "asset", "ADD FIELD", "add-field"));
         gFieldArray.push(new RetirementField("---------", "", "", "break"));
         
@@ -1274,7 +1280,6 @@ function storeData(inputDataStream) {
     if (dataToStore) {
         if (dataToStore.fieldArray) {
             //OK, it is legit...rip thru everything and store it
-
             for (const key in dataToStore){
                 if(dataToStore.hasOwnProperty(key)){
                     localStorage.setItem(key, dataToStore[key]);
@@ -1290,9 +1295,6 @@ function storeData(inputDataStream) {
     else {
         alert("Bad data, try again.");
     }
-
-    //Store the fields
-    localStorage.setItem('fieldArray', JSON.stringify(gFieldArray));
 
     //All set, but we need to reload everything
     onDOMContentLoaded();
