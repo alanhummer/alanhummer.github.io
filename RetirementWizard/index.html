@@ -240,8 +240,8 @@ RETIREMENT CALCULATOR<img src="help_button.png" height="75" valign="top" align="
   <p align="center"><div id="fieldDetailsDetail">_FIELDDETAILS_</div></p>
   <BR><BR>
   <center>
-    <input type="button" id="run6" value="Update" onClick="updateField();showPageView('inputs');"></input>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    <input type="button" id="run8" value="Delete" onClick="deleteField();showPageView('inputs');"></input>
+    <input type="button" id="run6" value="Update" onClick="updateField();"></input>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <input type="button" id="run8" value="Delete" onClick="deleteField();"></input>
   </center>
 </div>
 
@@ -252,7 +252,7 @@ RETIREMENT CALCULATOR<img src="help_button.png" height="75" valign="top" align="
     Field Definition Details!<br><br>
     <ul class="help">
       <li>The field definition describes a piece of data to manage and track. <br><br></li>
-      <li>Each field has a unique "name" which is used in referencing it when connecting fields together. For example, yearSocSec is field name of year to start taking social security. It would be referenced by Social Security income field as what Start Year to use.<br><br></li>
+      <li>Each field has a unique "name" which is used in referencing it when connecting fields together. For example, yearSocSec is field name of year to start taking Social Security. It would be referenced by Social Security income field as what Start Year to use.<br><br></li>
       <li>The "description" is the value prompt used in the list where you enter values<br><br></li>
       <li>A field can be one of 4 "field types": Year, Rate, Asset or Money<br><br>
       <u>Year</u> --> 4 digit year, used for setting your time horizon. Retirement year, year you start taking social security, etc.<br><br>
@@ -265,7 +265,7 @@ RETIREMENT CALCULATOR<img src="help_button.png" height="75" valign="top" align="
         <u>Money Type:</u> Refers to the type of money this is --> Investment balance, income or an expense.<br><br>
         <u>Time Period:</u> Indicates whether this money field is a monthly or yearly value (ie: rent is $1500 per month)<br><br>
         <u>Rate Field:</u> Specifies what "rate" field you have setup to use in accruing ro appreciating value (ie: rent goes up by 3% inflation rate)<br><br>
-        <u>Start Year and End Year:</u> Specify what "year" fields indicate the expense, income or investment value is active for (ex: Secial Scurity income value from when you are 65 til when you die)<br><br>
+        <u>Start Year and End Year:</u> Specify what "year" fields indicate the expense, income or investment value is active for (ex: Social Scurity income value from when you are 65 til when you die)<br><br>
         <u>Accrue B4 Start:</u> Indicates whether appreciation or interest rate should apply to the value before the start year (ex: IRA value should accrue now, but start year isnt until 62)<br><br>
         <u>Deposit Account:</u> Specifies what "money" field to put the income or earnings into. For investments, default is to reinvest so "(none)"<br><br>
         <u>Withdrawal Account:</u> Specifies what "money" field to take the expense out of. Really this is for expenses only. When account specified is empty, will drain from other accounts<br><br>

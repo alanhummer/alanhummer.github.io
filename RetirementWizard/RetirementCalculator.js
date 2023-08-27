@@ -758,6 +758,7 @@ updateField
 function updateField() {
 
     var fieldName = "";
+    var blnUpdateError = false;
 
     //Updte field settings
     fieldName = document.getElementById("fieldName").value;
@@ -813,13 +814,24 @@ function updateField() {
                     fieldObject.defaultCashAccount = false;
                 }
             }
+
+            if ((fieldObject.startYear && !fieldObject.endYear) || (!fieldObject.startYear && fieldObject.endYear)) {
+                alert("Sorry, if speicifying a time range please include both start and ending years.");
+                blnUpdateError = true;
+                return;
+            }
+        
         }
     });
    
-    localStorage.setItem('fieldArray', JSON.stringify(gFieldArray));
+    if (!blnUpdateError) {
+        localStorage.setItem('fieldArray', JSON.stringify(gFieldArray));
 
-    //And start again
-    onDOMContentLoaded();
+        //And start again
+        onDOMContentLoaded();
+    }
+
+   
 }
 
 
@@ -897,10 +909,10 @@ function deleteField() {
         });
         localStorage.setItem('fieldArray', JSON.stringify(tempArray));
 
-        //And start again
-        onDOMContentLoaded();
     }
 
+    //And start again
+    onDOMContentLoaded();
 }
 
 /****************
@@ -1750,6 +1762,9 @@ class RetirementField {
         if (dataValue) {
             this.fieldValue = trimNumber(dataValue); 
         }
+        else {
+            this.fieldValue = "0";
+        }
 
         //console.log("Retirement Calculator Got Value " + this.fieldName + " = " + this.fieldValue);
 
@@ -1829,7 +1844,7 @@ class RetirementField {
             }
 
             //For investments, they will always grow.
-            if (((this.fieldType == "money" && this.moneyType == "investment-savings") || this.fieldType == "asset") ) {
+            if (((this.fieldType == "money" && this.moneyType == "investment-savings") || (this.fieldType == "asset" && blnHandleMoney)) ) {
                 this.yearStartAmount = Number(this.fieldValue);
                 this.yearInvestmentReturnAmount = Number(this.fieldNetChange);
                 this.yearEndAmount = Number(this.fieldValue) + Number(this.fieldNetChange);
@@ -1845,13 +1860,8 @@ class RetirementField {
             var clone = JSON.parse(JSON.stringify(this));
 
         }
-
     }
-
-
 }
-
-
 
 /*
 
