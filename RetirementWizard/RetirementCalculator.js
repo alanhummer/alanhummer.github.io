@@ -205,6 +205,7 @@ function doCalc(inputSaveOnly) {
     var blnBogus = false;
     var startAmount = 0;
     var assetStartAmount = 0;
+    var assetReturnAmount = 0;
     var investmentReturnAmount = 0;
     var assetReturnAmount = 0;
     var incomeAmount = 0;
@@ -303,6 +304,7 @@ function doCalc(inputSaveOnly) {
 
         startAmount = 0;
         assetStartAmount = 0;
+        assetReturnAmount = 0;
         incomeAmount = 0;
         investmentReturnAmount = 0;
         assetReturnAmount = 0;
@@ -345,6 +347,10 @@ function doCalc(inputSaveOnly) {
                     investmentReturnAmount = investmentReturnAmount + fieldObject.yearInvestmentReturnAmount;
                     //endAmount = endAmount + fieldObject.yearEndAmount;
                     changeAmount = changeAmount + fieldObject.yearInvestmentReturnAmount;
+
+                    //And our asset stuff
+                    assetStartAmount = assetStartAmount + fieldObject.yearStartAmount;   
+                    assetReturnAmount = assetReturnAmount + fieldObject.yearInvestmentReturnAmount;
                 }
             }
 
@@ -523,15 +529,19 @@ function doCalc(inputSaveOnly) {
         var clonedArray = structuredClone(gFieldArray)
         gYearDetailsArray.push(clonedArray);
 
+        //Calculate % of this withdraw
+        var returnPercentage = calculatePercentage((investmentReturnAmount - assetReturnAmount), (startAmount - assetStartAmount));
+        var expensePercentage = calculatePercentage(expenseAmount, (startAmount - assetStartAmount));
+
         var clickCode = "onclick='javascript:showYearDetail(" + i + ")'";
-        resultReport = resultReport + "<tr " + clickCode + "><td align='center' width='10%'>" + i + "</td><td width='20%' align='right'>" + currency(startAmount) + "&nbsp;</td><td width='20%' align='right'>" + currency(investmentReturnAmount) + "</td><td width='15%' align='right'>" + currency(incomeAmount) + "</td>";
+        resultReport = resultReport + "<tr " + clickCode + "><td align='center' width='10%'>" + i + "</td><td width='20%' align='right'>" + currency(startAmount, "", true) + "&nbsp;</td><td width='20%' align='right'>" + currency(investmentReturnAmount, "", true) + "<font color='green'>&nbsp;(" + returnPercentage + "%)</font></td><td width='15%' align='right'>" + currency(incomeAmount, "", true) + "</td>";
         if (expenseAmount > 0) {
-            resultReport = resultReport + "<td width='15%' align='right'>" + currency(-1 * expenseAmount) + "</td>";
+            resultReport = resultReport + "<td width='15%' align='right'>" + currency(-1 * expenseAmount, "", true) + "<font color='green'>&nbsp;(" + expensePercentage + "%)</font></td>";
         } 
         else {
-            resultReport = resultReport + "<td width='15%' align='right'>" + currency(expenseAmount) + "</td>";
+            resultReport = resultReport + "<td width='15%' align='right'>" + currency(expenseAmount, "", true) + "</td>";
         }
-        resultReport = resultReport + "<td width='20%' align='right'>" + currency(startAmount + changeAmount) + "</td></tr>";
+        resultReport = resultReport + "<td width='20%' align='right'>" + currency(startAmount + changeAmount, "", true) + "</td></tr>";
     };
 
     endAmount = startAmount + changeAmount; //This if where finally landed
@@ -605,6 +615,33 @@ function doCalc(inputSaveOnly) {
     showPageView("output");
 
 }
+
+/****************
+calculatePercentage
+****************/
+function calculatePercentage(inputNumerator, inputDenominator) {
+
+    var myResult = 0;
+    var myNumerator = inputNumerator;
+    var myDenominator = inputDenominator;
+
+    if (!isNaN(myNumerator) && !isNaN(myDenominator)) {
+        myNumerator = myNumerator * 100;
+        myResult = roundNumber(myNumerator / myDenominator, 1);
+        myResult = myResult.toFixed(1);
+    }
+
+    return myResult;
+}
+
+/****************
+roundNumber
+****************/
+function roundNumber(value, precision) {
+    var multiplier = Math.pow(10, precision || 0);
+    return Math.round(value * multiplier) / multiplier;
+}
+
 
 /****************
 addScenario
@@ -1482,11 +1519,12 @@ isNumber
 function isNumber(inputNumber) {
 
     var myResponse = true;
-    var validChars = "0123456789$%,."
+    var validChars = "0123456789$%,.-"
 
     if (inputNumber) {
         for (var i = 0; i < inputNumber.length; i++) {
             if (!validChars.includes(inputNumber.charAt(i))) {
+                console.log("INVALID " + inputNumber + " AT " + i + " = " + inputNumber.charAt(i));
                 myResponse = false;
             }
         }
@@ -1505,18 +1543,23 @@ trimNumber
 function trimNumber(inputNumber) {
 
     var myResponse = "";
-    var validChars = "0123456789."
+    var validChars = "0123456789.-"
 
     if (inputNumber) {
-        if (isNumber(inputNumber)) {
-            for (var i = 0; i < inputNumber.length; i++) {
-                if (validChars.includes(inputNumber.charAt(i))) {
-                    myResponse = myResponse + inputNumber.charAt(i);
+        if (!isNaN(inputNumber)) {
+            myResponse = inputNumber.toString();
+        }
+        else {
+            if (isNumber(inputNumber)) {
+                for (var i = 0; i < inputNumber.length; i++) {
+                    if (validChars.includes(inputNumber.charAt(i))) {
+                        myResponse = myResponse + inputNumber.charAt(i);
+                    }
                 }
             }
         }
     }
-
+    
     return myResponse;
 
 }
@@ -1524,7 +1567,11 @@ function trimNumber(inputNumber) {
 /****************
 currency
 ****************/
-function currency(inputNumber, inputType="") {
+function currency(inputNumber, inputType="", superRound=false) {
+ 
+    var blnLastComma = false;
+    var thousandthsNumber = "";
+    var nonThousandthsNumber = "";
 
     // Create our number formatter.
     if (!formatter) {
@@ -1541,29 +1588,70 @@ function currency(inputNumber, inputType="") {
         });
     }
 
+    var myResponse = formatter.format(inputNumber);
+    var tempNumber = trimNumber(inputNumber);
+
+    if (superRound) {
+
+        if (tempNumber) {
+            if (isNumber(tempNumber)) {
+
+                if (Math.abs(tempNumber) > 9999) {
+ 
+                    for (var i = 0; i < myResponse.length; i++) {
+                        if (blnLastComma) {
+                            thousandthsNumber = thousandthsNumber +  myResponse.charAt(i);
+                        }
+                        if (myResponse.charAt(i) == "," && i == myResponse.length - 4) { 
+                            //We have our last ,
+                              blnLastComma = true;
+                              thousandthsNumber = "";
+                        }
+                        else {
+                            if (!blnLastComma) {
+                                nonThousandthsNumber = nonThousandthsNumber +  myResponse.charAt(i);
+                            }
+                        }
+                    }
+                    if (blnLastComma) {
+                        //We have thousands seperator, so make number and translate back to currency
+                        var tempNumber = trimNumber(nonThousandthsNumber);
+                        
+                        if (thousandthsNumber > 499) {
+                            //Add 1 to thousands number
+                            tempNumber = Number(tempNumber) + 1;
+                        }
+        
+                        //Back to currencty and appaend the K
+                        tempNumber = currency(tempNumber) + "K";
+        
+                        myResponse = tempNumber;
+                   }
+                }
+            }
+        }
+    }
+ 
     if (inputType == "expense") {
         if (inputNumber > 0) {
-            return "<font color='red'>-" + formatter.format(inputNumber) + "</font>";
+            myResponse = "<font color='red'>-" + myResponse + "</font>";
         }
         else {
-            if (inputNumber == 0) {
-                return formatter.format(inputNumber);
-            }
-            else {
-                return "<font color='red'>" + formatter.format(inputNumber) + "</font>";
+            if (inputNumber != 0) {
+                return "<font color='red'>" + myResponse + "</font>";
             }
         } 
     }
     else {
         if (inputNumber < 0) {
-            return "<font color='red'>" + formatter.format(inputNumber) + "</font>";
+            return "<font color='red'>" + myResponse + "</font>";
         }
-        else {
-            return formatter.format(inputNumber);
-        }      
     }
 
+    return myResponse;
+
 }
+
 
 /****************
 validateField
