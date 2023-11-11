@@ -80,6 +80,8 @@ function onDOMContentLoaded() {
         //Add our feilds - Setup the time horizon
         gFieldArray.push(new RetirementField("timeBreak", "", "---TIME HORIZON---", "break"));
         gFieldArray.push(new RetirementField("yearBorn", "1969", "Born Year", "year"));
+        gFieldArray.push(new RetirementField("yearMortgageStart", "1999", "Mortgage Start", "year"));
+        gFieldArray.push(new RetirementField("yearMortgageEnd", "1999", "Mortgage End", "year"));
         gFieldArray.push(new RetirementField("yearRetire", "2025", "Retire Year", "year"));
         gFieldArray.push(new RetirementField("yearIRA", "2031", "IRA Withdraw Year", "year"));
         gFieldArray.push(new RetirementField("yearSocSec", "2034", "Social Security Year", "year"));
@@ -95,12 +97,14 @@ function onDOMContentLoaded() {
         gFieldArray.push(new RetirementField("rateMoneyMarketAccountReturn", "0", "Money Mkt Rate %", "rate")); 
         gFieldArray.push(new RetirementField("rateInvestmentAccountReturn", "0", "Investment Rate %", "rate")); 
         gFieldArray.push(new RetirementField("rateHomeAppreciation", "0", "Home Apprec %", "rate")); 
+        gFieldArray.push(new RetirementField("rateMortgage", "0", "Mortage Rate %", "rate")); 
         gFieldArray.push(new RetirementField("addRate", "rate", "ADD FIELD", "add-field"));
 
         //Our expenses
         gFieldArray.push(new RetirementField("expenseBreak", "", "---EXPENSES---", "break"));
-        gFieldArray.push(new RetirementField("expenseLiving", "50000", "Living Expense/Yr", "money", "expense", "yearly", "rateInflation", "yearRetire", "yearDie", true, "", "cash"));
+        gFieldArray.push(new RetirementField("expenseLiving", "50000", "Living Expense/Yr", "money", "expense", "yearly", "rateInflation", "", "", true, "", "cash"));
         gFieldArray.push(new RetirementField("expenseMedicalPreMedicare", "1500", "Pre-Medicare/Mth", "money", "expense", "monthly", "rateInflation", "yearRetire", "yearMedicare", true, "", "cash"));
+        gFieldArray.push(new RetirementField("expenseMortagePayment", "1500", "Mortgage/Mth", "money", "expense", "monthly", "rateMortgage", "", "", true, "", "cash"));
         gFieldArray.push(new RetirementField("addExpense", "money", "ADD FIELD", "add-field"));
 
         /* If wanted to do real expense break down, do this
@@ -126,6 +130,7 @@ function onDOMContentLoaded() {
 
         //Income
         gFieldArray.push(new RetirementField("incomeBreak", "", "---INCOME---", "break"));
+        gFieldArray.push(new RetirementField("incomeSalary", "100000", "Salary/Yr", "money", "income", "yearly", "rateInflation", "", "yearRetire", false, "cash", ""));
         gFieldArray.push(new RetirementField("incomeSocialSecurity", "500", "Social Security/Mth", "money", "income", "monthly", "rateInflation", "yearSocSec", "yearDie", false, "cash", ""));
         gFieldArray.push(new RetirementField("incomePension", "100", "Pension/Mth", "money", "income", "monthly", "rateInflation", "yearRetire", "yearDie", true, "cash", ""));
         gFieldArray.push(new RetirementField("incomeRental", "0", "Rental Income/Mth", "money", "income", "monthly", "rateInflation", "", "yearDie", true, "cash", ""));
@@ -156,12 +161,17 @@ function onDOMContentLoaded() {
         gFieldArray.push(new RetirementField("educationCoverdell", "1000", "Coverdell", "money", "investment-savings", "yearly", "rateInvestmentAccountReturn"));
         gFieldArray.push(new RetirementField("education529", "1000", "529 Plan", "money", "investment-savings", "yearly", "rateInvestmentAccountReturn"));        
         gFieldArray.push(new RetirementField("addEducation", "money", "ADD FIELD", "add-field"));
-        gFieldArray.push(new RetirementField("---------", "", "", "break"));
 
         //Property Assets
         gFieldArray.push(new RetirementField("propertyBreak", "", "--PROPERTY ASSETS--", "break"));
         gFieldArray.push(new RetirementField("propertyHouse", "300000", "House", "asset", "", "", "rateHomeAppreciation"));
         gFieldArray.push(new RetirementField("addAsset", "asset", "ADD FIELD", "add-field"));
+
+        //Debt
+        gFieldArray.push(new RetirementField("debtBreak", "", "--DEBT--", "break"));
+        //Debit is principle, start year, end year, rate --> Calculate payment amount
+        gFieldArray.push(new RetirementField("debtMortgage", "200000", "Mortgage", "debt", "", "", "rateMortgage", "yearMortgageStart", "yearMortgageEnd"));
+        gFieldArray.push(new RetirementField("addDebt", "debt", "ADD FIELD", "add-field"));
         gFieldArray.push(new RetirementField("---------", "", "", "break"));
         
         //And since it is all fresh, pre-load scenario name
@@ -195,6 +205,13 @@ function onDOMContentLoaded() {
     else {
         showPageView("inputs");   
     }
+
+    //Test out our mortgage calculator - THIS WOKS, for debt we'll show -rem bal as part of net worth
+    //var paymentCount = (currentDate.getFullYear() - 2000) * 12;
+    //var remBal = 0;
+    //var testMortagePayment = calculateMortagePayment(100000, 6, 2000, 2030, paymentCount);
+    //console.log("MORTGAGE PAYMENT: " + testMortagePayment.paymentAmount + " REM BAL: " + testMortagePayment.remainingBalance);
+
 }
 
 /****************
@@ -207,8 +224,9 @@ function doCalc(inputSaveOnly) {
     var startAmount = 0;
     var assetStartAmount = 0;
     var assetReturnAmount = 0;
+    var debtStartAmount = 0;
+    var debtReturnAmount = 0;
     var investmentReturnAmount = 0;
-    var assetReturnAmount = 0;
     var incomeAmount = 0;
     var expenseAmount = 0;
     var changeAmount = 0;
@@ -306,9 +324,10 @@ function doCalc(inputSaveOnly) {
         startAmount = 0;
         assetStartAmount = 0;
         assetReturnAmount = 0;
+        debtStartAmount = 0;
+        debtReturnAmount = 0;
         incomeAmount = 0;
         investmentReturnAmount = 0;
-        assetReturnAmount = 0;
         expenseAmount = 0;
         expenseToWithdraw = 0;
         changeAmount = 0;
@@ -343,7 +362,7 @@ function doCalc(inputSaveOnly) {
                 }
             }
             else {
-                if (fieldObject.fieldType == "asset") {
+                if (fieldObject.fieldType == "asset" || fieldObject.fieldType == "debt") {
                     startAmount = startAmount + fieldObject.yearStartAmount;
                     investmentReturnAmount = investmentReturnAmount + fieldObject.yearInvestmentReturnAmount;
                     //endAmount = endAmount + fieldObject.yearEndAmount;
@@ -359,10 +378,10 @@ function doCalc(inputSaveOnly) {
                     expenseAmount = expenseAmount + fieldObject.yearExpense;
                     changeAmount = changeAmount - fieldObject.yearExpense;
 
-                    //Show our assets
-                    //if (fieldObject.fieldName == "assetCondo" && i == 2035) {
-                    //    console.log("AJH YEAR: " + i + " ASSET: " + fieldObject.fieldName + " START: " + fieldObject.yearStartAmount + " RETURN: " + fieldObject.yearInvestmentReturnAmount + " INC: " + fieldObject.yearIncome + " EXP: " + fieldObject.yearExpense + " NET CHANGE: " + fieldObject.netChange + " END: " + fieldObject.yearEndAmount );
-                    //}
+                }
+                else {
+                    if (fieldObject.fieldType == "debt") {
+                    }
                 }
             }
 
@@ -537,19 +556,6 @@ function doCalc(inputSaveOnly) {
             }
         }
 
-        lFieldArray.forEach((fieldObject) => {
-            //if (fieldObject.fieldType == "asset") {
-                //console.log("WE HANDLED THIS EXPENSE: " + fieldObject.yearExpense + " FOR YEAR: " + i);
-            //}  
-
-            //Show our assets
-            //if (fieldObject.fieldName == "assetCondo" && i == 2035) {
-            //    console.log("AJH LATR: " + i + " ASSET: " + fieldObject.fieldName + " START: " + fieldObject.yearStartAmount + " RETURN: " + fieldObject.yearInvestmentReturnAmount + " INC: " + fieldObject.yearIncome + " EXP: " + fieldObject.yearExpense + " NET CHANGE: " + fieldObject.netChange +  " END: " + fieldObject.yearEndAmount );
-            //}
-
-        });
-
-
         //OK, these should be 0, but use em anyway
         totalIncomeToDeposit = totalIncomeToDeposit + incomeToDeposit;
         totalExpenseToWithdraw = totalExpenseToWithdraw + expenseToWithdraw;
@@ -559,11 +565,8 @@ function doCalc(inputSaveOnly) {
         gYearDetailsArray.push(clonedArray);
 
         //Calculate % of this withdraw
-        var returnPercentage = calculatePercentage((investmentReturnAmount - assetReturnAmount), (startAmount - assetStartAmount));
-        var expensePercentage = calculatePercentage(expenseAmount, (startAmount - assetStartAmount));
-
-
-
+        var returnPercentage = calculatePercentage((investmentReturnAmount - assetReturnAmount - debtReturnAmount), (startAmount - assetStartAmount - debtStartAmount));
+        var expensePercentage = calculatePercentage(expenseAmount, (startAmount - assetStartAmount - debtStartAmount));
 
         var clickCode = "onclick='javascript:showYearDetail(" + i + ")'";
         resultReport = resultReport + "<tr " + clickCode + "><td align='center' width='10%'>" + i + "</td><td width='20%' align='right'>" + currency(startAmount, "", true) + "&nbsp;</td><td width='20%' align='right'>" + currency(investmentReturnAmount, "", true) + "<font color='green'>&nbsp;(" + returnPercentage + "%)</font></td><td width='15%' align='right'>" + currency(incomeAmount, "", true) + "</td>";
@@ -871,16 +874,33 @@ function updateField() {
                     fieldObject.defaultCashAccount = false;
                 }
                 else {
+                    //Do Debt
+                    if (fieldObject.fieldType == "debt")  {
 
-                    fieldObject.moneyType = "";
-                    fieldObject.timePeriod = "";
-                    fieldObject.rateField = "";
-                    fieldObject.startYear = "";
-                    fieldObject.endYear = "";
-                    fieldObject.depositAccount = "";
-                    fieldObject.withdrawAccount = "";
-                    fieldObject.accrueBeforeStart = true;
-                    fieldObject.defaultCashAccount = false;
+                        fieldObject.moneyType = "";
+                        fieldObject.timePeriod = "";
+                        fieldObject.rateField = document.getElementById("debtRateField").value;
+                        fieldObject.startYear = document.getElementById("debtStartYear").value;
+                        fieldObject.endYear = document.getElementById("debtEndYear").value;
+                        fieldObject.depositAccount = "";
+                        fieldObject.withdrawAccount = "";
+                        fieldObject.accrueBeforeStart = true;
+                        fieldObject.defaultCashAccount = false;
+
+                    }
+                    else {
+
+                        fieldObject.moneyType = "";
+                        fieldObject.timePeriod = "";
+                        fieldObject.rateField = "";
+                        fieldObject.startYear = "";
+                        fieldObject.endYear = "";
+                        fieldObject.depositAccount = "";
+                        fieldObject.withdrawAccount = "";
+                        fieldObject.accrueBeforeStart = true;
+                        fieldObject.defaultCashAccount = false;
+                        
+                    }
                 }
             }
 
@@ -1036,6 +1056,11 @@ function addField(inputFieldtype, inputSequenceNumber) {
             addPrefix = "asset";
             addSuffix = "Field";
             break;
+        case "addDebt":
+            addType = "debt";
+            addPrefix = "debt";
+            addSuffix = "Field";
+            break;
         default:          
     }
     var newFieldName = prompt("Please enter name of this " + addType + " field", addPrefix + addSuffix);
@@ -1066,6 +1091,9 @@ function addField(inputFieldtype, inputSequenceNumber) {
                     break;
                 case "addAsset":
                     newFieldObject = new RetirementField(newFieldName, "0", "", "asset", "", "yearly", "");
+                    break;
+                case "addDebt":
+                    newFieldObject = new RetirementField(newFieldName, "0", "", "debt", "", "yearly", "");
                     break;
                 default:          
             }
@@ -1122,7 +1150,7 @@ function showFieldDetails(inputFieldName) {
         fieldDetailOutput = fieldDetailOutput + "<table class='output-report' border='1px' width='100%' cellpadding='10' cellspacing='10'>";
         fieldDetailOutput = fieldDetailOutput + "<tr><td>Name:</td><td>" + displayField.fieldName + "</td></tr>";
         fieldDetailOutput = fieldDetailOutput + "<tr><td>Description:</td><td><input type='text' id='fieldDescription' value='" + displayField.fieldDescription + "'></td></tr>";
-        fieldDetailOutput = fieldDetailOutput + "<tr><td>Field Type:</td><td>" + showDropDown("fieldType", "money|year|rate|asset", displayField.fieldType) + "</td></tr>";
+        fieldDetailOutput = fieldDetailOutput + "<tr><td>Field Type:</td><td>" + showDropDown("fieldType", "money|year|rate|asset|debt", displayField.fieldType) + "</td></tr>";
         fieldDetailOutput = fieldDetailOutput + "<tr><td>Value:</td><td>" + displayField.fieldValue + "</td></tr>";
         fieldDetailOutput = fieldDetailOutput + "</table>";
         fieldDetailOutput = fieldDetailOutput + "<div id='" + displayField.fieldName + "-moneyfields'>";
@@ -1145,6 +1173,14 @@ function showFieldDetails(inputFieldName) {
         fieldDetailOutput = fieldDetailOutput + "<tr><td>End Year:</td><td>" + showDropDown("assetEndYear", "yearFields", displayField.endYear) + "</td></tr>";
          fieldDetailOutput = fieldDetailOutput + "</table>"; 
         fieldDetailOutput = fieldDetailOutput + "</div>";     
+        fieldDetailOutput = fieldDetailOutput + "<div id='" + displayField.fieldName + "-debtfields'>";
+        fieldDetailOutput = fieldDetailOutput + "<table class='output-report' border='1px' width='100%' cellpadding='10' cellspacing='10'>";
+        fieldDetailOutput = fieldDetailOutput + "<tr><td>Rate Field:</td><td>" + showDropDown("debtRateField", "rateFields", displayField.rateField) + "</td></tr>";
+        fieldDetailOutput = fieldDetailOutput + "<tr><td>Start Year:</td><td>" + showDropDown("debtStartYear", "yearFields", displayField.startYear) + "</td></tr>";
+        fieldDetailOutput = fieldDetailOutput + "<tr><td>End Year:</td><td>" + showDropDown("debtEndYear", "yearFields", displayField.endYear) + "</td></tr>";
+         fieldDetailOutput = fieldDetailOutput + "</table>"; 
+        fieldDetailOutput = fieldDetailOutput + "</div>";    
+
 
         document.getElementById("fieldDetailsDetail").innerHTML = "<center>" + fieldDetailOutput + "</center>";
         showPageView("fieldDetails");
@@ -1165,19 +1201,25 @@ function toggleFieldDetailDisplay(inputValue) {
 
     var myMoneyDiv = document.getElementById("fieldName").value + "-moneyfields";
     var myAssetDiv = document.getElementById("fieldName").value + "-assetfields";
+    var myDebtDiv = document.getElementById("fieldName").value + "-debtfields";
 
     if (inputValue == "money") {
         document.getElementById(myMoneyDiv).style.display = "block";
         document.getElementById(myAssetDiv).style.display = "none";
+        document.getElementById(myDebtDiv).style.display = "none";
     }
     else {
         if (inputValue == "asset") {
             document.getElementById(myMoneyDiv).style.display = "none";
             document.getElementById(myAssetDiv).style.display = "block";
+            document.getElementById(myDebtDiv).style.display = "none";
         }
         else {
-            document.getElementById(myMoneyDiv).style.display = "none";
-            document.getElementById(myAssetDiv).style.display = "none";
+            if (inputValue == "debt") { 
+                document.getElementById(myMoneyDiv).style.display = "none";
+                document.getElementById(myAssetDiv).style.display = "none";
+                document.getElementById(myDebtDiv).style.display = "block";
+            }
         }
     }
     
@@ -1226,6 +1268,14 @@ function showDropDown(inputFieldName, inputFieldOptions, inputFieldValue) {
                 }
             }
             if (fieldObject.fieldType == "asset" && inputFieldOptions == "assetFields") {
+                if (fieldObject.fieldName == inputFieldValue) {
+                    options = options + "<option value='" + fieldObject.fieldName + "' selected>" + fieldObject.fieldName + "</option>";
+                }
+                else {
+                    options = options + "<option value='" + fieldObject.fieldName + "'>" + fieldObject.fieldName + "</option>";
+                }
+            }
+            if (fieldObject.fieldType == "debt" && inputFieldOptions == "debtFields") {
                 if (fieldObject.fieldName == inputFieldValue) {
                     options = options + "<option value='" + fieldObject.fieldName + "' selected>" + fieldObject.fieldName + "</option>";
                 }
@@ -1451,11 +1501,14 @@ function showYearDetail(inputYear) {
         arrayObjects.forEach((fieldObject) => {
 
             if (fieldObject.yearProcessed == inputYear) {
-                if (fieldObject.fieldType == "money" || fieldObject.fieldType == "asset") {
+                if (fieldObject.fieldType == "money" || fieldObject.fieldType == "asset" || fieldObject.fieldType == "debt") {
                 
                     switch(fieldObject.fieldType) {
                         case "asset":      
                             displayClass = "nowrap-purple";
+                            break;
+                        case "debt":      
+                            displayClass = "nowrap-black";
                             break;
                         case "money":
                             switch(fieldObject.moneyType) {
@@ -1477,12 +1530,15 @@ function showYearDetail(inputYear) {
                             displayClass = "nowrap";
                             break;
                     }
+
+                    //Debt yearStartAmount = last years rem bal, return is dif to thisyears, 
+                    //Debt yearEndAmount = this years rem bal
                     totalStartAmount = totalStartAmount + fieldObject.yearStartAmount;
                     totalInvestmentReturnAmount = totalInvestmentReturnAmount + fieldObject.yearInvestmentReturnAmount;
                     totalIncome = totalIncome + fieldObject.yearIncome;
                     totalExpense = totalExpense + fieldObject.yearExpense;
 
-                    if (fieldObject.fieldType == "asset") {
+                    if (fieldObject.fieldType == "asset" || fieldObject.fieldType == "debt") {
                         displayReturn = currency(fieldObject.yearInvestmentReturnAmount);
                         if (fieldObject.yearExpense > 0) {
                             displayExpense = currency(fieldObject.yearExpense, "expense");    
@@ -1505,7 +1561,7 @@ function showYearDetail(inputYear) {
                             //We put money in
                             displayExpense = "(DEP)";
                         }
-                        displayExpense = "(" + currency((fieldObject.yearStartAmount + fieldObject.yearInvestmentReturnAmount - fieldObject.yearEndAmount)) + ")";
+                        displayExpense = "(" + currency((fieldObject.yearStartAmount + fieldObject.yearInvestmentReturnAmount - fieldObject.yearEndAmount), fieldObject.fieldType) + ")";
                     }
                     else {
                         switch(fieldObject.moneyType) {
@@ -1530,18 +1586,14 @@ function showYearDetail(inputYear) {
                                 if (fieldObject.yearStartAmount + fieldObject.yearInvestmentReturnAmount < fieldObject.yearEndAmount) {
                                     //We put money in
                                     displayExpense = "(DEP)";
-                                } //AJH
+                                }
                                 displayExpense = "(" + currency((fieldObject.yearStartAmount + fieldObject.yearInvestmentReturnAmount - fieldObject.yearEndAmount)) + ")";      
                                 break;
                         }
                     }
 
-                    //Show our assets
-                    //if (fieldObject.fieldName == "assetCondo" && inputYear == 2035) {
-                    //    console.log("AJH DETL: " + inputYear + " ASSET: " + fieldObject.fieldName + " START: " + fieldObject.yearStartAmount + " RETURN: " + fieldObject.yearInvestmentReturnAmount + " INC: " + fieldObject.yearIncome + " EXP: " + fieldObject.yearExpense + " NET CHANGE: " + fieldObject.netChange + " END: " + fieldObject.yearEndAmount );
-                    //}
                     totalEndAmount = totalEndAmount + fieldObject.yearEndAmount;
-                    resultReport = resultReport + "<tr class='" + displayClass + "'><td width='30%'>" + fieldObject.fieldDescription + "</div></td><td width='14%'>" + currency(fieldObject.yearStartAmount) + "</td><td width='14%'>" + displayReturn + "</td><td width='14%'>" + displayIncome + "</td><td width='14%'>" + displayExpense + "</td><td width='14%'>" + currency(fieldObject.yearEndAmount) + "</td></tr>";  
+                    resultReport = resultReport + "<tr class='" + displayClass + "'><td width='30%'>" + fieldObject.fieldDescription + "</div></td><td width='14%'>" + currency(fieldObject.yearStartAmount, fieldObject.fieldType) + "</td><td width='14%'>" + displayReturn + "</td><td width='14%'>" + displayIncome + "</td><td width='14%'>" + displayExpense + "</td><td width='14%'>" + currency(fieldObject.yearEndAmount, fieldObject.fieldType) + "</td></tr>";  
                 }           
             }
         });        
@@ -1566,7 +1618,7 @@ function getValue(inputArray, inputFieldName) {
     //Build our display
     inputArray.forEach((fieldObject) => {
         if (fieldObject.fieldName == inputFieldName) {
-            console.log("GETTING VALUE " + fieldObject.fieldName);
+            //console.log("GETTING VALUE " + fieldObject.fieldName);
             if (!isNumber(fieldObject.fieldValue)) {
                 myValue = Number(fieldObject.fieldValue);
             }
@@ -1699,13 +1751,13 @@ function currency(inputNumber, inputType="", superRound=false) {
         }
     }
  
-    if (inputType == "expense") {
+    if (inputType == "expense" || inputType == "debt") {
         if (inputNumber > 0) {
             myResponse = "<font color='red'>-" + myResponse + "</font>";
         }
         else {
             if (inputNumber != 0) {
-                return "<font color='red'>" + myResponse + "</font>";
+                return "<font color='black'>" + myResponse + "</font>";
             }
         } 
     }
@@ -1768,6 +1820,7 @@ function validateField(inputFieldType, inputFieldName, inputFieldValue) {
             break;
         case "money":
         case "asset":
+        case "debt":
             if (isNumber(inputFieldValue)) {
                 if (Number(cleanedValue) >= 0 && Number(cleanedValue) <= 999999999) {
                     //Its valid
@@ -1785,6 +1838,28 @@ function validateField(inputFieldType, inputFieldName, inputFieldValue) {
         default:
           // else, do nothing
     }
+
+}
+
+/****************
+calculateMortagePayment
+****************/
+function calculateMortagePayment(inputPrinciple, inputInterestRate, inputStartYear, inputEndYear, paymentCount) {
+
+    var monthlyInterestRate = (inputInterestRate / 100) / 12;
+    var numberOfPayments = (inputEndYear - inputStartYear) * 12;
+    var paymentAmount = inputPrinciple * (monthlyInterestRate * ((1 + monthlyInterestRate) ** numberOfPayments)) / (((1 + monthlyInterestRate) ** numberOfPayments) - 1);
+    var monthlyRate = (inputInterestRate / 12) / 100;
+    var tempValue1 = (1+monthlyRate) ** paymentCount;
+    var calc1 = inputPrinciple*(tempValue1);
+    var calc2 = paymentAmount*((tempValue1 - 1)/monthlyRate);
+    
+    remBal = calc1 - calc2;
+
+    //console.log("PRINCIPLE:" + inputPrinciple + " RATE:" + monthlyInterestRate + " START:" + inputStartYear + " END:" + inputEndYear + " NUMBER OF PAYMENTS TOTAL:" + numberOfPayments);
+    //console.log("PAYMENT COUNT:" + paymentCount);
+    //console.log("PAYMENT AMOUNT: " + paymentAmount + " REM BAL: " + remBal);
+    return {"paymentAmount": paymentAmount, "remainingBalance": remBal};
 
 }
 
@@ -1849,7 +1924,7 @@ class RetirementField {
             myResponse = myResponse.replace(/_FIELDNAME_/gi, this.fieldName);
             myResponse = myResponse.replace(/_FIELDNAMEPARM_/gi, '"' + this.fieldName + '"');
 
-            if (this.fieldType == "money" || this.fieldType == "asset") {
+            if (this.fieldType == "money" || this.fieldType == "asset" || this.fieldType == "debt") {
                 myResponse = myResponse.replace(/_FIELDVALUE_/gi, currency(this.fieldValue));
             }
             else {
@@ -1946,7 +2021,7 @@ class RetirementField {
         this.yearEndAmount = 0;
  
         //Increase by rate of growth 
-        if ((this.fieldType == "money" || this.fieldType == "asset") && Number(this.fieldValue) != 0) {
+        if ((this.fieldType == "money" || this.fieldType == "asset" || this.fieldType == "debt") && Number(this.fieldValue) != 0) {
 
             //See if this money is in play for this year range
             if (this.startYear && this.endYear) {
@@ -2010,7 +2085,7 @@ class RetirementField {
                 //Fix goofy JS -0 problem
                 this.yearInvestmentReturnAmount = this.yearInvestmentReturnAmount + +0;
 
-                if (this.fieldType == "asset") {
+                if (this.fieldType == "asset" || this.fieldType == "debt") {
                     this.yearEndAmount = Number(this.yearEndAmount) - Number(this.yearExpense);
                 }
             }
@@ -2049,9 +2124,34 @@ class RetirementField {
                 }                
             }
 
-            //if (this.fieldName == "assetCondo" && inputYear == 2035) {
-            //    console.log("AJH CYCL: " + inputYear + " ASSET: " + this.fieldName + " START: " + this.yearStartAmount + " RETURN: " + this.yearInvestmentReturnAmount + " INC: " + this.yearIncome + " EXP: " + this.yearExpense + " NET CHANGE: " + this.netChange + " END: " + this.yearEndAmount );
-            //}
+            if (this.fieldType == "debt" && blnHandleMoney) {
+
+                //If debt, then remaining balance is what we manage
+                if (inputYear == getValue(gFieldArray, this.startYear)) {
+                    //When start, remaing balance is full amount
+                    this.yearStartAmount = 0;
+                    this.yearIncome = 0;
+                    this.yearExpense = 0;
+                    this.yearEndAmount = Number(this.fieldValue);
+                }
+                else {
+                    //Debt - last years balance AJH AJH AJH
+                    //Almost there, year detail line is a little off for the mortgaeg
+                    var paymentCount = (inputYear - 1 - getValue(gFieldArray, this.startYear)) * 12;
+                    var testMortagePayment = calculateMortagePayment(this.fieldValue, getValue(gFieldArray, this.rateField), getValue(gFieldArray, this.startYear), getValue(gFieldArray, this.endYear), paymentCount);
+                    this.yearStartAmount = testMortagePayment.remainingBalance * -1;
+                    
+                    //Now this years balance
+                    paymentCount = (inputYear - getValue(gFieldArray, this.startYear)) * 12;
+                    testMortagePayment = calculateMortagePayment(this.fieldValue, getValue(gFieldArray, this.rateField), getValue(gFieldArray, this.startYear), getValue(gFieldArray, this.endYear), paymentCount);
+                    this.yearEndAmount = testMortagePayment.remainingBalance * -1;
+                    this.yearIncome = 0;
+                    this.yearExpense = 0; 
+                }
+                this.yearInvestmentReturnAmount = this.yearEndAmount - this.yearStartAmount;
+                this.fieldNetChange = 0;
+            }
+
 
             //End of yaer, cycled up by net change amount
             this.fieldValue = Number(this.fieldValue) + Number(this.fieldNetChange);
