@@ -1030,6 +1030,11 @@ function addField(inputFieldtype, inputSequenceNumber) {
             addPrefix = "year";
             addSuffix = "Field";
              break;
+        case "addRate":
+            addType = "interest rate / yr";
+            addPrefix = "rate";
+            addSuffix = "Field";
+            break;
         case "addExpense":
             addType = "expense";
             addPrefix = "expense";
@@ -1079,6 +1084,9 @@ function addField(inputFieldtype, inputSequenceNumber) {
             switch(inputFieldtype) {
                 case "addTime":
                     newFieldObject = new RetirementField(newFieldName, "", "", "year");
+                    break;
+                case "addRate":
+                    newFieldObject = new RetirementField(newFieldName, "0", "", "rate");
                     break;
                 case "addExpense":
                     newFieldObject = new RetirementField(newFieldName, "0", "", "money", "expense", "monthly", "", "", "", true, "", "");
@@ -1181,13 +1189,6 @@ function showFieldDetails(inputFieldName) {
         fieldDetailOutput = fieldDetailOutput + "<tr><td>Start Year:</td><td>" + showDropDown("assetStartYear", "yearFields", displayField.startYear) + "</td></tr>";
         fieldDetailOutput = fieldDetailOutput + "<tr><td>End Year:</td><td>" + showDropDown("assetEndYear", "yearFields", displayField.endYear) + "</td></tr>";
          fieldDetailOutput = fieldDetailOutput + "</table>"; 
-        fieldDetailOutput = fieldDetailOutput + "</div>";     
-        fieldDetailOutput = fieldDetailOutput + "<div id='" + displayField.fieldName + "-debtfields'>";
-        fieldDetailOutput = fieldDetailOutput + "<table class='output-report' border='1px' width='100%' cellpadding='10' cellspacing='10'>";
-        fieldDetailOutput = fieldDetailOutput + "<tr><td>Rate Field:</td><td>" + showDropDown("debtRateField", "rateFields", displayField.rateField) + "</td></tr>";
-        fieldDetailOutput = fieldDetailOutput + "<tr><td>Start Year:</td><td>" + showDropDown("debtStartYear", "yearFields", displayField.startYear) + "</td></tr>";
-        fieldDetailOutput = fieldDetailOutput + "<tr><td>End Year:</td><td>" + showDropDown("debtEndYear", "yearFields", displayField.endYear) + "</td></tr>";
-         fieldDetailOutput = fieldDetailOutput + "</table>"; 
         fieldDetailOutput = fieldDetailOutput + "</div>";    
 
 
@@ -1210,25 +1211,19 @@ function toggleFieldDetailDisplay(inputValue) {
 
     var myMoneyDiv = document.getElementById("fieldName").value + "-moneyfields";
     var myAssetDiv = document.getElementById("fieldName").value + "-assetfields";
-    var myDebtDiv = document.getElementById("fieldName").value + "-debtfields";
 
     if (inputValue == "money") {
         document.getElementById(myMoneyDiv).style.display = "block";
         document.getElementById(myAssetDiv).style.display = "none";
-        document.getElementById(myDebtDiv).style.display = "none";
     }
     else {
-        if (inputValue == "asset") {
+        if (inputValue == "asset" || inputValue == "debt") {
             document.getElementById(myMoneyDiv).style.display = "none";
             document.getElementById(myAssetDiv).style.display = "block";
-            document.getElementById(myDebtDiv).style.display = "none";
         }
         else {
-            if (inputValue == "debt") { 
-                document.getElementById(myMoneyDiv).style.display = "none";
-                document.getElementById(myAssetDiv).style.display = "none";
-                document.getElementById(myDebtDiv).style.display = "block";
-            }
+            document.getElementById(myMoneyDiv).style.display = "none";
+            document.getElementById(myAssetDiv).style.display = "none";            
         }
     }
     
@@ -1616,6 +1611,27 @@ function showYearDetail(inputYear) {
     showPageView("yeardetail");
 }
 
+/****************
+moveField
+****************/
+function moveField(inputSequenceNumber, inputMovement) {
+
+    var myField = gFieldArray[inputSequenceNumber];
+    var mySwapField = gFieldArray[inputSequenceNumber + inputMovement];
+
+    //console.log("SWAP: " + mySwapField.fieldName + " FIELD: " + myField.fieldName + " ENTRY: " + inputSequenceNumber + " MOVEMENT: " + inputMovement);
+ 
+    gFieldArray[inputSequenceNumber] = mySwapField;
+    gFieldArray[inputSequenceNumber + inputMovement] = myField;
+
+    //Store the fields
+    localStorage.setItem('fieldArray', JSON.stringify(gFieldArray));
+
+    //Reset everything
+    onDOMContentLoaded();
+ 
+}
+
 
 /****************
 getValue
@@ -1784,10 +1800,12 @@ function currency(inputNumber, inputType="", superRound=false) {
 /****************
 validateField
 ****************/
-function validateField(inputFieldType, inputFieldName, inputFieldValue) {
+function validateField(inputFieldType, inputFieldName, inputFieldValue, inputSequenceNumber) {
 
     var today = new Date();
     var cleanedValue;
+    var blnValid = false;
+    var enteredField = gFieldArray[inputSequenceNumber];
 
     if (isNumber(inputFieldValue)) {
         cleanedValue  = trimNumber(inputFieldValue);
@@ -1801,6 +1819,7 @@ function validateField(inputFieldType, inputFieldName, inputFieldValue) {
             if (isNumber(inputFieldValue)) {
                 if (Number(cleanedValue) > 1900 && Number(cleanedValue) < (today.getFullYear() + 100)) {
                     //Its valid
+                    blnValid = true;
                 }
                 else {
                     alert("Sorry, " + inputFieldValue + " is not a valid year (1900 to " + (today.getFullYear() + 100) + ")");
@@ -1816,6 +1835,7 @@ function validateField(inputFieldType, inputFieldName, inputFieldValue) {
             if (isNumber(inputFieldValue)) {
                 if (Number(cleanedValue) >= 0 && Number(cleanedValue) <= 100) {
                     //Its valid
+                    blnValid = true;
                 }
                 else {
                     alert("Sorry, " + inputFieldValue + " is not a valid rate (0 to 100)");
@@ -1833,6 +1853,7 @@ function validateField(inputFieldType, inputFieldName, inputFieldValue) {
             if (isNumber(inputFieldValue)) {
                 if (Number(cleanedValue) >= 0 && Number(cleanedValue) <= 999999999) {
                     //Its valid
+                    blnValid = true;
                 }
                 else {
                     alert("Sorry, " + inputFieldValue + " is not a valid amount (0 to 1 billion)");
@@ -1846,6 +1867,13 @@ function validateField(inputFieldType, inputFieldName, inputFieldValue) {
             break;
         default:
           // else, do nothing
+    }
+
+    if (blnValid) {
+        //Store the fields
+        enteredField.fieldValue = inputFieldValue;
+        localStorage.setItem('fieldArray', JSON.stringify(gFieldArray));
+
     }
 
 }
@@ -1919,15 +1947,37 @@ class RetirementField {
     fieldDisplayRow(inputSequenceNumber) {
 
         var myResponse = "";
-        var changeFunction = 'validateField("' + this.fieldType + '", "' + this.fieldName + '", this.value)';
 
         inputSequenceNumber = inputSequenceNumber - 1; //Before the button
 
+        var changeFunction = 'validateField("' + this.fieldType + '", "' + this.fieldName + '", this.value, ' + inputSequenceNumber + ');';
+
         if (this.fieldType != "break" && this.fieldType != "add-field") {
+
+            var priorField = gFieldArray[inputSequenceNumber - 1];
+            var nextField = gFieldArray[inputSequenceNumber + 1];
+
+            var upDownArrows = "";
+            
+            //console.log("FIELD NAME: " + this.fieldName + " INPUT SEQ: " + inputSequenceNumber + " ARRAY SIZE: " + gFieldArray.length);
+            if (priorField.fieldType != "break" && priorField.fieldType != "add-field") {
+                upDownArrows = upDownArrows + "<img src='up-arrow.png' onclick='moveField(" + inputSequenceNumber + ", -1);'>";
+            }
+            else {
+                upDownArrows = upDownArrows + "<img src='no-arrow.png'>";
+
+            }
+            if (nextField.fieldType != "break" && nextField.fieldType != "add-field") {
+                upDownArrows = upDownArrows + "<img src='down-arrow.png' onclick='moveField(" + inputSequenceNumber + ", 1);'>";
+            }
+            else {
+                upDownArrows = upDownArrows + "<img src='no-arrow.png'>";
+
+            }
 
             myResponse = myResponse + "<tr>";
             myResponse = myResponse + "<td width='50%'><p align='right' valign='top'><a onclick='showFieldDetails(_FIELDNAMEPARM_);'>_FIELDDESCRIPTION_:</a>&nbsp;&nbsp;</p></td>";
-            myResponse = myResponse + "<td width='50%'><textarea rows='1' cols='15' id='_FIELDNAME_' onchange='" + changeFunction +  "'>_FIELDVALUE_</textarea></td>";
+            myResponse = myResponse + "<td width='50%'><textarea rows='1' cols='15' id='_FIELDNAME_' onchange='" + changeFunction +  "'>_FIELDVALUE_</textarea>_UPDOWNARROWS_</td>";
             myResponse = myResponse + "</tr>";
     
             myResponse = myResponse.replace(/_FIELDNAME_/gi, this.fieldName);
@@ -1945,6 +1995,7 @@ class RetirementField {
                 }
             }
             myResponse = myResponse.replace(/_FIELDDESCRIPTION_/gi, this.fieldDescription);
+            myResponse = myResponse.replace(/_UPDOWNARROWS_/gi, upDownArrows);
         }
         else {
             if (this.fieldType == "break") {
