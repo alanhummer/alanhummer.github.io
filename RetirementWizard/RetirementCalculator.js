@@ -15,6 +15,15 @@ var gScenario = {scenarioName: "", scenarioNote: ""};
 var gScenarioOptionsHTML = "";
 var formatter;
 var currentDate = new Date();
+var gBlnMoveUp = true;
+var storedMoveUp;
+
+localStorage.getItem("moveUp", storedMoveUp);
+if (storedMoveUp) {
+    if (storedMoveUp == "false") {
+        gBlnMoveUp = false;
+    }
+}
 
 //Initialize our scenarios
 gScenarioArray = JSON.parse(localStorage.getItem('scenarioArray'));
@@ -1901,6 +1910,27 @@ function calculateMortagePayment(inputPrinciple, inputInterestRate, inputStartYe
 }
 
 /****************
+toggleButtons
+****************/
+function toggleButtons() {
+
+    if (gBlnMoveUp) {
+        gBlnMoveUp = false;
+        localStorage.setItem("moveUp", "false");
+    }
+    else {
+        gBlnMoveUp = true;
+        localStorage.setItem("moveUp", "true");
+    }
+    console.log("TOGGLED TO " + gBlnMoveUp);
+
+    //Reset everything
+    onDOMContentLoaded();
+
+}
+
+
+/****************
 Retirement Field Object
 ****************/
 class RetirementField {
@@ -1957,28 +1987,28 @@ class RetirementField {
             var priorField = gFieldArray[inputSequenceNumber - 1];
             var nextField = gFieldArray[inputSequenceNumber + 1];
 
-            var upDownArrows = "";
+            var upArrows = "";
+            var downArrows = "";
             
             //console.log("FIELD NAME: " + this.fieldName + " INPUT SEQ: " + inputSequenceNumber + " ARRAY SIZE: " + gFieldArray.length);
             if (priorField.fieldType != "break" && priorField.fieldType != "add-field") {
-                upDownArrows = upDownArrows + "<img src='up-arrow.png' onclick='moveField(" + inputSequenceNumber + ", -1);'>";
+                upArrows = upArrows + "<img src='up-arrow.png' onclick='moveField(" + inputSequenceNumber + ", -1);'>";
             }
             else {
-                upDownArrows = upDownArrows + "<img src='no-arrow-lg.png'>";
+                upArrows = upArrows + "<img src='no-arrow-lg.png'>";
 
             }
-            upDownArrows = upDownArrows + "<img src='no-arrow.png'>";
             if (nextField.fieldType != "break" && nextField.fieldType != "add-field") {
-                upDownArrows = upDownArrows + "<img src='down-arrow.png' onclick='moveField(" + inputSequenceNumber + ", 1);'>";
+                downArrows = downArrows + "<img src='down-arrow.png' onclick='moveField(" + inputSequenceNumber + ", 1);'>";
             }
             else {
-                upDownArrows = upDownArrows + "<img src='no-arrow.png'>";
+                downArrows = downArrows + "<img src='no-arrow-lg.png'>";
 
             }
 
             myResponse = myResponse + "<tr>";
             myResponse = myResponse + "<td width='50%'><p align='right' valign='top'><a onclick='showFieldDetails(_FIELDNAMEPARM_);'>_FIELDDESCRIPTION_:</a>&nbsp;&nbsp;</p></td>";
-            myResponse = myResponse + "<td width='50%'><textarea rows='1' cols='10' id='_FIELDNAME_' onchange='" + changeFunction +  "'>_FIELDVALUE_</textarea>_UPDOWNARROWS_</td>";
+            myResponse = myResponse + "<td width='50%'><textarea rows='1' cols='10' id='_FIELDNAME_' onchange='" + changeFunction +  "'>_FIELDVALUE_</textarea>_ARROWS_</td>";
             myResponse = myResponse + "</tr>";
     
             myResponse = myResponse.replace(/_FIELDNAME_/gi, this.fieldName);
@@ -1996,11 +2026,21 @@ class RetirementField {
                 }
             }
             myResponse = myResponse.replace(/_FIELDDESCRIPTION_/gi, this.fieldDescription);
-            myResponse = myResponse.replace(/_UPDOWNARROWS_/gi, upDownArrows);
+            if (gBlnMoveUp) {
+                myResponse = myResponse.replace(/_ARROWS_/gi, upArrows);
+            }
+            else {
+                myResponse = myResponse.replace(/_ARROWS_/gi, downArrows);
+            }                  
         }
         else {
             if (this.fieldType == "break") {
-                myResponse = myResponse + "<tr><td colspan='2' align='center'><hr><p>-------" + this.fieldDescription + "-------</p></td></tr>";
+                if (gBlnMoveUp) {
+                    myResponse = myResponse + "<tr><td colspan='2' align='center'><hr><p>-------" + this.fieldDescription + "-------</p></td></tr>";
+                }
+                else {
+                    myResponse = myResponse + "<tr><td colspan='2' align='center'><hr><p>-------" + this.fieldDescription + "-------</p></td></tr>";
+                }
             }
             else {
                 var tempName = "\"" + this.fieldName + "\"";
