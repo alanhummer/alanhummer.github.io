@@ -33,6 +33,7 @@ function onDOMContentLoaded() {
     var outputRows = "";
     var storedFieldArray = [];
     var blnDoStartupHelp = false;
+    var blnDidDebt = false;
 
     gFieldArray = [];
     gYearDetailsArray = [];
@@ -72,7 +73,15 @@ function onDOMContentLoaded() {
         storedFieldArray.forEach((fieldObject) => {
             var tempRetObject = new RetirementField(fieldObject.fieldName, fieldObject.fieldValue, fieldObject.fieldDescription, fieldObject.fieldType, fieldObject.moneyType, fieldObject.timePeriod, fieldObject.rateField, fieldObject.startYear, fieldObject.endYear, fieldObject.accrueBeforeStart, fieldObject.depositAccount, fieldObject.withdrawAccount, fieldObject.defaultCashAccount);
             gFieldArray.push(tempRetObject);
+            if (fieldObject.fieldName == "debtBreak") {
+                blnDidDebt = true;
+            }
         });
+        if (!blnDidDebt) {
+            gFieldArray.push(new RetirementField("debtBreak", "", "--DEBT--", "break"));
+            gFieldArray.push(new RetirementField("addDebt", "debt", "ADD FIELD", "add-field"));
+            gFieldArray.push(new RetirementField("---------", "", "", "break"));
+        }
 
     }
     else {
