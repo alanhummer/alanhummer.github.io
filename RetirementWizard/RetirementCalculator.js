@@ -874,9 +874,9 @@ function updateField() {
 
                     fieldObject.moneyType = "";
                     fieldObject.timePeriod = "";
-                    fieldObject.rateField = document.getElementById("assetRateField").value;
-                    fieldObject.startYear = document.getElementById("assetStartYear").value;
-                    fieldObject.endYear = document.getElementById("assetEndYear").value;
+                    fieldObject.rateField = document.getElementById("assetDebtRateField").value;
+                    fieldObject.startYear = document.getElementById("assetDebtStartYear").value;
+                    fieldObject.endYear = document.getElementById("assetDebtEndYear").value;
                     fieldObject.depositAccount = "";
                     fieldObject.withdrawAccount = "";
                     fieldObject.accrueBeforeStart = true;
@@ -888,9 +888,9 @@ function updateField() {
 
                         fieldObject.moneyType = "";
                         fieldObject.timePeriod = "";
-                        fieldObject.rateField = document.getElementById("debtRateField").value;
-                        fieldObject.startYear = document.getElementById("debtStartYear").value;
-                        fieldObject.endYear = document.getElementById("debtEndYear").value;
+                        fieldObject.rateField = document.getElementById("assetDebtRateField").value;
+                        fieldObject.startYear = document.getElementById("assetDebtStartYear").value;
+                        fieldObject.endYear = document.getElementById("assetDebtEndYear").value;
                         fieldObject.depositAccount = "";
                         fieldObject.withdrawAccount = "";
                         fieldObject.accrueBeforeStart = true;
@@ -1183,11 +1183,11 @@ function showFieldDetails(inputFieldName) {
         fieldDetailOutput = fieldDetailOutput + "<tr><td>Default Cash Account:</td><td>" + showDropDown("defaultCashAccount", "true|false", displayField.defaultCashAccount) + "</td></tr>";
         fieldDetailOutput = fieldDetailOutput + "</table>"; 
         fieldDetailOutput = fieldDetailOutput + "</div>";
-        fieldDetailOutput = fieldDetailOutput + "<div id='" + displayField.fieldName + "-assetfields'>";
+        fieldDetailOutput = fieldDetailOutput + "<div id='" + displayField.fieldName + "-assetDebtfields'>";
         fieldDetailOutput = fieldDetailOutput + "<table class='output-report' border='1px' width='100%' cellpadding='10' cellspacing='10'>";
-        fieldDetailOutput = fieldDetailOutput + "<tr><td>Rate Field:</td><td>" + showDropDown("assetRateField", "rateFields", displayField.rateField) + "</td></tr>";
-        fieldDetailOutput = fieldDetailOutput + "<tr><td>Start Year:</td><td>" + showDropDown("assetStartYear", "yearFields", displayField.startYear) + "</td></tr>";
-        fieldDetailOutput = fieldDetailOutput + "<tr><td>End Year:</td><td>" + showDropDown("assetEndYear", "yearFields", displayField.endYear) + "</td></tr>";
+        fieldDetailOutput = fieldDetailOutput + "<tr><td>Rate Field:</td><td>" + showDropDown("assetDebtRateField", "rateFields", displayField.rateField) + "</td></tr>";
+        fieldDetailOutput = fieldDetailOutput + "<tr><td>Start Year:</td><td>" + showDropDown("assetDebtStartYear", "yearFields", displayField.startYear) + "</td></tr>";
+        fieldDetailOutput = fieldDetailOutput + "<tr><td>End Year:</td><td>" + showDropDown("assetDebtEndYear", "yearFields", displayField.endYear) + "</td></tr>";
          fieldDetailOutput = fieldDetailOutput + "</table>"; 
         fieldDetailOutput = fieldDetailOutput + "</div>";    
 
@@ -1210,7 +1210,7 @@ toggleFieldDetailDisplay
 function toggleFieldDetailDisplay(inputValue) {
 
     var myMoneyDiv = document.getElementById("fieldName").value + "-moneyfields";
-    var myAssetDiv = document.getElementById("fieldName").value + "-assetfields";
+    var myAssetDiv = document.getElementById("fieldName").value + "-assetDebtfields";
 
     if (inputValue == "money") {
         document.getElementById(myMoneyDiv).style.display = "block";
@@ -1271,7 +1271,7 @@ function showDropDown(inputFieldName, inputFieldOptions, inputFieldValue) {
                     options = options + "<option value='" + fieldObject.fieldName + "'>" + fieldObject.fieldName + "</option>";
                 }
             }
-            if (fieldObject.fieldType == "asset" && inputFieldOptions == "assetFields") {
+            if (fieldObject.fieldType == "asset" && inputFieldOptions == "assetDebtFields") {
                 if (fieldObject.fieldName == inputFieldValue) {
                     options = options + "<option value='" + fieldObject.fieldName + "' selected>" + fieldObject.fieldName + "</option>";
                 }
@@ -1964,9 +1964,10 @@ class RetirementField {
                 upDownArrows = upDownArrows + "<img src='up-arrow.png' onclick='moveField(" + inputSequenceNumber + ", -1);'>";
             }
             else {
-                upDownArrows = upDownArrows + "<img src='no-arrow.png'>";
+                upDownArrows = upDownArrows + "<img src='no-arrow-lg.png'>";
 
             }
+            upDownArrows = upDownArrows + "<img src='no-arrow.png'>";
             if (nextField.fieldType != "break" && nextField.fieldType != "add-field") {
                 upDownArrows = upDownArrows + "<img src='down-arrow.png' onclick='moveField(" + inputSequenceNumber + ", 1);'>";
             }
@@ -1977,7 +1978,7 @@ class RetirementField {
 
             myResponse = myResponse + "<tr>";
             myResponse = myResponse + "<td width='50%'><p align='right' valign='top'><a onclick='showFieldDetails(_FIELDNAMEPARM_);'>_FIELDDESCRIPTION_:</a>&nbsp;&nbsp;</p></td>";
-            myResponse = myResponse + "<td width='50%'><textarea rows='1' cols='15' id='_FIELDNAME_' onchange='" + changeFunction +  "'>_FIELDVALUE_</textarea>_UPDOWNARROWS_</td>";
+            myResponse = myResponse + "<td width='50%'><textarea rows='1' cols='10' id='_FIELDNAME_' onchange='" + changeFunction +  "'>_FIELDVALUE_</textarea>_UPDOWNARROWS_</td>";
             myResponse = myResponse + "</tr>";
     
             myResponse = myResponse.replace(/_FIELDNAME_/gi, this.fieldName);
