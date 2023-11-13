@@ -1140,6 +1140,7 @@ function addField(inputFieldtype, inputSequenceNumber) {
     
                 //And store it
                 localStorage.setItem('fieldArray', JSON.stringify(gFieldArray));
+                
             }
     
             showFieldDetails(newFieldObject.fieldName);
@@ -1881,7 +1882,7 @@ function validateField(inputFieldType, inputFieldName, inputFieldValue, inputSeq
     if (blnValid) {
         //Store the fields
         enteredField.fieldValue = inputFieldValue;
-        localStorage.setItem('fieldArray', JSON.stringify(gFieldArray));
+        enteredField.setDataValue();
 
     }
 
