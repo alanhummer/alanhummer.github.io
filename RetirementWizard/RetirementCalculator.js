@@ -80,7 +80,7 @@ function onDOMContentLoaded() {
     if (storedFieldArray.length > 0) {
         //All loaded from local storage
         storedFieldArray.forEach((fieldObject) => {
-            var tempRetObject = new RetirementField(fieldObject.fieldName, fieldObject.fieldValue, fieldObject.fieldDescription, fieldObject.fieldType, fieldObject.moneyType, fieldObject.timePeriod, fieldObject.rateField, fieldObject.startYear, fieldObject.endYear, fieldObject.accrueBeforeStart, fieldObject.depositAccount, fieldObject.withdrawAccount, fieldObject.defaultCashAccount);
+            var tempRetObject = new RetirementField(fieldObject.fieldName, fieldObject.fieldValue, fieldObject.fieldDescription, fieldObject.fieldType, fieldObject.moneyType, fieldObject.timePeriod, fieldObject.rateField, fieldObject.startYear, fieldObject.endYear, fieldObject.accrueBeforeStart, fieldObject.depositAccount, fieldObject.withdrawAccount, fieldObject.defaultCashAccount, fieldObject.assetLoan);
             gFieldArray.push(tempRetObject);
             if (fieldObject.fieldName == "debtBreak") {
                 blnDidDebt = true;
@@ -182,7 +182,9 @@ function onDOMContentLoaded() {
 
         //Property Assets
         gFieldArray.push(new RetirementField("propertyBreak", "", "--PROPERTY ASSETS--", "break"));
-        gFieldArray.push(new RetirementField("propertyHouse", "300000", "House", "asset", "", "", "rateHomeAppreciation"));
+        var propertyHouse = new RetirementField("propertyHouse", "300000", "House", "asset", "", "", "rateHomeAppreciation", "yearMortgageStart", "yearDie");
+        propertyHouse.assetLoan = "debtMortgage";
+        gFieldArray.push(propertyHouse);
         gFieldArray.push(new RetirementField("addAsset", "asset", "ADD FIELD", "add-field"));
 
         //Debt
@@ -191,7 +193,7 @@ function onDOMContentLoaded() {
         gFieldArray.push(new RetirementField("debtMortgage", "200000", "Mortgage", "debt", "", "", "rateMortgage", "yearMortgageStart", "yearMortgageEnd"));
         gFieldArray.push(new RetirementField("addDebt", "debt", "ADD FIELD", "add-field"));
         gFieldArray.push(new RetirementField("---------", "", "", "break"));
-        
+      
         //And since it is all fresh, pre-load scenario name
         document.getElementById("new-scenario").value = "Default Scenario Name";
 
@@ -380,7 +382,7 @@ function doCalc(inputSaveOnly) {
                 }
             }
             else {
-                if (fieldObject.fieldType == "asset" || fieldObject.fieldType == "debt") {
+                if (fieldObject.fieldType == "asset") {
                     startAmount = startAmount + fieldObject.yearStartAmount;
                     investmentReturnAmount = investmentReturnAmount + fieldObject.yearInvestmentReturnAmount;
                     //endAmount = endAmount + fieldObject.yearEndAmount;
@@ -399,9 +401,20 @@ function doCalc(inputSaveOnly) {
                 }
                 else {
                     if (fieldObject.fieldType == "debt") {
+
+                        if (fieldObject.yearStartAmount > 0) {  //AJH THIS GIVES NAN
+                            startAmount = startAmount + fieldObject.yearStartAmount; 
+                        }
+
+                        if (fieldObject.yearInvestmentReturnAmount > 0) {
+                            investmentReturnAmount = investmentReturnAmount + fieldObject.yearInvestmentReturnAmount;
+                            changeAmount = changeAmount + fieldObject.yearInvestmentReturnAmount;
+                        }                       
                     }
                 }
             }
+
+
 
         });     
         
@@ -853,6 +866,7 @@ function updateField() {
     //Updte field settings
     fieldName = document.getElementById("fieldName").value;
     gFieldArray.forEach((fieldObject) => { 
+        console.log("DOING FIELD: " + fieldName);
         if (fieldObject.fieldName == fieldName) {
             //Nowe we update it
             fieldObject.fieldDescription = document.getElementById("fieldDescription").value;
@@ -881,11 +895,15 @@ function updateField() {
             else {
                 if (fieldObject.fieldType == "asset") {
 
+                    console.log("HERE WE GO START 1: " + document.getElementById("startYear").value + " END: " + document.getElementById("endYear").value);
+                    console.log("HERE WE GO START 2: " + document.getElementById("rateField").value + " END: " + document.getElementById("assetLoan").value);
+
                     fieldObject.moneyType = "";
                     fieldObject.timePeriod = "";
-                    fieldObject.rateField = document.getElementById("assetDebtRateField").value;
-                    fieldObject.startYear = document.getElementById("assetDebtStartYear").value;
-                    fieldObject.endYear = document.getElementById("assetDebtEndYear").value;
+                    fieldObject.rateField = document.getElementById("rateField").value;
+                    fieldObject.startYear = document.getElementById("startYear").value;
+                    fieldObject.endYear = document.getElementById("endYear").value;
+                    fieldObject.assetLoan = document.getElementById("assetLoan").value;
                     fieldObject.depositAccount = "";
                     fieldObject.withdrawAccount = "";
                     fieldObject.accrueBeforeStart = true;
@@ -897,9 +915,9 @@ function updateField() {
 
                         fieldObject.moneyType = "";
                         fieldObject.timePeriod = "";
-                        fieldObject.rateField = document.getElementById("assetDebtRateField").value;
-                        fieldObject.startYear = document.getElementById("assetDebtStartYear").value;
-                        fieldObject.endYear = document.getElementById("assetDebtEndYear").value;
+                        fieldObject.rateField = document.getElementById("rateField").value;
+                        fieldObject.startYear = document.getElementById("startYear").value;
+                        fieldObject.endYear = document.getElementById("endYear").value;
                         fieldObject.depositAccount = "";
                         fieldObject.withdrawAccount = "";
                         fieldObject.accrueBeforeStart = true;
@@ -1181,26 +1199,39 @@ function showFieldDetails(inputFieldName) {
         fieldDetailOutput = fieldDetailOutput + "<tr><td>Value:</td><td>" + displayField.fieldValue + "</td></tr>";
         fieldDetailOutput = fieldDetailOutput + "</table>";
         fieldDetailOutput = fieldDetailOutput + "<div id='" + displayField.fieldName + "-moneyfields'>";
-        fieldDetailOutput = fieldDetailOutput + "<table class='output-report' border='1px' width='100%' cellpadding='10' cellspacing='10'>";
-        fieldDetailOutput = fieldDetailOutput + "<tr><td>Money Type:</td><td>" + showDropDown("moneyType", "expense|income|investment-savings", displayField.moneyType) + "</td></tr>";
-        fieldDetailOutput = fieldDetailOutput + "<tr><td>Time Period:</td><td>" + showDropDown("timePeriod", "monthly|yearly", displayField.timePeriod) + "</td></tr>";
-        fieldDetailOutput = fieldDetailOutput + "<tr><td>Rate Field:</td><td>" + showDropDown("rateField", "rateFields", displayField.rateField) + "</td></tr>";
-        fieldDetailOutput = fieldDetailOutput + "<tr><td>Start Year:</td><td>" + showDropDown("startYear", "yearFields", displayField.startYear) + "</td></tr>";
-        fieldDetailOutput = fieldDetailOutput + "<tr><td>End Year:</td><td>" + showDropDown("endYear", "yearFields", displayField.endYear) + "</td></tr>";
-        fieldDetailOutput = fieldDetailOutput + "<tr><td>Accrue B4 Start:</td><td>" + showDropDown("accrueBeforeStart", "true|false", displayField.accrueBeforeStart) + "</td></tr>";
-        fieldDetailOutput = fieldDetailOutput + "<tr><td>Deposit Acct:</td><td>" + showDropDown("depositAccount", "moneyFields", displayField.depositAccount) + "</td></tr>";
-        fieldDetailOutput = fieldDetailOutput + "<tr><td>Withdraw Acct:</td><td>" + showDropDown("withdrawAccount", "moneyFields", displayField.withdrawAccount) + "</td></tr>";
-        fieldDetailOutput = fieldDetailOutput + "<tr><td>Default Cash Account:</td><td>" + showDropDown("defaultCashAccount", "true|false", displayField.defaultCashAccount) + "</td></tr>";
-        fieldDetailOutput = fieldDetailOutput + "</table>"; 
+        if (displayField.fieldType == "money") {
+            fieldDetailOutput = fieldDetailOutput + "<table class='output-report' border='1px' width='100%' cellpadding='10' cellspacing='10'>";
+            fieldDetailOutput = fieldDetailOutput + "<tr><td>Money Type:</td><td>" + showDropDown("moneyType", "expense|income|investment-savings", displayField.moneyType) + "</td></tr>";
+            fieldDetailOutput = fieldDetailOutput + "<tr><td>Time Period:</td><td>" + showDropDown("timePeriod", "monthly|yearly", displayField.timePeriod) + "</td></tr>";
+            fieldDetailOutput = fieldDetailOutput + "<tr><td>Rate Field:</td><td>" + showDropDown("rateField", "rateFields", displayField.rateField) + "</td></tr>";
+            fieldDetailOutput = fieldDetailOutput + "<tr><td>Start Year:</td><td>" + showDropDown("startYear", "yearFields", displayField.startYear) + "</td></tr>";
+            fieldDetailOutput = fieldDetailOutput + "<tr><td>End Year:</td><td>" + showDropDown("endYear", "yearFields", displayField.endYear) + "</td></tr>";
+            fieldDetailOutput = fieldDetailOutput + "<tr><td>Accrue B4 Start:</td><td>" + showDropDown("accrueBeforeStart", "true|false", displayField.accrueBeforeStart) + "</td></tr>";
+            fieldDetailOutput = fieldDetailOutput + "<tr><td>Deposit Acct:</td><td>" + showDropDown("depositAccount", "moneyFields", displayField.depositAccount) + "</td></tr>";
+            fieldDetailOutput = fieldDetailOutput + "<tr><td>Withdraw Acct:</td><td>" + showDropDown("withdrawAccount", "moneyFields", displayField.withdrawAccount) + "</td></tr>";
+            fieldDetailOutput = fieldDetailOutput + "<tr><td>Default Cash Account:</td><td>" + showDropDown("defaultCashAccount", "true|false", displayField.defaultCashAccount) + "</td></tr>";
+            fieldDetailOutput = fieldDetailOutput + "</table>"; 
+        }
         fieldDetailOutput = fieldDetailOutput + "</div>";
-        fieldDetailOutput = fieldDetailOutput + "<div id='" + displayField.fieldName + "-assetDebtfields'>";
-        fieldDetailOutput = fieldDetailOutput + "<table class='output-report' border='1px' width='100%' cellpadding='10' cellspacing='10'>";
-        fieldDetailOutput = fieldDetailOutput + "<tr><td>Rate Field:</td><td>" + showDropDown("assetDebtRateField", "rateFields", displayField.rateField) + "</td></tr>";
-        fieldDetailOutput = fieldDetailOutput + "<tr><td>Start Year:</td><td>" + showDropDown("assetDebtStartYear", "yearFields", displayField.startYear) + "</td></tr>";
-        fieldDetailOutput = fieldDetailOutput + "<tr><td>End Year:</td><td>" + showDropDown("assetDebtEndYear", "yearFields", displayField.endYear) + "</td></tr>";
-         fieldDetailOutput = fieldDetailOutput + "</table>"; 
+        fieldDetailOutput = fieldDetailOutput + "<div id='" + displayField.fieldName + "-assetfields'>";
+        if (displayField.fieldType == "asset") {
+            fieldDetailOutput = fieldDetailOutput + "<table class='output-report' border='1px' width='100%' cellpadding='10' cellspacing='10'>";
+            fieldDetailOutput = fieldDetailOutput + "<tr><td>Rate Field:</td><td>" + showDropDown("rateField", "rateFields", displayField.rateField) + "</td></tr>";
+            fieldDetailOutput = fieldDetailOutput + "<tr><td>Start Year:</td><td>" + showDropDown("startYear", "yearFields", displayField.startYear) + "</td></tr>";
+            fieldDetailOutput = fieldDetailOutput + "<tr><td>End Year:</td><td>" + showDropDown("endYear", "yearFields", displayField.endYear) + "</td></tr>";
+            fieldDetailOutput = fieldDetailOutput + "<tr><td>Loan:</td><td>" + showDropDown("assetLoan", "debtFields", displayField.assetLoan) + "</td></tr>";
+            fieldDetailOutput = fieldDetailOutput + "</table>"; 
+        }
+        fieldDetailOutput = fieldDetailOutput + "</div>";
+        fieldDetailOutput = fieldDetailOutput + "<div id='" + displayField.fieldName + "-debtfields'>";
+        if (displayField.fieldType == "debt") {
+            fieldDetailOutput = fieldDetailOutput + "<table class='output-report' border='1px' width='100%' cellpadding='10' cellspacing='10'>";
+            fieldDetailOutput = fieldDetailOutput + "<tr><td>Rate Field:</td><td>" + showDropDown("rateField", "rateFields", displayField.rateField) + "</td></tr>";
+            fieldDetailOutput = fieldDetailOutput + "<tr><td>Start Year:</td><td>" + showDropDown("startYear", "yearFields", displayField.startYear) + "</td></tr>";
+            fieldDetailOutput = fieldDetailOutput + "<tr><td>End Year:</td><td>" + showDropDown("endYear", "yearFields", displayField.endYear) + "</td></tr>";
+            fieldDetailOutput = fieldDetailOutput + "</table>"; 
+        }
         fieldDetailOutput = fieldDetailOutput + "</div>";    
-
 
         document.getElementById("fieldDetailsDetail").innerHTML = "<center>" + fieldDetailOutput + "</center>";
         showPageView("fieldDetails");
@@ -1220,20 +1251,26 @@ toggleFieldDetailDisplay
 function toggleFieldDetailDisplay(inputValue) {
 
     var myMoneyDiv = document.getElementById("fieldName").value + "-moneyfields";
-    var myAssetDiv = document.getElementById("fieldName").value + "-assetDebtfields";
+    var myAssetDiv = document.getElementById("fieldName").value + "-assetfields";
+    var myDebtDiv = document.getElementById("fieldName").value + "-debtfields";
 
     if (inputValue == "money") {
         document.getElementById(myMoneyDiv).style.display = "block";
         document.getElementById(myAssetDiv).style.display = "none";
+        document.getElementById(myDebtDiv).style.display = "none";
     }
     else {
-        if (inputValue == "asset" || inputValue == "debt") {
+        if (inputValue == "asset") {
             document.getElementById(myMoneyDiv).style.display = "none";
             document.getElementById(myAssetDiv).style.display = "block";
+            document.getElementById(myDebtDiv).style.display = "none";
         }
         else {
-            document.getElementById(myMoneyDiv).style.display = "none";
-            document.getElementById(myAssetDiv).style.display = "none";            
+            if (inputValue == "debt") {
+                document.getElementById(myMoneyDiv).style.display = "none";
+                document.getElementById(myAssetDiv).style.display = "none";  
+                document.getElementById(myDebtDiv).style.display = "block";
+            }     
         }
     }
     
@@ -1255,7 +1292,7 @@ function showDropDown(inputFieldName, inputFieldOptions, inputFieldValue) {
         myResponse = myResponse.replace("_ONCHANGE_", "");
     }
 
-    if (inputFieldOptions == "rateFields" || inputFieldOptions == "yearFields" || inputFieldOptions == "moneyFields") {
+    if (inputFieldOptions == "rateFields" || inputFieldOptions == "yearFields" || inputFieldOptions == "moneyFields" || inputFieldOptions == "assetFields" || inputFieldOptions == "debtFields") {
         gFieldArray.forEach((fieldObject) => {
             if (fieldObject.fieldType == "rate" && inputFieldOptions == "rateFields") {
                 if (fieldObject.fieldName == inputFieldValue) {
@@ -1281,7 +1318,7 @@ function showDropDown(inputFieldName, inputFieldOptions, inputFieldValue) {
                     options = options + "<option value='" + fieldObject.fieldName + "'>" + fieldObject.fieldName + "</option>";
                 }
             }
-            if (fieldObject.fieldType == "asset" && inputFieldOptions == "assetDebtFields") {
+            if (fieldObject.fieldType == "asset" && inputFieldOptions == "assetFields") {
                 if (fieldObject.fieldName == inputFieldValue) {
                     options = options + "<option value='" + fieldObject.fieldName + "' selected>" + fieldObject.fieldName + "</option>";
                 }
@@ -1923,7 +1960,6 @@ function toggleButtons() {
         gBlnMoveUp = true;
         localStorage.setItem("moveUp", "true");
     }
-    console.log("TOGGLED TO " + gBlnMoveUp);
 
     //Reset everything
     onDOMContentLoaded();
@@ -1936,7 +1972,7 @@ Retirement Field Object
 ****************/
 class RetirementField {
      
-    constructor(fieldName, fieldValue, fieldDescription, fieldType = "", moneyType = "", timePeriod = "", rateField = "", startYear = "", endYear = "", accrueBeforeStart = true, depositAccount ="", withdrawAccount = "", defaultCashAccount = false) {
+    constructor(fieldName, fieldValue, fieldDescription, fieldType = "", moneyType = "", timePeriod = "", rateField = "", startYear = "", endYear = "", accrueBeforeStart = true, depositAccount ="", withdrawAccount = "", defaultCashAccount = false, assetLoan = "") {
 
         this.fieldName = fieldName;
         if (isNumber(fieldValue)) {
@@ -1964,6 +2000,7 @@ class RetirementField {
         this.depositAccount = depositAccount;
         this.withdrawAccount = withdrawAccount;
         this.defaultCashAccount = defaultCashAccount;
+        this.assetLoan = assetLoan;
 
         this.initField();
 
