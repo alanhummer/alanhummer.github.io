@@ -4,6 +4,10 @@
 //
 //And so we begin....
 //
+//Year Detail page - bigger, readable, multi-line break
+//Property Asset: Group with value, mortage, rate, payment, etc.
+//Add group total/sub-total 
+//
 document.addEventListener("DOMContentLoaded", onDOMContentLoaded, false);
 
 var gFieldArray = [];
@@ -1988,10 +1992,14 @@ function toggleButtons() {
     if (gBlnMoveUp) {
         gBlnMoveUp = false;
         localStorage.setItem("moveUp", "false");
+        //set to down arrow
+        document.getElementById("up-down-arrow").src = "down-arrow.png";
     }
     else {
         gBlnMoveUp = true;
         localStorage.setItem("moveUp", "true");
+        //set to up arrow
+        document.getElementById("up-down-arrow").src = "up-arrow.png";
     }
 
     //Reset everything
@@ -2115,7 +2123,7 @@ class RetirementField {
             }
             else {
                 var tempName = "\"" + this.fieldName + "\"";
-                myResponse = myResponse + "<tr><td colspan='2' align='center'><input type='button' value='" + this.fieldDescription + "' onClick='javascript:addField(" + tempName + ", " + inputSequenceNumber + ");'></input></td></tr>";
+                myResponse = myResponse + "<tr><td colspan='2' align='center'><input type='button' value='" + this.fieldDescription + "' onClick='javascript:addField(" + tempName + ", " + inputSequenceNumber + ");'></input></td></tr>"; //AJH Add group total here
             }
            
         }

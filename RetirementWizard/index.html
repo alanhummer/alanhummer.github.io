@@ -99,9 +99,9 @@ body{ margin:0 auto; }
 
 <div id="calculatorHeader" style="display: none;">
 <p align="center" valign="bottom">
-RETIREMENT CALCULATOR V23.11.16.1<img src="help_button.png" height="75" valign="top" align="right" onclick="showPageView('help');">
+RETIREMENT CALCULATOR V24.3.3.1
 </p>
-<p align="center"><img src="reset.png" height="60" valign="bottom" onclick="resetData();">&nbsp;<img src="save.png" height="60" valign="bottom" onclick="saveData();">&nbsp;<img src="load.png" height="60" valign="bottom" onclick="showPageView('loadData');">&nbsp;&nbsp;&nbsp;&nbsp;<img src='up-arrow.png' onclick='toggleButtons();'><img src='down-arrow.png' onclick='toggleButtons();'></p>
+<p align="center"><img src="reset.png" height="90" valign="bottom" onclick="resetData();">&nbsp;<img src="save.png" height="90" valign="bottom" onclick="saveData();">&nbsp;<img src="load.png" height="90" valign="bottom" onclick="showPageView('loadData');">&nbsp;<img src='up-arrow.png' id="up-down-arrow" height="90" onclick='toggleButtons();'>&nbsp;<img src="help_button.png" height="90" valign="top" align="right" onclick="showPageView('help');"></p>
 <p id="infomessage" align="center"></p>
 
 
@@ -110,14 +110,16 @@ RETIREMENT CALCULATOR V23.11.16.1<img src="help_button.png" height="75" valign="
 <div id="scenarioOptions">
 <table border="0" width="100%" cellpadding="10" cellspacing="10">
  <tr>
-    <td width="30%"><p align='right' valign='bottom'>SCENARIO:</p></td>
+    <td width="25%"><p align='right' valign='middle'>SCENARIO:</p></td>
     <td width="70%"><p align='left' valign='top'>
       <select name="scenario" id="scenario" onchange="loadScenario(this.value);onDOMContentLoaded();">
         _SCENARIOLIST_
-      </select>&nbsp;&nbsp;<img src="note.png" height="60px" valign="bottom" onclick="loadNote(document.getElementById('scenario').value);"></p>
+      </select>
+    </td>
+    <td width="5%"><img src="note.png" height="90" valign="bottom" onclick="loadNote(document.getElementById('scenario').value);"></p>
     </td>
   </tr>
-  <tr><td colspan="2"><p align="center">OR ENTER NEW NAME</p></td></tr>
+  <tr><td colspan="3"><p align="center">OR ENTER NEW NAME</p></td></tr>
 </table>
 </div>
 
