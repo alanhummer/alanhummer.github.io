@@ -1,0 +1,24 @@
+/* styles.css */
+body, html {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #f4f4f9;
+    margin: 0;
+    padding: 20px;
+  }
+  
+  .card {
+    background-color: white;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    width: 150px;
+    display: inline-block;
+    margin: 10px;
+    vertical-align: top;
+  }
+  
+  .card h4, .card p {
+    margin: 5px 0;
+  }
+  
