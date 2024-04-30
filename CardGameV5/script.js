@@ -1,3 +1,4 @@
+// script.js
 document.addEventListener('DOMContentLoaded', function () {
     const cardTypes = ['Feature', 'Bug', 'Tech Debt'];
     const costs = [1, 2, 3, 4, 5, 6];
@@ -9,31 +10,25 @@ document.addEventListener('DOMContentLoaded', function () {
     let expenseSaved = 0;
     let costSaved = 0;
   
-    function updateStatsDisplay() {
+    function updateTotal(amount) {
+      totalAmount -= amount;
       document.getElementById('total-amount').textContent = totalAmount;
-      document.getElementById('feature-discounts').textContent = featureDiscountsTotal;
-      document.getElementById('expense-saved').textContent = expenseSaved;
-      document.getElementById('cost-saved').textContent = costSaved;
-    }
-  
-    function updateTotal(cost) {
-      totalAmount -= cost;
-      updateStatsDisplay();
     }
   
     function updateFeatureDiscounts(amount) {
       featureDiscountsTotal += amount;
-      updateStatsDisplay();
-    }
-  
-    function updateCostSaved(amount) {
-      costSaved += amount;
-      updateStatsDisplay();
+      console.log("Feature Discounts Total is now " + amount);
+      document.getElementById('feature-discounts').textContent = featureDiscountsTotal;
     }
   
     function updateExpenseSaved(amount) {
       expenseSaved += amount;
-      updateStatsDisplay();
+      document.getElementById('expense-saved').textContent = expenseSaved;
+    }
+  
+    function updateCostSaved(amount) {
+      costSaved += amount;
+      document.getElementById('cost-saved').textContent = costSaved;
     }
   
     function allowDrop(ev) {
@@ -48,21 +43,20 @@ document.addEventListener('DOMContentLoaded', function () {
       ev.preventDefault();
       var data = ev.dataTransfer.getData("text");
       var cardElement = document.getElementById(data);
-      if (ev.target.className.includes('card-container')) {
-        ev.target.appendChild(cardElement);
-        const cost = parseInt(cardElement.getAttribute('data-cost'));
-        const type = cardElement.getAttribute('data-type');
-        const featureDiscount = parseInt(cardElement.getAttribute('data-feature-discount') || 0);
-        const expense = parseInt(cardElement.getAttribute('data-expense') || 0);
+      ev.target.appendChild(cardElement);
+      const cost = parseInt(cardElement.getAttribute('data-cost'));
+      const type = cardElement.getAttribute('data-type');
+      const featureDiscount = parseInt(cardElement.getAttribute('data-feature-discount') || 0);
+      const expense = parseInt(cardElement.getAttribute('data-expense') || 0);
   
-        updateTotal(cost);
+      updateTotal(cost);
   
-        if (type === 'Tech Debt') {
-          updateFeatureDiscounts(featureDiscount);
-          updateCostSaved(featureDiscount);
-        } else if (type === 'Bug') {
-          updateExpenseSaved(expense);
-        }
+      console.log("Dropped card is ", cardElement);
+      if (type === 'Tech Debt') {
+        updateFeatureDiscounts(featureDiscount);
+        updateCostSaved(featureDiscount);
+      } else if (type === 'Bug') {
+        updateExpenseSaved(expense);
       }
     }
   
@@ -71,11 +65,18 @@ document.addEventListener('DOMContentLoaded', function () {
       displayCards(newDeck.slice(0, 4)); // Deal new cards
     });
   
+    const playedCards = document.getElementById('played-cards');
+    playedCards.addEventListener('dragover', allowDrop);
+    playedCards.addEventListener('drop', function(event) {
+      drop(event);
+      // Resize the played cards container if necessary
+      this.style.height = 'auto';  // Reset height to grow as needed
+    });
+  
     function createDeck() {
       let deck = [];
       for (let i = 0; i < 48; i++) {
-        let typeIndex = Math.floor(Math.random() * cardTypes.length);
-        let type = cardTypes[typeIndex];
+        let type = cardTypes[Math.floor(Math.random() * cardTypes.length)];
         let cost = costs[Math.floor(Math.random() * costs.length)];
         let card = { type, cost, id: i };
   
@@ -103,10 +104,7 @@ document.addEventListener('DOMContentLoaded', function () {
         let cardElement = document.createElement('div');
         cardElement.className = 'card ' + card.type.toLowerCase().replace(/\s+/g, '-');
         cardElement.id = `card-${card.id}`;
-        cardElement.setAttribute('data-type', card.type);
         cardElement.setAttribute('data-cost', card.cost);
-        if (card.featureDiscount) cardElement.setAttribute('data-feature-discount', card.featureDiscount);
-        if (card.expense) cardElement.setAttribute('data-expense', card.expense);
         cardElement.draggable = true;
         cardElement.addEventListener('dragstart', drag);
         cardElement.innerHTML = `<h4>${card.type}</h4><p>Cost: ${card.cost}</p>` +
@@ -118,13 +116,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   
     let deck = createDeck();
-    displayCards(deck.slice(0, 4));
-
-    // Make the cards container droppable
-    document.getElementById('card-deck').addEventListener('dragover', allowDrop);
-    document.getElementById('played-cards').addEventListener('dragover', allowDrop);
-    document.getElementById('played-cards').addEventListener('drop', drop);
-
-    // Initial Stats Display Update
-    updateStatsDisplay();
-});
+    displayCards(deck.slice(0, 4)); // Display initial 4 cards
+  });
+  
+  

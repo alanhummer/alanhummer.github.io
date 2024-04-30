@@ -6,7 +6,6 @@ body, html {
     margin: 0;
     padding: 20px;
     display: flex;
-    flex-wrap: wrap;
   }
   
   #stats {
@@ -24,21 +23,16 @@ body, html {
     width: 80%;
     display: flex;
     justify-content: space-around;
-    padding-right: 20%;
-  }
-  
-  .column {
-    width: 48%;
-    margin: 1%;
   }
   
   .card-container {
     min-height: 200px;
+    width: 48%; /* Adjust width to accommodate side-by-side layout */
     margin: 20px;
     padding: 10px;
-    border: 4px solid black;
+    border: 1px solid #ddd;
     border-radius: 8px;
-    overflow: auto;
+    overflow: auto; /* Allows container to scroll if too many cards */
     display: flex;
     flex-wrap: wrap;
     justify-content: start;
@@ -58,21 +52,20 @@ body, html {
   }
   
   .card.feature {
-    background-color: #e6e6fa;
+    background-color: #e6e6fa; /* Light purple for feature cards */
   }
   
   .card.bug {
-    background-color: #ffcccc;
+    background-color: #ffcccc; /* Light red for bug cards */
   }
   
   .card.tech-debt {
-    background-color: #ccffcc;
+    background-color: #ccffcc; /* Light green for tech debt cards */
   }
   
   button {
     padding: 5px 20px;
     font-size: 16px;
     cursor: pointer;
-    margin-top: 20px;
   }
   
