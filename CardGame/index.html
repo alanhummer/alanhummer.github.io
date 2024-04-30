@@ -7,7 +7,19 @@
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<div id="card-deck" class="card-container"></div>
+<div id="stats">
+    <button id="deal-button">Deal</button>
+    <div>Total Amount: <span id="total-amount">20</span></div>
+    <div>Feature Discounts: <span id="feature-discounts">0</span></div>
+    <div>Expense Saved: <span id="expense-saved">0</span></div>
+    <div>Cost Saved: <span id="cost-saved">0</span></div>
+</div>
+<div id="game-area">
+    <h2>Dealt Cards</h2>
+    <div id="card-deck" class="card-container"></div>
+    <h2>Played Cards</h2>
+    <div id="played-cards" class="card-container"></div>
+</div>
 <script src="script.js"></script>
 </body>
 </html>
