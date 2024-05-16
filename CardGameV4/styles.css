@@ -1,0 +1,64 @@
+/* styles.css */
+body, html {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #f4f4f9;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  #stats {
+    font-size: 16px;
+    width: 20%;
+    border-left: 2px solid #ddd;
+    padding-left: 20px;
+    height: 100vh;
+    position: fixed;
+    right: 0;
+    top: 0;
+  }
+  
+  #game-area {
+    width: 75%;
+  }
+  
+  .card-container {
+    min-height: 200px;
+    margin: 20px;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  .card {
+    background-color: white; /* Default background */
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    width: 150px;
+    display: inline-block;
+    margin: 10px;
+    cursor: pointer;
+    vertical-align: top;
+  }
+  
+  .card.feature {
+    background-color: #e6e6fa; /* Light purple for feature cards */
+  }
+  
+  .card.bug {
+    background-color: #ffcccc; /* Light red for bug cards */
+  }
+  
+  .card.tech-debt {
+    background-color: #ccffcc; /* Light green for tech debt cards */
+  }
+  
+  button {
+    margin: 10px;
+    padding: 5px 20px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  

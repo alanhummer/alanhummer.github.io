@@ -1,0 +1,40 @@
+/* styles.css */
+body, html {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #f4f4f9;
+    margin: 0;
+    padding: 20px;
+  }
+  
+  #stats {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+  
+  .card-container {
+    min-height: 200px;
+    margin: 20px;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  .card {
+    background-color: white;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    width: 150px;
+    display: inline-block;
+    margin: 10px;
+    cursor: pointer; /* Indicates the card can be moved */
+    vertical-align: top;
+  }
+  
+  button {
+    margin: 10px;
+    padding: 5px 20px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  

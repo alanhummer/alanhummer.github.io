@@ -1,0 +1,42 @@
+/* styles.css */
+body, html {
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+
+#gameBoard {
+    width: 800px;
+    height: 400px;
+    margin: 20px auto;
+    position: relative;
+    background-image: url('world-map.svg'); /* Placeholder for the world map */
+    background-size: cover;
+}
+
+.token {
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    border-radius: 50%;
+}
+
+#blackToken {
+    background-color: black;
+}
+
+#whiteToken {
+    background-color: white;
+}
+
+.flag {
+    width: 30px;
+    height: 20px;
+    position: absolute;
+    background-image: url('flag.png'); /* Placeholder for a flag image */
+    background-size: contain;
+}
+
+#info {
+    margin: 0 auto;
+    width: 800px;
+}

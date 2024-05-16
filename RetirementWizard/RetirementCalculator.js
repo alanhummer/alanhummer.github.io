@@ -21,6 +21,8 @@ var formatter;
 var currentDate = new Date();
 var gBlnMoveUp = true;
 var storedMoveUp;
+var subTotalAmount = 0;
+var blnDoneWithSection = false;
 
 localStorage.getItem("moveUp", storedMoveUp);
 if (storedMoveUp) {
@@ -209,9 +211,32 @@ function onDOMContentLoaded() {
     var fieldSequenceNumber = 0;
     gFieldArray.forEach((fieldObject) => {
         fieldSequenceNumber = fieldSequenceNumber + 1;
+        if (blnDoneWithSection) {
+            blnDoneWithSection = false;
+            if (subTotalAmount > 0) {
+                outputRows = outputRows.replace(" (REPLEAMT)", currency(subTotalAmount));
+            }
+            else {
+                outputRows = outputRows.replace(" (REPLEAMT)", "");
+            }
+            subTotalAmount = 0;
+        }
+        else {
+            outputRows = outputRows.replace(" (AMT)", " (REPLEAMT)");
+        }
         outputRows = outputRows + fieldObject.fieldDisplayRow(fieldSequenceNumber);
+        //AJH SUBTOTAL THING GOES HERE
         //console.log("ROW IS: " + outputRows);
     });
+    blnDoneWithSection = false;
+    if (subTotalAmount > 0) {
+        outputRows = outputRows.replace(" (REPLEAMT)", currency(subTotalAmount));
+    }
+    else {
+        outputRows = outputRows.replace(" (REPLEAMT)", "");
+    }
+    outputRows = outputRows.replace(" (AMT)", "");
+    subTotalAmount = 0;
 
     outputTable = outputTable.replace(/_RETIREMENTFIELDS_/gi, outputRows);
     document.getElementById("input-fields").innerHTML = outputTable;
@@ -2095,6 +2120,13 @@ class RetirementField {
 
             if (this.fieldType == "money" || this.fieldType == "asset" || this.fieldType == "debt") {
                 myResponse = myResponse.replace(/_FIELDVALUE_/gi, currency(this.fieldValue));
+                //AJH SUBTOTALS GO HERE
+                if (this.timePeriod == "monthly") {
+                    subTotalAmount = subTotalAmount + (parseFloat(this.fieldValue) * 12); 
+                }
+                else {
+                    subTotalAmount = subTotalAmount + parseFloat(this.fieldValue); 
+                }
             }
             else {
                 if (this.fieldType == "rate") {
@@ -2114,12 +2146,9 @@ class RetirementField {
         }
         else {
             if (this.fieldType == "break") {
-                if (gBlnMoveUp) {
-                    myResponse = myResponse + "<tr><td colspan='2' align='center'><hr><p>-------" + this.fieldDescription + "-------</p></td></tr>";
-                }
-                else {
-                    myResponse = myResponse + "<tr><td colspan='2' align='center'><hr><p>-------" + this.fieldDescription + "-------</p></td></tr>";
-                }
+                myResponse = myResponse + "<tr><td colspan='2' align='center'><hr><p>-------" + this.fieldDescription + " (AMT)--</p></td></tr>";
+                blnDoneWithSection = true;
+                //AJH SUBTOTALS ADD THEM UP AND PUT THEM HERE
             }
             else {
                 var tempName = "\"" + this.fieldName + "\"";
