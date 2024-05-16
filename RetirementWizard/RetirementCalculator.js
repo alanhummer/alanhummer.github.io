@@ -215,15 +215,15 @@ function onDOMContentLoaded() {
         if (blnDoneWithSection) {
             blnDoneWithSection = false;
             if (subTotalAmount > 0) {
-                outputRows = outputRows.replace(" (REPLEAMT)", currency(subTotalAmount));
+                outputRows = outputRows.replace(/_REPLEAMT_/, currency(subTotalAmount));
             }
             else {
-                outputRows = outputRows.replace(" (REPLEAMT)", "");
+                outputRows = outputRows.replace(/_REPLEAMT_/, "");
             }
             subTotalAmount = 0;
         }
         else {
-            outputRows = outputRows.replace(" (AMT)", " (REPLEAMT)");
+            outputRows = outputRows.replace(/_AMOUNT_/, "_REPLEAMT_");
         }
         outputRows = outputRows + fieldObject.fieldDisplayRow(fieldSequenceNumber);
         //AJH SUBTOTAL THING GOES HERE
@@ -231,17 +231,17 @@ function onDOMContentLoaded() {
     });
     blnDoneWithSection = false;
     if (subTotalAmount > 0) {
-        outputRows = outputRows.replace(" (REPLEAMT)", currency(subTotalAmount));
+        outputRows = outputRows.replace(/_REPLEAMT_/, currency(subTotalAmount));
     }
     else {
-        outputRows = outputRows.replace(" (REPLEAMT)", "");
+        outputRows = outputRows.replace(/_REPLEAMT_/, "");
     }
-    outputRows = outputRows.replace(" (AMT)", "");
-    subTotalAmount = 0;
+    outputRows = outputRows.replace(/_AMOUNT_/, "");
     outputRows = outputRows + "<tr>";
     outputRows = outputRows + "<td width='100%' colspan='2'><p align='center' valign='top'>_LIQUID_ Starting Amount</p></td>";
     outputRows = outputRows + "</tr>";
-    outputRows = outputRows.replace("_LIQUID_", currency(startLiquidNetWorth));
+    outputRows = outputRows.replace(/_LIQUID_/, currency(startLiquidNetWorth));
+    subTotalAmount = 0;
     
     outputTable = outputTable.replace(/_RETIREMENTFIELDS_/gi, outputRows);
     document.getElementById("input-fields").innerHTML = outputTable;
@@ -2155,7 +2155,7 @@ class RetirementField {
         }
         else {
             if (this.fieldType == "break") {
-                myResponse = myResponse + "<tr><td colspan='2' align='center'><hr><p>-------" + this.fieldDescription + " (AMT)--</p></td></tr>";
+                myResponse = myResponse + "<tr><td colspan='2' align='center'><hr><p>-------" + this.fieldDescription + "_AMOUNT_--</p></td></tr>";
                 blnDoneWithSection = true;
                 //AJH SUBTOTALS ADD THEM UP AND PUT THEM HERE
             }
