@@ -242,6 +242,7 @@ function onDOMContentLoaded() {
     outputRows = outputRows + "</tr>";
     outputRows = outputRows.replace(/_LIQUID_/, currency(startLiquidNetWorth));
     subTotalAmount = 0;
+    startLiquidNetWorth = 0;
     
     outputTable = outputTable.replace(/_RETIREMENTFIELDS_/gi, outputRows);
     document.getElementById("input-fields").innerHTML = outputTable;
