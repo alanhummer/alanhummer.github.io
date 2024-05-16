@@ -22,6 +22,7 @@ var currentDate = new Date();
 var gBlnMoveUp = true;
 var storedMoveUp;
 var subTotalAmount = 0;
+var startLiquidNetWorth = 0;
 var blnDoneWithSection = false;
 
 localStorage.getItem("moveUp", storedMoveUp);
@@ -237,7 +238,11 @@ function onDOMContentLoaded() {
     }
     outputRows = outputRows.replace(" (AMT)", "");
     subTotalAmount = 0;
-
+    outputRows = outputRows + "<tr>";
+    outputRows = outputRows + "<td width='100%' colspan='2'><p align='center' valign='top'>_LIQUID_ Starting Amount</p></td>";
+    outputRows = outputRows + "</tr>";
+    outputRows = outputRows.replace("_LIQUID_", currency(startLiquidNetWorth));
+    
     outputTable = outputTable.replace(/_RETIREMENTFIELDS_/gi, outputRows);
     document.getElementById("input-fields").innerHTML = outputTable;
 
@@ -2126,6 +2131,10 @@ class RetirementField {
                 }
                 else {
                     subTotalAmount = subTotalAmount + parseFloat(this.fieldValue); 
+                }
+                //Starting out, what is liquied net worth?
+                if (this.moneyType == "investment-savings") {
+                    startLiquidNetWorth = startLiquidNetWorth + parseFloat(this.fieldValue);
                 }
             }
             else {
