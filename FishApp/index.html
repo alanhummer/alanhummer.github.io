@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <!-- Display area for image capture -->
   <div class="container" id="capture-image" style="display: none;">
     <h1>Catch that fish!</h1>
     <video id="video" autoplay playsinline></video><br>
@@ -14,11 +15,22 @@
     <button id="captureBtn">Capture</button>
     <canvas id="canvas" style="display: none;"></canvas>
   </div>
+  <!-- Display area for image captured -->
   <div class="container" id="captured-image" style="display: none;">
-    <div id="status"><h1>I saw your fish!</h1></div>
+    <h1>I saw your fish!</h1>
     <img id="photo" alt="Captured Image" >
-    <button id="tryAgainBtn">Try Again</button>
   </div>
+  <!-- Display area for weather info -->
+  <div class="container" id="weather-info" style="display: none;">
+    <h1>Weather Data!</h1>
+    <div id="weather-info"></div>
+  </div>
+  <!-- Buttons / Options and Status -->
+  <button id="tryAgainBtn">Try Again</button>
+  <button id="fishPictureBtn">Fish Picture</button>
+  <button id="weatherBtn">Weather Info</button>
+  <div id="status"></div>
+  <!-- And our script -->
   <script src="script.js"></script>
 </body>
 </html>
