@@ -15,6 +15,12 @@
   
   .container {
     text-align: center;
+    justify-content: center; /* Centers horizontally */
+    align-items: center;     /* Centers vertically */
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Optional: Adds spacing between elements */
+
   }
   
   video, img {

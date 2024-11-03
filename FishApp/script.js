@@ -70,7 +70,11 @@ function toggleDisplay(inputType) {
   document.getElementById("capture-image").style.display = "none";
   document.getElementById("captured-image").style.display = "none";
   document.getElementById("weather-info").style.display = "none";
-  document.getElementById(inputType).style.display = "block";
+  document.getElementById("button-display").style.display = "none";
+  document.getElementById(inputType).style.display = "flex";
+  if (inputType != "capture-image") {
+    document.getElementById("button-display").style.display = "flex";
+  }
 
 }
 
