@@ -22,6 +22,16 @@
     gap: 10px; /* Optional: Adds spacing between elements */
 
   }
+  .buttons {
+    text-align: center;
+    justify-content: center; /* Centers horizontally */
+    align-items: center;     /* Centers vertically */
+    display: block;
+    flex-direction: row;
+    gap: 0px; /* Optional: Adds spacing between elements */
+
+  }
+  
   
   video, img {
     width: 100%;
@@ -30,7 +40,7 @@
   }
   
   button {
-    padding: 10px 20px;
+    padding: 5px 5px;
     font-size: 16px;
     margin: 5px;
     cursor: pointer;

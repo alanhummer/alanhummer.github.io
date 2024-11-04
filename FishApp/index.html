@@ -7,33 +7,68 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <!-- Display area for image capture -->
-  <div class="container" id="capture-image" style="display: none;">
-    <h1>Catch that fish!</h1>
-    <video id="video" autoplay playsinline></video><br>
-    <h1>If you catch em', take a picture!</h1>
-    <button id="captureBtn">Capture</button>
-    <canvas id="canvas" style="display: none;"></canvas>
-  </div>
-  <!-- Display area for image captured -->
-  <div class="container" id="captured-image" style="display: none;">
-    <h1>I saw your fish!</h1>
-    <img id="photo" alt="Captured Image" >
-  </div>
-  <!-- Display area for weather info -->
-  <div class="container" id="weather-info" style="display: none;">
-    <h1>Weather Data!</h1>
-    <div id="weather-info"></div>
-  </div>
-  <!-- Buttons / Options and Status -->
-  <br><br><br>
-  <div class="container" id="button-display" style="display: none;">
-    <button id="tryAgainBtn">Try Again</button>
-    <button id="fishPictureBtn">Fish Picture</button>
-    <button id="weatherBtn">Weather Info</button>
-   </div>
-  <div id="status"></div>
+  <table cellpadding="0" cellspacing="0" table-border="0">
+    <tr>
+      <td height="400px">
+        <!-- Display area for API keys -->
+        <div class="container" id="api-keys-container" style="display: none;">
+          <h1>API Keys</h1>
+          <div id="api-keys" style="height: 250px; text-align: right;">
+            Open AI: <input id="openAIAPI-key" type="text" size="30"><br>
+            Open Weather Map:<input id="openWeatherMapAPI-key" type="text" size="30">
+            <div id="weather-api-info" style="font-size: 12px; text-align: left;"></div>
+            <div id="open-ai-api-info" style="font-size: 12px; text-align: left;"></div>
+          </div>
+          <h1>Cut and past them into here</h1>
+        </div>
+        <!-- Display area for image capture -->
+        <div class="container" id="capture-image-container" style="display: none;">
+          <h1>Catch that fish!</h1>
+          <div id="capture-image" style="height: 250px;"><video id="video" autoplay playsinline></video></div>
+          <h1>If you catch em', take a picture</h1>
+          <canvas id="canvas" style="display: none;"></canvas>
+        </div>
+        <!-- Display area for image captured -->
+        <div class="container" id="captured-image-container" style="display: none;">
+          <h1>I saw your fish!</h1>
+          <div id="captured-image" style="height: 250px;"><img id="photo" alt="Captured Image" ></div>
+          <h1>You caught em</h1>
+        </div>
+        <!-- Display area for weather info -->
+        <div class="container" id="weather-info-container" style="display: none;">
+          <h1>I saw your fish!</h1>
+          <div id="weather-info" style="height: 250px; font-size: 32px; text-align: left;"></div>
+          <h1>What Weather Was Like</h1>
+        </div>
+        <!-- Display area for fish info -->
+        <div class="container" id="fish-info-container" style="display: none;">
+          <h1>I saw your fish!</h1>
+          <div id="fish-info" style="height: 250px; font-size: 32px;"></div>
+          <h1>Any size?</h1>
+        </div>
+        <!-- Buttons / Options and Status -->
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <div class="buttons" id="button-display" style="display: none;">
+          <button id="tryAgainBtn">Do Another</button>
+          <button id="fishPictureBtn">See Picture</button>
+          <button id="weatherBtn">Weather Info</button>
+          <button id="fishInfoBtn">Fish Info</button>
+        </div>
+        <div class="buttons" id="capture-display" style="display: none;">
+          <button id="captureBtn">Take a Picture</button>
+        </div>
+        <div class="buttons" id="update-apis-display" style="display: none;">
+          <button id="apiKeysUpdateBtn">Update API Keys</button>
+        </div>
+        <div id="status"></div>
+      </td>
+    </tr>
+  </table>
   <!-- And our script -->
   <script src="script.js"></script>
 </body>
 </html>
+
