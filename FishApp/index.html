@@ -7,13 +7,13 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <table cellpadding="0" cellspacing="0" table-border="0">
+  <table cellpadding="0" cellspacing="0" table-border="0" width="100%">
     <tr>
-      <td height="400px" valign="top">
+      <td height="400px" valign="top" align="center">
         <!-- Display area for API keys -->
         <div class="container" id="api-keys-container" style="display: none;">
           <h1>API Keys</h1>
-          <div id="api-keys" style="height: 500px; text-align: right;">
+          <div id="api-keys" style="height: 500px; width: 450px; text-align: right;">
             Open AI: <input id="openAIAPI-key" type="text" size="30"><br>
             Open Weather Map:<input id="openWeatherMapAPI-key" type="text" size="30">
             <div id="weather-api-info" style="font-size: 12px; text-align: left;"></div>
@@ -22,28 +22,30 @@
           <h1>Cut and past them into here</h1>
         </div>
         <!-- Display area for image capture -->
-        <div class="container" id="capture-image-container" style="display: none;">
+        <div class="container" id="capture-image-container" style="display: none; width: 450px; text-align: center;">
           <h1>Catch that fish!</h1>
-          <div id="capture-image" style="height: 500px;"><video id="video" autoplay playsinline></video></div>
+          <div id="capture-image" style="height: 500px; width: 450px; font-size: 32px; text-align: center;">
+            <center><video id="video" autoplay playsinline></video></center>
+          </div>
           <h1>Then take a picture</h1>
           <canvas id="canvas" style="display: none;"></canvas>
         </div>
         <!-- Display area for image captured -->
-        <div class="container" id="captured-image-container" style="display: none;">
+        <div class="container" id="captured-image-container" style="display: none; width: 450px; text-align: center;">
           <h1>I saw your fish!</h1>
-          <div id="captured-image" style="height: 500px;"><img id="photo" alt="Captured Image" ></div>
+          <center><div id="captured-image" style="height: 500px; width: 450px; font-size: 32px; text-align: center;"><img id="photo" alt="Captured Image" style="display: block; margin: auto;" ></div></canvas>
           <h1>You caught em</h1>
         </div>
         <!-- Display area for weather info -->
-        <div class="container" id="weather-info-container" style="display: none;">
+        <div class="container" id="weather-info-container" style="display: none; width: 450px; text-align: center;">
           <h1>I saw your fish!</h1>
-          <div id="weather-info" style="height: 500px; font-size: 32px; text-align: left;"></div>
+          <div id="weather-info" style="height: 500px; width: 450px; font-size: 32px; text-align: left; margin:25px"></div>
           <h1>What Weather Was Like</h1>
         </div>
         <!-- Display area for fish info -->
-        <div class="container" id="fish-info-container" style="display: none;">
+        <div class="container" id="fish-info-container" style="display: none; width: 450px; text-align: center;">
           <h1>I saw your fish!</h1>
-          <div id="fish-info" style="height: 500px; font-size: 32px;"></div>
+          <div id="fish-info" style="height: 500px; width: 450px;  font-size: 32px; text-align: center;"></div>
           <h1>Any size?</h1>
         </div>
         <!-- Buttons / Options and Status -->
@@ -63,7 +65,7 @@
         <div class="buttons" id="update-apis-display" style="display: none;">
           <button id="apiKeysUpdateBtn">Update API Keys</button>
         </div>
-        <div class="container" id="status">v2024.11.03.5</div>
+        <div class="container" id="status">v2024.11.03.6</div>
       </td>
     </tr>
   </table>
