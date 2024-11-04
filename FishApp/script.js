@@ -29,6 +29,11 @@ var imageDescription = "";
 var keyAPIOpenAI = getStorage("keyAPIOpenAI");
 var keyAPIOpenWeatherMap = getStorage("keyAPIOpenWeatherMap");
 
+//Hold our location
+var latitude = null;
+var longitude = null;
+var locationTime = null;
+
 document.getElementById("openAIAPI-key").value = keyAPIOpenAI;
 document.getElementById("openWeatherMapAPI-key").value = keyAPIOpenWeatherMap;
 
@@ -95,21 +100,48 @@ fishPictureBtn.addEventListener('click', () => {
 // Weather Info
 weatherBtn.addEventListener('click', () => {
 
-  //Get Location Data
-  if (!navigator.geolocation) {
-    console.log("Geolocation is not supported by your browser");
-  
-    //Get Weather Data - no geo info available so default
-    getWeatherData(43.0731, -89.4012, null); // Coordinates for Madison, WI
+  //Get Location Data - if we timeout of caching it
+
+  var blnGetLocation = false;
+  if (latitude && longitude && locationTime) {
+
+    // Calculate the difference in milliseconds
+    const differenceInMilliseconds = Date.now() - locationTime;
+
+    // Convert to days
+    const millisecondsPerHour = 1000 * 60 * 60;
+    const differenceInHours = Math.floor(differenceInMilliseconds / millisecondsPerHour);
+
+    if (differenceInHours > 0) {
+      blnGetLocation = true;
+    }
+  }
+  else {
+    blnGetLocation = true;
+  }
+
+  if (blnGetLocation) {
+    if (!navigator.geolocation) {
+      console.log("Geolocation is not supported by your browser");
+    
+      //Get Weather Data - no geo info available so default
+      getWeatherData(43.0731, -89.4012, null); // Coordinates for Madison, WI
+      toggleDisplay("weather-info-container");
+    
+    } else {
+      navigator.geolocation.getCurrentPosition(success, error);
+    }
+  }
+  else {
+    //Get Weather Data
+    getWeatherData(latitude, longitude, null); 
     toggleDisplay("weather-info-container");
-  
-  } else {
-    navigator.geolocation.getCurrentPosition(success, error);
   }
 
   function success(position) {
-    const latitude = position.coords.latitude;
-    const longitude = position.coords.longitude;
+    latitude = position.coords.latitude;
+    longitude = position.coords.longitude;
+    locationTime = Date.now();
    
     //Get Weather Data
     getWeatherData(latitude, longitude, null); 
