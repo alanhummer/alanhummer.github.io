@@ -201,7 +201,7 @@ async function getWeatherData(latitude, longitude, dateTimeStamp) {
     
     const weatherInfo = await pointResponse.json();
 
-    // Build weather output
+    // Build weather output - wind direction 180 = from South
     var weatherInfoText = "Temp: " + Math.round(weatherInfo.current.temp) + "&deg F<br>";
     weatherInfoText = weatherInfoText + "Wind: " + Math.round(weatherInfo.current.wind_speed) + " MPH at " + weatherInfo.current.wind_deg + "&deg<br>";
     weatherInfoText = weatherInfoText + "Pressure: " + Math.round(weatherInfo.current.pressure) + " hPa<br>";
