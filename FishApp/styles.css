@@ -19,7 +19,10 @@
     display: flex;
     flex-direction: column;
     gap: 10px; /* Optional: Adds spacing between elements */
-
+    height: 450px; 
+    width: 375px; 
+    text-align: center;
+    vertical-align: top;
   }
   .buttons {
     text-align: center;
