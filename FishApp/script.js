@@ -1,7 +1,7 @@
 //To do's:
-//1) Store Lat / Long so don't query alwasy...time out in 1 hour
-//2) API Keys for Weather and Open AI in local storage? Get from server? Or setup host relay?
-//2b) Replit as a relay server?
+//1) X Store Lat / Long so don't query alwasy...time out in 1 hour
+//2) X API Keys for Weather and Open AI in local storage? Get from server? Or setup host relay?
+//2b) Replit as a relay server w/Keys
 //2c) X  If not keys, ask for key and store in local storage
 //3) Camera storage thumbs of inventory to pick from instead of taking pic
 //4) Stored pics select them from camera storage - use date / loc on pic for weather 
@@ -222,6 +222,7 @@ function toggleDisplay(inputType) {
 async function getWeatherData(latitude, longitude, dateTimeStamp) {
 
   //From here: https://openweathermap.org/
+  //Let's get location description first and then weather info
 
   try {
     // 1. Get the forecast office and grid location based on latitude and longitude
@@ -235,14 +236,21 @@ async function getWeatherData(latitude, longitude, dateTimeStamp) {
 
     // Build weather output - wind direction 180 = from South
     var weatherInfoText = "Temp: " + Math.round(weatherInfo.current.temp) + "&deg F<br>";
-    weatherInfoText = weatherInfoText + "Wind: " + Math.round(weatherInfo.current.wind_speed) + " MPH at " + weatherInfo.current.wind_deg + "&deg<br>";
-    weatherInfoText = weatherInfoText + "Pressure: " + Math.round(weatherInfo.current.pressure) + " hPa<br>";
+    weatherInfoText = weatherInfoText + "Wind: " + Math.round(weatherInfo.current.wind_speed) + " MPH at " + weatherInfo.current.wind_deg + "&deg " + windDirection(weatherInfo.current.wind_deg) + "<br>";
+    weatherInfoText = weatherInfoText + "Pressure: " + Math.round(weatherInfo.current.pressure) + " hPa / " + empericalPressure(Math.round(weatherInfo.current.pressure)) + " inHg<br>";
     weatherInfoText = weatherInfoText + "Dew Point: " + Math.round(weatherInfo.current.dew_point) + "&deg F<br>";
     weatherInfoText = weatherInfoText + "Description: " + toTitleCase(weatherInfo.current.weather[0].description) + "<br>";
 
-    weatherInfoDiv.innerHTML = weatherInfoText;
+    //All good, lets also get location name
 
-    return weatherInfoText;
+    const locationResponse = await fetch(`https://api.openweathermap.org/geo/1.0/reverse?lat=${latitude}&lon=${longitude}&appid=${keyAPIOpenWeatherMap}`);
+    if (!locationResponse.ok) throw new Error(`Location fetch failed: ${locationResponse.statusText}`);
+    const locationinfo = await locationResponse.json();
+    var locationInfoText = locationinfo[0].name + " " + locationinfo[0].state + "<br>";
+
+    weatherInfoDiv.innerHTML = locationInfoText + weatherInfoText;
+
+    return weatherInfoDiv.innerHTML;
 
   } catch (error) {
     console.error("Error fetching weather data:", error);
@@ -313,6 +321,11 @@ async function identifyFish() {
 
     // Display the result
     imageDescription = `${data.choices[0].message.content}`;
+
+    if (imageDescription.length > 500) {
+      imageDescription = imageDescription.substring(0, 500) + "...";
+    }
+
     document.getElementById('fish-info').innerText = imageDescription;
     document.body.style.cursor  = 'default';
 
@@ -351,4 +364,92 @@ function getStorage(inputKey) {
   return outputValue;
 }
 
+function empericalPressure(inputhPa) {
+  
+  var outputinHg = inputhPa / 33.863889532611;
+
+  return Math.round(outputinHg);
+  
+}
+
+
+function windDirection(inputWindDegrees) {
+
+  var responseDirection = "N";
+
+  switch (true) {
+
+    case inputWindDegrees < 12:
+      responseDirection = "N";
+      break;  
+
+    case inputWindDegrees < 34:
+      responseDirection = "NNE";
+      break;  
+  
+    case inputWindDegrees < 57:
+      responseDirection = "NE";
+      break;  
+
+    case inputWindDegrees < 79:
+      responseDirection = "ENE";
+      break;          
+
+    case inputWindDegrees < 102:
+      responseDirection = "E";
+      break;  
+
+    case inputWindDegrees < 124:
+      responseDirection = "ESE";
+      break;  
+  
+    case inputWindDegrees < 147:
+      responseDirection = "SE";
+      break;  
+
+    case inputWindDegrees < 169:
+      responseDirection = "SSE";
+      break;          
+
+    case inputWindDegrees < 192:
+      responseDirection = "S";
+      break;  
+
+    case inputWindDegrees < 214:
+      responseDirection = "SSW";
+      break;  
+  
+    case inputWindDegrees < 237:
+      responseDirection = "SW";
+      break;  
+
+    case inputWindDegrees < 259:
+      responseDirection = "WSW";
+      break;      
+
+    case inputWindDegrees < 282:
+      responseDirection = "W";
+      break;  
+
+    case inputWindDegrees < 304:
+      responseDirection = "WNW";
+      break;  
+  
+    case inputWindDegrees < 327:
+      responseDirection = "NW";
+      break;  
+
+    case inputWindDegrees < 349:
+      responseDirection = "NNW";
+      break;      
+
+    default:
+      responseDirection = "N";
+      break;  
+  
+  }
+
+  return responseDirection;
+
+}
 

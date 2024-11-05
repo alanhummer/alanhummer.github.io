@@ -7,13 +7,13 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <table cellpadding="0" cellspacing="0" table-border="0" width="100%">
+  <table cellpadding="0" cellspacing="0" table-border="0" width="400px">
     <tr>
       <td height="400px" valign="top" align="center">
         <!-- Display area for API keys -->
         <div class="container" id="api-keys-container" style="display: none;">
           <h1>API Keys</h1>
-          <div id="api-keys" style="height: 500px; width: 450px; text-align: right;">
+          <div id="api-keys" style="height: 500px; width: 400px; text-align: right;">
             Open AI: <input id="openAIAPI-key" type="text" size="30"><br>
             Open Weather Map:<input id="openWeatherMapAPI-key" type="text" size="30">
             <div id="weather-api-info" style="font-size: 12px; text-align: left;"></div>
@@ -22,31 +22,31 @@
           <h1>Cut and past them into here</h1>
         </div>
         <!-- Display area for image capture -->
-        <div class="container" id="capture-image-container" style="display: none; width: 450px; text-align: center;">
+        <div class="container" id="capture-image-container" style="display: none; width: 400px; text-align: center;">
           <h1>Catch that fish!</h1>
-          <div id="capture-image" style="height: 500px; width: 450px; font-size: 32px; text-align: center;">
+          <div id="capture-image" style="height: 500px; width: 400px; font-size: 24px; text-align: center;">
             <center><video id="video" autoplay playsinline></video></center>
           </div>
           <h1>Then take a picture</h1>
           <canvas id="canvas" style="display: none;"></canvas>
         </div>
         <!-- Display area for image captured -->
-        <div class="container" id="captured-image-container" style="display: none; width: 450px; text-align: center;">
+        <div class="container" id="captured-image-container" style="display: none; width: 400px; text-align: center;">
           <h1>I saw your fish!</h1>
-          <center><div id="captured-image" style="height: 500px; width: 450px; font-size: 32px; text-align: center;"><img id="photo" alt="Captured Image" style="display: block; margin: auto;" ></div></canvas>
+          <center><div id="captured-image" style="height: 500px; width: 400px; font-size: 24px; text-align: center;"><img id="photo" alt="Captured Image" style="display: block; margin: auto;" ></div></canvas>
           <h1>You caught em</h1>
         </div>
         <!-- Display area for weather info -->
-        <div class="container" id="weather-info-container" style="display: none; width: 450px; text-align: center;">
+        <div class="container" id="weather-info-container" style="display: none; width: 400px; text-align: center;">
           <h1>I saw your fish!</h1>
-          <div id="weather-info" style="height: 500px; width: 450px; font-size: 32px; text-align: left; margin:25px"></div>
+          <div id="weather-info" style="padding-left: 20px; height: 500px; width: 400px; font-size: 24px; text-align: left; margin:25px;"></div>
           <h1>What Weather Was Like</h1>
         </div>
         <!-- Display area for fish info -->
-        <div class="container" id="fish-info-container" style="display: none; width: 450px; text-align: center;">
+        <div class="container" id="fish-info-container" style="display: none; width: 400px; text-align: center;">
           <h1>I saw your fish!</h1>
-          <div id="fish-info" style="height: 500px; width: 450px;  font-size: 32px; text-align: center;"></div>
-          <h1>Any size?</h1>
+          <div id="fish-info" style="padding-left: 20px; height: 500px; width: 400px;  font-size: 24px; text-align: left; margin:25px;"></div>
+          <h1>Any size?</h1> 
         </div>
         <!-- Buttons / Options and Status -->
       </td>
@@ -54,16 +54,17 @@
     <tr>
       <td>
         <div class="buttons" id="button-display" style="display: none;">
-          <button id="tryAgainBtn">Do Another</button>
-          <button id="fishPictureBtn">See Picture</button>
-          <button id="weatherBtn">Weather Info</button>
-          <button id="fishInfoBtn">Fish Info</button>
+          <img src="camera.png" id="tryAgainBtn" alt="Take a Picture" class="buttonImage">
+          <img src="view-picture.png" id="fishPictureBtn" alt="See Picture" class="buttonImage">
+          <img src="weather.png" id="weatherBtn" alt="Weather Info" class="buttonImage">
+          <img src="favicon.png" id="fishInfoBtn" alt="Fish Info" class="buttonImage">
+
         </div>
         <div class="buttons" id="capture-display" style="display: none;">
-          <button id="captureBtn">Take a Picture</button>
+          <img src="camera.png" id="captureBtn" alt="Take a Picture" class="buttonImage">
         </div>
         <div class="buttons" id="update-apis-display" style="display: none;">
-          <button id="apiKeysUpdateBtn">Update API Keys</button>
+          <img src="update-keys.png" id="apiKeysUpdateBtn" alt="Update API Keys" class="buttonImage">
         </div>
         <div class="container" id="status">v2024.11.03.6</div>
       </td>
