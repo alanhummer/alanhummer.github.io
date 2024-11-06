@@ -29,10 +29,12 @@ var imageDescription = "";
 var keyAPIOpenAI = getStorage("keyAPIOpenAI");
 var keyAPIOpenWeatherMap = getStorage("keyAPIOpenWeatherMap");
 
-//Hold our location
+//Hold our location and weather
 var latitude = null;
 var longitude = null;
 var locationTime = null;
+var weatherMessage = "";
+
 
 document.getElementById("openAIAPI-key").value = keyAPIOpenAI;
 document.getElementById("openWeatherMapAPI-key").value = keyAPIOpenWeatherMap;
@@ -189,11 +191,11 @@ apiKeysUpdateBtn.addEventListener('click', () => {
 // toggleDisplay for what we want to show
 function toggleDisplay(inputType) {
 
+  document.getElementById("api-keys-container").style.display = "none";
   document.getElementById("capture-image-container").style.display = "none";
   document.getElementById("captured-image-container").style.display = "none";
   document.getElementById("weather-info-container").style.display = "none";
   document.getElementById("fish-info-container").style.display = "none";
-  document.getElementById("api-keys-container").style.display = "none";
 
   document.getElementById("button-display").style.display = "none";
   document.getElementById("capture-display").style.display = "none";
@@ -201,17 +203,44 @@ function toggleDisplay(inputType) {
 
   document.getElementById(inputType).style.display = "flex";
 
-  if (inputType == "capture-image-container") {
-    document.getElementById("capture-display").style.display = "flex";
-  }
-  else {
-    if (inputType == "api-keys-container") {
+  switch (inputType) {
+
+    case "api-keys-container":
+      document.getElementById("top-message").innerHTML = "API Keys";
+      document.getElementById("bottom-message").innerHTML = "Cut and past them into here";
       document.getElementById("update-apis-display").style.display = "flex";
-    } 
-    else {
+      break;  
+
+    case "capture-image-container":
+      document.getElementById("top-message").innerHTML = "Catch that fish!";
+      document.getElementById("bottom-message").innerHTML = "Take a picture!";
+      document.getElementById("capture-display").style.display = "flex";
+      break;  
+
+    case "captured-image-container":
+      document.getElementById("top-message").innerHTML = "I saw your fish!";
+      document.getElementById("bottom-message").innerHTML = "Now you got em'";
       document.getElementById("button-display").style.display = "flex";
-    }    
+      break;  
+  
+    case "weather-info-container":
+      document.getElementById("top-message").innerHTML = "I saw your fish!";
+      document.getElementById("bottom-message").innerHTML = weatherMessage;
+      document.getElementById("button-display").style.display = "flex";
+      break;  
+  
+    case "fish-info-container":
+      document.getElementById("top-message").innerHTML = "I saw your fish!";
+      document.getElementById("bottom-message").innerHTML = "Any size?";
+      document.getElementById("button-display").style.display = "flex";
+      break;  
+      
+    default:
+      responseDirection = "N";
+      break;  
+
   }
+
 }
 
 //***************************
@@ -235,11 +264,14 @@ async function getWeatherData(latitude, longitude, dateTimeStamp) {
     const weatherInfo = await pointResponse.json();
 
     // Build weather output - wind direction 180 = from South
-    var weatherInfoText = "Temp: " + Math.round(weatherInfo.current.temp) + "&deg F<br>";
+    var myDesription = toTitleCase(weatherInfo.current.weather[0].description);
+    var myTempDescription = Math.round(weatherInfo.current.temp) + "&deg F";
+
+    var weatherInfoText = "Temp: " + myTempDescription + "<br>";
     weatherInfoText = weatherInfoText + "Wind: " + Math.round(weatherInfo.current.wind_speed) + " MPH at " + weatherInfo.current.wind_deg + "&deg " + windDirection(weatherInfo.current.wind_deg) + "<br>";
     weatherInfoText = weatherInfoText + "Pressure: " + Math.round(weatherInfo.current.pressure) + " hPa / " + empericalPressure(Math.round(weatherInfo.current.pressure)) + " inHg<br>";
     weatherInfoText = weatherInfoText + "Dew Point: " + Math.round(weatherInfo.current.dew_point) + "&deg F<br>";
-    weatherInfoText = weatherInfoText + "Description: " + toTitleCase(weatherInfo.current.weather[0].description) + "<br>";
+    weatherInfoText = weatherInfoText + "Description: " + myDesription + "<br>";
 
     //All good, lets also get location name
 
@@ -249,6 +281,8 @@ async function getWeatherData(latitude, longitude, dateTimeStamp) {
     var locationInfoText = locationinfo[0].name + " " + locationinfo[0].state + "<br>";
 
     weatherInfoDiv.innerHTML = locationInfoText + weatherInfoText;
+    weatherMessage = myDesription + " " + myTempDescription;
+    document.getElementById("bottom-message").innerHTML = weatherMessage;
 
     return weatherInfoDiv.innerHTML;
 
@@ -257,6 +291,7 @@ async function getWeatherData(latitude, longitude, dateTimeStamp) {
     weatherInfoDiv.textContent = "Error fetching weather data";
     weatherAPIInfoDiv.textContent = "Error fetching weather data";
     toggleDisplay("api-keys-container");
+    weatherMessage = "No weather data";
   }
 }
 
