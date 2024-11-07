@@ -29,11 +29,12 @@ var imageDescription = "";
 var keyAPIOpenAI = getStorage("keyAPIOpenAI");
 var keyAPIOpenWeatherMap = getStorage("keyAPIOpenWeatherMap");
 
-//Hold our location and weather
+//Hold our location and weather and other stuff
 var latitude = null;
 var longitude = null;
 var locationTime = null;
 var weatherMessage = "";
+var blnGotPicture = false;
 
 
 document.getElementById("openAIAPI-key").value = keyAPIOpenAI;
@@ -75,6 +76,7 @@ captureBtn.addEventListener('click', () => {
   document.getElementById('fish-info').innerText = imageDescription;
   photo.src = imageData;
   photo.style.display = "block";
+  blnGotPicture = true;
 
   //console.log("imageData", imageData);
 
@@ -201,6 +203,15 @@ function toggleDisplay(inputType) {
   document.getElementById("capture-display").style.display = "none";
   document.getElementById("update-apis-display").style.display = "none";
 
+  document.getElementById("tryAgainBtn").disabled = false;
+  document.getElementById("fishPictureBtn").disabled = false;
+  document.getElementById("weatherBtn").disabled = false;
+  document.getElementById("fishInfoBtn").disabled = false;
+  document.getElementById("tryAgainBtn").style.opacity = "1";
+  document.getElementById("fishPictureBtn").style.opacity = "1";
+  document.getElementById("weatherBtn").style.opacity = "1";
+  document.getElementById("fishInfoBtn").style.opacity = "1";
+
   document.getElementById(inputType).style.display = "flex";
 
   switch (inputType) {
@@ -215,30 +226,49 @@ function toggleDisplay(inputType) {
       document.getElementById("top-message").innerHTML = "Catch that fish!";
       document.getElementById("bottom-message").innerHTML = "Take a picture!";
       document.getElementById("capture-display").style.display = "flex";
+      document.getElementById("button-display").style.display = "flex";
+      document.getElementById("tryAgainBtn").disabled = true;
+      document.getElementById("tryAgainBtn").style.opacity = "0.5";
       break;  
 
     case "captured-image-container":
       document.getElementById("top-message").innerHTML = "I saw your fish!";
       document.getElementById("bottom-message").innerHTML = "Now you got em'";
       document.getElementById("button-display").style.display = "flex";
+      document.getElementById("fishPictureBtn").disabled = true;
+      document.getElementById("fishPictureBtn").style.opacity = "0.5";
       break;  
   
     case "weather-info-container":
       document.getElementById("top-message").innerHTML = "I saw your fish!";
       document.getElementById("bottom-message").innerHTML = weatherMessage;
       document.getElementById("button-display").style.display = "flex";
+      document.getElementById("weatherBtn").disabled = true;
+      document.getElementById("weatherBtn").style.opacity = "0.5";
       break;  
   
     case "fish-info-container":
       document.getElementById("top-message").innerHTML = "I saw your fish!";
       document.getElementById("bottom-message").innerHTML = "Any size?";
       document.getElementById("button-display").style.display = "flex";
+      document.getElementById("fishInfoBtn").disabled = true;
+      document.getElementById("fishInfoBtn").style.opacity = "0.5";
       break;  
       
     default:
-      responseDirection = "N";
       break;  
 
+  }
+
+  if (!blnGotPicture) {
+    document.getElementById("tryAgainBtn").disabled = true;
+    document.getElementById("tryAgainBtn").style.opacity = "0.5";
+    document.getElementById("fishPictureBtn").disabled = true;
+    document.getElementById("fishPictureBtn").style.opacity = "0.5"
+    document.getElementById("weatherBtn").disabled = true;
+    document.getElementById("weatherBtn").style.opacity = "0.5";
+    document.getElementById("fishInfoBtn").disabled = true;
+    document.getElementById("fishInfoBtn").style.opacity = "0.5";
   }
 
 }

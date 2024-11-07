@@ -6,6 +6,8 @@
   <title>I saw your fish!</title>
   <link rel="stylesheet" href="styles.css">
 </head>
+<link rel="shortcut icon" href="favicon.png" type="image/x-icon" />
+<link rel="icon" type="image/png" href="favicon.png">
 <body>
   <h1 class="header-top" id="top-message">I saw your fish!</h1>
 
@@ -20,12 +22,19 @@
   </div>
   <!-- Display area for image capture -->
   <div class="container" id="capture-image-container" style="display: none;">
-    <div id="capture-image"><video id="video" autoplay playsinline></video></div>
+    <div id="capture-image"><video id="video" autoplay playsinline></video></div>    
+    <div class="bigButtons" id="capture-display" style="display: none;">
+      <img src="take-picture.png" id="captureBtn" alt="Take a Picture" class="buttonImageWide">    
+    </div>
     <canvas id="canvas" style="display: none;"></canvas>
   </div>
   <!-- Display area for image captured -->
   <div class="container" id="captured-image-container" style="display: none;">
     <div id="captured-image"><img id="photo" alt="Captured Image" style="display: block; margin: auto;" ></div>
+    <div class="bigButtons" style="height: 75px;">
+      <img src="take-picture.png" class="buttonImageWide" style="display:none;">    
+    </div>
+    <canvas style="display: none;"></canvas> <!-- For spacing, we keep this-->
   </div>
   <!-- Display area for weather info -->
   <div class="container" id="weather-info-container" style="display: none;">
@@ -44,13 +53,11 @@
     <img src="weather.png" id="weatherBtn" alt="Weather Info" class="buttonImage">
     <img src="favicon.png" id="fishInfoBtn" alt="Fish Info" class="buttonImage">
   </div>
-  <div class="buttons" id="capture-display" style="display: none;">
-    <img src="camera.png" id="captureBtn" alt="Take a Picture" class="buttonImage">
-  </div>
+
   <div class="buttons" id="update-apis-display" style="display: none;">
     <img src="update-keys.png" id="apiKeysUpdateBtn" alt="Update API Keys" class="buttonImage">
   </div>
-  <div class="status" id="status">v2024.11.05.1</div>
+  <div class="status" id="status">v2024.11.06.1</div>
   <!-- And our script -->
   <script src="script.js"></script>
 </body>
