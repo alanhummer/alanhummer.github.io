@@ -59,6 +59,8 @@
     width: 300px;
     margin: auto;     /* Centers vertically */
     display: block;
+    position: fixed;
+    bottom: 1;
   }
  
   video, img {
@@ -122,3 +124,13 @@
     vertical-align: top;
   }
   
+  hr {
+    border: 0px;
+    height: 10px;
+    /* Set the hr color */
+    color: #1faee2;  /* old IE */
+    background-color: #1faee2;  /* Modern Browsers */
+    margin-top: 10px;
+    margin-bottom: 10px;
+    width: 100%;
+  }

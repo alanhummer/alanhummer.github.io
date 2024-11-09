@@ -89,23 +89,32 @@ captureBtn.addEventListener('click', () => {
 tryAgainBtn.addEventListener('click', () => {
 
   //Show capture display
+  if (tryAgainBtn.disabled) {
+    return;
+  }  
   toggleDisplay("capture-image-container");
-  
+
 });
 
 // Show Picture Again
 fishPictureBtn.addEventListener('click', () => {
 
   //Show capture display
+  if (fishPictureBtn.disabled) {
+    return;
+  }
   toggleDisplay("captured-image-container");
-  
+
 });
 
 // Weather Info
 weatherBtn.addEventListener('click', () => {
 
-  //Get Location Data - if we timeout of caching it
+  if (weatherBtn.disabled) {
+    return;
+  }
 
+  //Get Location Data - if we timeout of caching it
   var blnGetLocation = false;
   if (latitude && longitude && locationTime) {
 
@@ -165,6 +174,10 @@ weatherBtn.addEventListener('click', () => {
 // Fish Info
 fishInfoBtn.addEventListener('click', () => {
 
+  if (fishInfoBtn.disabled) {
+    return;
+  }
+
   //Show info on the image
   identifyFish(); // We'll want to pass in the picture here
   toggleDisplay("fish-info-container");
@@ -212,6 +225,8 @@ function toggleDisplay(inputType) {
   document.getElementById("weatherBtn").style.opacity = "1";
   document.getElementById("fishInfoBtn").style.opacity = "1";
 
+  document.getElementById("bottom-message").style.display = "block"; //Message at bottom....usually on
+
   document.getElementById(inputType).style.display = "flex";
 
   switch (inputType) {
@@ -229,6 +244,8 @@ function toggleDisplay(inputType) {
       document.getElementById("button-display").style.display = "flex";
       document.getElementById("tryAgainBtn").disabled = true;
       document.getElementById("tryAgainBtn").style.opacity = "0.5";
+      document.getElementById("bottom-message").style.display = "none"; //Message at bottom..
+
       break;  
 
     case "captured-image-container":
@@ -304,14 +321,18 @@ async function getWeatherData(latitude, longitude, dateTimeStamp) {
     weatherInfoText = weatherInfoText + "Description: " + myDesription + "<br>";
 
     //All good, lets also get location name
-
     const locationResponse = await fetch(`https://api.openweathermap.org/geo/1.0/reverse?lat=${latitude}&lon=${longitude}&appid=${keyAPIOpenWeatherMap}`);
     if (!locationResponse.ok) throw new Error(`Location fetch failed: ${locationResponse.statusText}`);
     const locationinfo = await locationResponse.json();
     var locationInfoText = locationinfo[0].name + " " + locationinfo[0].state + "<br>";
 
-    weatherInfoDiv.innerHTML = locationInfoText + weatherInfoText;
+    //Add latitude, longitue, time
+    var latLongTime = "<hr>Latt:  " + latitude + "<br>Long: " + longitude + "<br>Time: " + getDateTime(dateTimeStamp);
+
+    //And our weather display buckets
+    weatherInfoDiv.innerHTML = locationInfoText + weatherInfoText + latLongTime;
     weatherMessage = myDesription + " " + myTempDescription;
+
     document.getElementById("bottom-message").innerHTML = weatherMessage;
 
     return weatherInfoDiv.innerHTML;
@@ -518,3 +539,26 @@ function windDirection(inputWindDegrees) {
 
 }
 
+function getDateTime(inputDateTIme) {
+
+  var timeStamp;
+  var dateStamp;
+
+  if (inputDateTIme) {
+    timeStamp = inputDateTIme;
+  }
+  else {
+    timeStamp = Date.now();
+  }
+
+  dateStamp = new Date(timeStamp);
+
+  // Format the date
+  const formattedDate = dateStamp.toLocaleDateString();
+  const formattedTime = dateStamp.toLocaleTimeString();
+
+  var responseDateTime = formattedDate + " " + formattedTime;
+
+  return responseDateTime;
+
+}
