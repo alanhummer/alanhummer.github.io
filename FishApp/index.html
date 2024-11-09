@@ -1,65 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <link rel="shortcut icon" href="favicon.png" type="image/x-icon" />
+  <link rel="icon" type="image/png" href="favicon.png">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>I saw your fish!</title>
   <link rel="stylesheet" href="styles.css">
 </head>
-<link rel="shortcut icon" href="favicon.png" type="image/x-icon" />
-<link rel="icon" type="image/png" href="favicon.png">
+
 <body>
-  <h1 class="header-top" id="top-message">I saw your fish!</h1>
-
-  <!-- Display area for API keys -->
-  <div class="container" id="api-keys-container" style="display: none;">
-    <div id="api-keys"">
-      Open AI: <input id="openAIAPI-key" type="text" size="30"><br>
-      Open Weather Map:<input id="openWeatherMapAPI-key" type="text" size="30">
-      <div id="weather-api-info" style="font-size: 12px; text-align: left;"></div>
-      <div id="open-ai-api-info" style="font-size: 12px; text-align: left;"></div>
-    </div>
-  </div>
-  <!-- Display area for image capture -->
-  <div class="container" id="capture-image-container" style="display: none;">
-    <div id="capture-image"><video id="video" autoplay playsinline></video></div>    
-    <canvas id="canvas" style="display: none;"></canvas>
-  </div>
-  <!-- Display area for image captured -->
-  <div class="container" id="captured-image-container" style="display: none;">
-    <div id="captured-image"><img id="photo" alt="Captured Image" style="display: block; margin: auto;" ></div>
-    <div class="bigButtons" style="height: 75px;">
-      <img src="take-picture.png" class="buttonImageWide" style="display:none;">    
-    </div>
-    <canvas style="display: none;"></canvas> <!-- For spacing, we keep this-->
-  </div>
-  <!-- Display area for weather info -->
-  <div class="container" id="weather-info-container" style="display: none;">
-    <div id="weather-info" class="text-display"></div>
-  </div>
-  <!-- Display area for fish info -->
-  <div class="container" id="fish-info-container" style="display: none;">
-    <div id="fish-info" class="text-display"></div>
-  </div>
-
-  <!-- Buttons / Options and Status -->
-  <h1 class="header-bottom" id="bottom-message">You caught em</h1>
-  <div class="bigButtons" id="capture-display" style="display: none;">
-    <img src="take-picture.png" id="captureBtn" alt="Take a Picture" class="buttonImageWide">
-  </div>
-  <div class="buttons" id="button-display" style="display: none;">
-    <img src="camera.png" id="tryAgainBtn" alt="Take a Picture" class="buttonImage">
-    <img src="view-picture.png" id="fishPictureBtn" alt="See Picture" class="buttonImage">
-    <img src="weather.png" id="weatherBtn" alt="Weather Info" class="buttonImage">
-    <img src="favicon.png" id="fishInfoBtn" alt="Fish Info" class="buttonImage">
-  </div>
-
-  <div class="buttons" id="update-apis-display" style="display: none;">
-    <img src="update-keys.png" id="apiKeysUpdateBtn" alt="Update API Keys" class="buttonImage">
-  </div>
-  <div class="status" id="status">v2024.11.08.1</div>
+  <table border="0" cellpadding="0" cellspacing="0" width="100%" height="100%" text-align="center">
+    <tr>
+      <td align="center" style="height: 5vh;"><h1 id="top-message">I saw your fish!</h1></td>
+    </tr>
+    <tr>
+      <td align="center" style="height: 60vh;">
+        <!-- Display area for API keys -->
+        <div class="container" id="api-keys-container" style="display: none;">
+          <div id="api-keys"">
+            Open AI: <input id="openAIAPI-key" type="text" size="30"><br>
+            Open Weather Map:<input id="openWeatherMapAPI-key" type="text" size="30">
+            <div id="weather-api-info" style="font-size: 12px; text-align: left;"></div>
+            <div id="open-ai-api-info" style="font-size: 12px; text-align: left;"></div>
+          </div>
+        </div>
+        <!-- Display area for image capture -->
+        <div class="container" id="capture-image-container" style="display: none;">
+          <div id="capture-image"><video id="video" autoplay playsinline></video></div>    
+          <canvas id="canvas" style="display: none;"></canvas>
+        </div>
+        <!-- Display area for image captured -->
+        <div class="container" id="captured-image-container" style="display: none;">
+          <div id="captured-image"><img id="photo" alt="Captured Image" style="display: block; margin: auto;" ></div>
+          <canvas style="display: none;"></canvas> <!-- For spacing, we keep this-->
+        </div>
+        <!-- Display area for weather info -->
+        <div class="container" id="weather-info-container" style="display: none;">
+          <div id="weather-info" class="text-display"></div>
+        </div>
+        <!-- Display area for fish info -->
+        <div class="container" id="fish-info-container" style="display: none;">
+          <div id="fish-info" class="text-display"></div>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td style="height: 15vh;" valign="middle">
+        <!-- Buttons / Options and Status -->
+        <h1 class="header-bottom" id="bottom-message">You caught em</h1>
+        <div class="bigButtons" id="capture-display" style="display: none;">
+          <img src="take-picture.png" id="captureBtn" alt="Take a Picture" class="buttonImageWide">
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td style="height: 80px;" valign="bottom">
+        <div class="buttons" id="button-display" style="display: none;">
+          <img src="camera.png" id="tryAgainBtn" alt="Take a Picture" class="buttonImage">
+          <img src="view-picture.png" id="fishPictureBtn" alt="See Picture" class="buttonImage">
+          <img src="weather.png" id="weatherBtn" alt="Weather Info" class="buttonImage">
+          <img src="favicon.png" id="fishInfoBtn" alt="Fish Info" class="buttonImage">
+        </div>
+        <div class="buttons" id="update-apis-display" style="display: none;">
+          <img src="update-keys.png" id="apiKeysUpdateBtn" alt="Update API Keys" class="buttonImage">
+        </div>
+      </td>
+    </tr>
+  </table>
   <!-- And our script -->
   <script src="script.js"></script>
+  <br><div class="status" id="status">v2024.11.08.1</div>
 </body>
 </html>
 
