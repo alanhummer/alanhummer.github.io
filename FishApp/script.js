@@ -289,6 +289,9 @@ async function getWeatherData(latitude, longitude, dateTimeStamp) {
 
   //Let's get location description first and then weather info
   try {
+
+    weatherInfoDiv.innerText = "Getting weather data...";
+
     // 1. Get the forecast office and grid location based on latitude and longitude
     //AJH Change to use relay: Lat/long/guid
     const pointResponse = await fetch(apiOpenWeatherURL + `?guid=${keyUserGUID}&lat=${latitude}&lon=${longitude}`);
