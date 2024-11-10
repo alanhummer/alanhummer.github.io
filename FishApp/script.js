@@ -55,10 +55,14 @@ var keyAPIOpenAI = getStorage("keyAPIOpenAI");
 if (keyAPIOpenAI) {
   deleteStorage("keyAPIOpenAI");
 }
-
 var keyAPIOpenWeatherMap = getStorage("keyAPIOpenWeatherMap");
 if (keyAPIOpenWeatherMap) {
   deleteStorage("keyAPIOpenWeatherMap");
+}
+
+//Lock the screen orientation
+if (screen.orientation) {
+  screen.orientation.lock("portrait").catch(() => {}) 
 }
 
 // Access the camera
