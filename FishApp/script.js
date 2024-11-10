@@ -1,11 +1,12 @@
 //To do's:
 //1) X Store Lat / Long so don't query alwasy...time out in 1 hour
 //2) X API Keys for Weather and Open AI in local storage? Get from server? Or setup host relay?
-//2b) Replit as a relay server w/Keys
+//2b) X Deno as a relay server w/Keys
 //2c) X  If not keys, ask for key and store in local storage
 //3) Camera storage thumbs of inventory to pick from instead of taking pic
 //4) Stored pics select them from camera storage - use date / loc on pic for weather 
-//5) Gen user GUID and store, then to pass with requests
+//5) X Gen user GUID and store, then to pass with requests
+//6) Lock screen rotation
 
 //We use https://openweathermap.org/
 //For Historical: https://api.openweathermap.org/data/3.0/onecall/timemachine?lat=39.099724&lon=-94.578331&dt=1643803200&appid=
