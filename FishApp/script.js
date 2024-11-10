@@ -5,6 +5,11 @@
 //2c) X  If not keys, ask for key and store in local storage
 //3) Camera storage thumbs of inventory to pick from instead of taking pic
 //4) Stored pics select them from camera storage - use date / loc on pic for weather 
+//5) Gen user GUID and store, then to pass with requests
+
+//We use https://openweathermap.org/
+//For Historical: https://api.openweathermap.org/data/3.0/onecall/timemachine?lat=39.099724&lon=-94.578331&dt=1643803200&appid=
+//Fish info here: https://platform.openai.com/docs/overview
 
 const video = document.getElementById('video');
 const canvas = document.getElementById('canvas');
@@ -19,15 +24,18 @@ const tryAgainBtn = document.getElementById('tryAgainBtn');
 const fishPictureBtn = document.getElementById('fishPictureBtn');
 const weatherBtn = document.getElementById('weatherBtn');
 const fishInfoBtn = document.getElementById('fishInfoBtn');
-const apiKeysUpdateBtn = document.getElementById('apiKeysUpdateBtn');
 
 //This holds our image stream
 var imageData = ""; 
 var imageDescription = "";
 
-//Hold our API Keys
-var keyAPIOpenAI = getStorage("keyAPIOpenAI");
-var keyAPIOpenWeatherMap = getStorage("keyAPIOpenWeatherMap");
+//API URLs
+var apiOpenWeatherURL = "https://i-saw-your-fish.deno.dev/getweatherinfo";
+var apiOpenWeatherMapURL = "https://i-saw-your-fish.deno.dev/getlocationinfo";
+var apiOpenAIURL = "https://i-saw-your-fish.deno.dev/getfishinfo";
+
+//Hold our GUID
+var keyUserGUID = getStorage("keyUserGUID");
 
 //Hold our location and weather and other stuff
 var latitude = null;
@@ -36,21 +44,21 @@ var locationTime = null;
 var weatherMessage = "";
 var blnGotPicture = false;
 
-
-document.getElementById("openAIAPI-key").value = keyAPIOpenAI;
-document.getElementById("openWeatherMapAPI-key").value = keyAPIOpenWeatherMap;
-
-//We need API keys or not?
-if (keyAPIOpenAI && keyAPIOpenWeatherMap) {
-  if (keyAPIOpenAI.length > 0 && keyAPIOpenWeatherMap.length > 0) {
-    toggleDisplay("capture-image-container");
-  }
-  else {
-    toggleDisplay("api-keys-container");
-  }
+//We need user GUID or not?
+if (!keyUserGUID) {
+  keyUserGUID = genGUID();
+  setStorage("keyUserGUID", keyUserGUID);
 }
-else {
-  toggleDisplay("api-keys-container");
+
+//Zap any local storage keys if i have them
+var keyAPIOpenAI = getStorage("keyAPIOpenAI");
+if (keyAPIOpenAI) {
+  deleteStorage("keyAPIOpenAI");
+}
+
+var keyAPIOpenWeatherMap = getStorage("keyAPIOpenWeatherMap");
+if (keyAPIOpenWeatherMap) {
+  deleteStorage("keyAPIOpenWeatherMap");
 }
 
 // Access the camera
@@ -62,6 +70,8 @@ navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
     console.error("Error accessing the camera", error);
     statusDiv.textContent = "Camera access is required to take a photo.";
 });
+
+toggleDisplay("capture-image-container"); //This is our starting point
 
 // Capture photo
 captureBtn.addEventListener('click', () => {
@@ -184,29 +194,10 @@ fishInfoBtn.addEventListener('click', () => {
   
 });
 
-// API Keys Update
-apiKeysUpdateBtn.addEventListener('click', () => {
-
-  //Update API Keys
-  if (document.getElementById("openAIAPI-key").value && document.getElementById("openWeatherMapAPI-key").value) {
-    if (document.getElementById("openAIAPI-key").value.length > 0 && document.getElementById("openWeatherMapAPI-key").value.length > 0) {
-
-      keyAPIOpenAI = document.getElementById("openAIAPI-key").value;
-      keyAPIOpenWeatherMap = document.getElementById("openWeatherMapAPI-key").value;
-
-      setStorage("keyAPIOpenAI", keyAPIOpenAI);
-      setStorage("keyAPIOpenWeatherMap", keyAPIOpenWeatherMap);
-
-      toggleDisplay("capture-image-container");
-
-    }
-  }  
-});
 
 // toggleDisplay for what we want to show
 function toggleDisplay(inputType) {
 
-  document.getElementById("api-keys-container").style.display = "none";
   document.getElementById("capture-image-container").style.display = "none";
   document.getElementById("captured-image-container").style.display = "none";
   document.getElementById("weather-info-container").style.display = "none";
@@ -214,7 +205,6 @@ function toggleDisplay(inputType) {
 
   document.getElementById("button-display").style.display = "none";
   document.getElementById("capture-display").style.display = "none";
-  document.getElementById("update-apis-display").style.display = "none";
 
   document.getElementById("tryAgainBtn").disabled = false;
   document.getElementById("fishPictureBtn").disabled = false;
@@ -230,12 +220,6 @@ function toggleDisplay(inputType) {
   document.getElementById(inputType).style.display = "flex";
 
   switch (inputType) {
-
-    case "api-keys-container":
-      document.getElementById("top-message").innerHTML = "API Keys";
-      document.getElementById("bottom-message").innerHTML = "Cut and past them into here";
-      document.getElementById("update-apis-display").style.display = "flex";
-      break;  
 
     case "capture-image-container":
       document.getElementById("top-message").innerHTML = "Catch that fish!";
@@ -297,15 +281,11 @@ function toggleDisplay(inputType) {
 // Function to fetch and parse weather data
 async function getWeatherData(latitude, longitude, dateTimeStamp) {
 
-  //From here: https://openweathermap.org/
   //Let's get location description first and then weather info
-
   try {
     // 1. Get the forecast office and grid location based on latitude and longitude
-    const pointResponse = await fetch(`https://api.openweathermap.org/data/3.0/onecall?lat=${latitude}&lon=${longitude}&units=imperial&appid=${keyAPIOpenWeatherMap}`);
-    
-    //For Historical: https://api.openweathermap.org/data/3.0/onecall/timemachine?lat=39.099724&lon=-94.578331&dt=1643803200&appid=
-    
+    //AJH Change to use relay: Lat/long/guid
+    const pointResponse = await fetch(apiOpenWeatherURL + `?guid=${keyUserGUID}&lat=${latitude}&lon=${longitude}`);
     if (!pointResponse.ok) throw new Error(`Point fetch failed: ${pointResponse.statusText}`);
     
     const weatherInfo = await pointResponse.json();
@@ -321,7 +301,8 @@ async function getWeatherData(latitude, longitude, dateTimeStamp) {
     weatherInfoText = weatherInfoText + "Description: " + myDesription + "<br>";
 
     //All good, lets also get location name
-    const locationResponse = await fetch(`https://api.openweathermap.org/geo/1.0/reverse?lat=${latitude}&lon=${longitude}&appid=${keyAPIOpenWeatherMap}`);
+    //AJH Change to use relay: Lat/long/guid
+    const locationResponse = await fetch(apiOpenWeatherMapURL + `?guid=${keyUserGUID}&lat=${latitude}&lon=${longitude}`);
     if (!locationResponse.ok) throw new Error(`Location fetch failed: ${locationResponse.statusText}`);
     const locationinfo = await locationResponse.json();
     var locationInfoText = locationinfo[0].name + " " + locationinfo[0].state + "<br>";
@@ -339,9 +320,8 @@ async function getWeatherData(latitude, longitude, dateTimeStamp) {
 
   } catch (error) {
     console.error("Error fetching weather data:", error);
-    weatherInfoDiv.textContent = "Error fetching weather data";
-    weatherAPIInfoDiv.textContent = "Error fetching weather data";
-    toggleDisplay("api-keys-container");
+    weatherInfoDiv.innerHTML = "Error fetching weather data";
+    return weatherInfoDiv.innerHTML;
     weatherMessage = "No weather data";
   }
 }
@@ -350,8 +330,6 @@ async function getWeatherData(latitude, longitude, dateTimeStamp) {
 //Here is the code to call Open AI and figure out what kind of fish it is
 //***************************
 async function identifyFish() {
-
-  //From here: https://platform.openai.com/docs/overview
 
   if (imageData.length <= 0) {
       alert("Please select an image first.");
@@ -392,13 +370,10 @@ async function identifyFish() {
     };
 
     // Call OpenAI API
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    //AJH Change to use relay Image + GUID
+    const response = await fetch(apiOpenAIURL + `?guid=${keyUserGUID}`, {
         method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${keyAPIOpenAI}`,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload)
+        body: imageContent
     });
 
     if (!response.ok) throw new Error("Failed to get response from OpenAI");
@@ -419,8 +394,6 @@ async function identifyFish() {
       console.error("Error identifying fish:", error);
       document.getElementById('fish-info').innerText = `Error: ${error.message}`;
       document.body.style.cursor  = 'default';
-      openAIAPIInfoDiv.textContent = `Error: ${error.message}`;
-      toggleDisplay("api-keys-container");
   }
 }
 
@@ -434,6 +407,7 @@ function toBase64(file) {
     });
 }
 
+// Helper function to convert to title case
 function toTitleCase(str) {
   return str.replace(
     /\w\S*/g,
@@ -441,15 +415,25 @@ function toTitleCase(str) {
   );
 }
 
+// Helper function to save to local storage
 function setStorage(inputKey, inputValue) {
   localStorage.setItem(inputKey, inputValue);
 }
 
+// Helper function to get from loca storage
 function getStorage(inputKey) {
   var outputValue = localStorage.getItem(inputKey);
   return outputValue;
 }
 
+// Helper function to delete from loca storage
+function deleteStorage(inputKey) {
+  localStorage.removeItem(inputKey);
+  return;
+}
+
+
+// Helper function to convert to emperica pressure units
 function empericalPressure(inputhPa) {
   
   var outputinHg = inputhPa / 33.863889532611;
@@ -458,7 +442,7 @@ function empericalPressure(inputhPa) {
   
 }
 
-
+// Helper function to translate wind degrees to direction
 function windDirection(inputWindDegrees) {
 
   var responseDirection = "N";
@@ -539,6 +523,7 @@ function windDirection(inputWindDegrees) {
 
 }
 
+// Helper function to  get a formatted date/time
 function getDateTime(inputDateTIme) {
 
   var timeStamp;
@@ -562,3 +547,15 @@ function getDateTime(inputDateTIme) {
   return responseDateTime;
 
 }
+
+// Helper function to  get a GUID
+function genGUID() {
+
+  var timeStamp = Date.now();
+  var randomNumber = Math.random();
+  var myGUID = timeStamp.toString() + randomNumber.toString().replace(".", "-");
+  
+  return myGUID;
+
+}
+
