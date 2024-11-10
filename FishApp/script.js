@@ -61,8 +61,9 @@ if (keyAPIOpenWeatherMap) {
 }
 
 //Lock the screen orientation
+document.documentElement.requestFullscreen().catch(() => {});
 if (screen.orientation) {
-  screen.orientation.lock("portrait").catch(() => {}) 
+  screen.orientation.lock("portrait").catch(() => {});
 }
 
 // Access the camera
