@@ -252,6 +252,8 @@ fishInfoBtn.addEventListener('click', () => {
 
   //Show info on the image
   identifyFish(); // We'll want to pass in the picture here
+  document.getElementById('fish-info-photo').src = imageData;
+  document.getElementById('fish-info-photo').style.display = "block";
   toggleDisplay("fish-info-container");
   
 });
@@ -520,15 +522,15 @@ async function getWeatherData(latitude, longitude, dateTimeStamp) {
 
     if (blnImageLoaded) {
       if (!blnGotPictureLocationTime && !blnGotPictureLocation) {
-        weatherMessage = "No Place or Time - Using Current"
+        weatherMessage = "Location and Time of Picture Not Available"
       }
       else {
         if (!blnGotPictureLocation) {
-          weatherMessage = "No Place - Using Current"
+          weatherMessage = "Location of Picture Not Available"
         } 
         else {
           if (!blnGotPictureLocationTime) {
-            weatherMessage = "No Time - Using Current"
+            weatherMessage = "Time of Picture Not Available"
           }
           else {
             weatherMessage = myDesription + " " + myTempDescription;
