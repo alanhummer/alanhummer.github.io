@@ -284,7 +284,14 @@ document.getElementById('fileInput').addEventListener('change', async function(e
       if (exifTags.GPSLongitude && exifTags.GPSLatitude) {
         longitude = (exifTags.GPSLongitude.description) * -1;
         latitude =  exifTags.GPSLatitude.description;
-        blnGotPictureLocation = true;
+        if (isNumeric(latitude) && isNumeric(longitude)) {
+          blnGotPictureLocation = true;
+        }
+        else {
+          longitude = "";
+          latitude = "";
+          blnGotPictureLocation = false;
+        }        
       }
       else {
         blnGotPictureLocation = false;
@@ -763,4 +770,8 @@ function convertToISO(dateString) {
   const isoString = `${formattedDate}T${timePart}.000Z`;
 
   return isoString;
+}
+
+function isNumeric(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
 }
