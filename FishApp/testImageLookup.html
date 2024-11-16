@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAUR5UBkzF2EbJrWlMeH6wl7jid5qgv4z0&callback=initialize"></script>
+</head>
+<body>
+
+<input type="file" id="fileInput" accept="image/*" />
+<pre id="output"></pre>
+
+<script type="module">
+
+import ExifReader from "https://esm.sh/exifreader";
+
+var outputReport = "Her we go!<br>";
+
+document.getElementById('fileInput').addEventListener('change', async function(event) {
+
+    outputReport = outputReport + "Doing Change Event<br>";
+
+    const file = event.target.files[0];
+
+    const exifTags = await ExifReader.load(file);
+
+    console.log(exifTags);
+    
+    var myLongitude = (exifTags.GPSLongitude.description) * -1;
+    outputReport = "GPS Latitude: " + exifTags.GPSLatitude.description + "<br>";
+    outputReport = outputReport + "GPS Longitude: " + myLongitude + "<br>";;
+    outputReport = outputReport + "Time Stamp: " + exifTags.DateTime.description + "<br>";;
+
+    const myDateTime = new Date(convertToISO(exifTags.DateTime.description));
+
+    const toTimestamp = date => Math.floor(date.getTime() / 1000);
+
+    const myUnxTS = toTimestamp(myDateTime)
+    
+    outputReport = outputReport + "Unix TS: " + myUnxTS + "<br>";;
+    document.getElementById('output').innerHTML = outputReport;
+
+    initialize(exifTags.GPSLatitude.description, myLongitude );
+
+});
+
+function convertToISO(dateString) {
+    // Split the input string into date and time parts
+    const [datePart, timePart] = dateString.split(' ');
+
+    // Replace colons in the date part with hyphens
+    const formattedDate = datePart.replace(/:/g, '-');
+
+    // Combine the formatted date with the time part
+    const isoString = `${formattedDate}T${timePart}.000Z`;
+
+    return isoString;
+}
+
+
+function initialize(inputLatitude, inputLongitude) {
+
+    var mapOptions = {
+
+        center: { lat: inputLatitude, lng: inputLongitude }, // Replace with your desired coordinates
+
+        zoom: 15 // Adjust zoom level as needed
+
+    };
+
+    var map = new google.maps.Map(document.getElementById('map'), mapOptions);
+
+}
+
+
+</script>
+<div id="map" style="width: 100%; height: 400px;"></div> 
+</body>
+</html>
+
+
+
