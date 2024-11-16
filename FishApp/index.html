@@ -18,6 +18,7 @@
       <td align="center" style="height: 57vh;">
         <!-- Display area for image capture -->
         <div class="container" id="capture-image-container" style="display: none;">
+          <input type="file" id="fileInput" accept="image/*" />
           <div id="capture-image" style="display: none;"><video id="video" autoplay playsinline></video></div>  
           <div id="captured-image" style="display: none;"><img id="photo" alt="Captured Image" style="display: none;" ></div>  
           <canvas id="canvas" style="display: none;"></canvas>
@@ -41,8 +42,20 @@
         <!-- Buttons / Options and Status -->
         <h1 class="header-bottom" id="bottom-message">You caught em</h1>
         <div class="bigButtons" id="capture-buttons" style="display: none;">
-          <img src="take-picture.png" id="captureBtn" alt="Take a Picture" class="buttonImageWide">
-          <img src="get-another.png" id="getAnotherBtn" alt="Get Another..." class="buttonImageWide" style="display: none;">        
+          <table cellspacing="0" cellpadding="0" border="0" width="100%">
+            <tr>
+              <td width="25px"><td>
+              <td width="280px" align="right">
+                <img src="take-picture.png" id="captureBtn" alt="Take a Picture" class="buttonImageWide">
+                <img src="get-another.png" id="getAnotherBtn" alt="Get Another..." class="buttonImageWide" style="display: none;">        
+              </td>
+              <td width="10px"><td>
+              <td width="65px" align="left">
+                <img src="load-picture.png" id="loadPictureBtn" alt="Load Picture..." class="buttonImage" style="height:65px">     
+              </td>
+              <td width="25px"><td>
+            </tr>
+          </table>
         </div>
       </td>
     </tr>
@@ -58,8 +71,8 @@
     </tr>
   </table>
   <!-- And our script -->
-  <script src="script.js"></script>
-  <br><div class="status" id="status">v2024.11.09.13</div>
+  <script src="script.js" type="module"></script>
+  <br><div class="status" id="status">v2024.11.15.02</div>
 </body>
 </html>
 

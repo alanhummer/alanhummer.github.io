@@ -17,7 +17,7 @@
 //TimeStamp converter: const toTimestamp = date => Math.floor(date.getTime() / 1000); 
 //TimeStamp reverse: const fromTimestamp = timestamp => new Date(timestamp * 1000) 
  
-
+import ExifReader from "https://esm.sh/exifreader";
 
 const video = document.getElementById('video');
 const canvas = document.getElementById('canvas');
@@ -34,6 +34,7 @@ const tryAgainBtn = document.getElementById('tryAgainBtn');
 const weatherBtn = document.getElementById('weatherBtn');
 const mapBtn = document.getElementById('mapBtn');
 const fishInfoBtn = document.getElementById('fishInfoBtn');
+const loadPictureBtn = document.getElementById('loadPictureBtn');
 
 //This holds our image stream
 var imageData = ""; 
@@ -53,6 +54,9 @@ var longitude = null;
 var locationTime = null;
 var weatherMessage = "";
 var blnGotPicture = false;
+var blnGotPictureLocation = false;
+var blnGotPictureLocationTime = false;
+var blnImageLoaded = false;
 
 //We need user GUID or not?
 if (!keyUserGUID) {
@@ -102,6 +106,9 @@ captureBtn.addEventListener('click', () => {
   photo.src = imageData;
   photo.style.display = "block";
   blnGotPicture = true;
+  blnGotPictureLocation = false;
+  blnGotPictureLocationTime = false;
+  blnImageLoaded = false;
 
   //console.log("imageData", imageData);
 
@@ -137,7 +144,7 @@ weatherBtn.addEventListener('click', async () => {
   await getLocationData();
 
   //Get Weather Data
-  getWeatherData(latitude, longitude, null); 
+  getWeatherData(latitude, longitude, locationTime); 
   toggleDisplay("weather-info-container");
 
 });
@@ -145,23 +152,34 @@ weatherBtn.addEventListener('click', async () => {
 //Get location data, if not cached and not cache timed out
 async function getLocationData() {
 
-  var blnGetLocation = false;
-  if (latitude && longitude && locationTime) {
+  if (blnGotPictureLocation) {
+    return;
+  }
 
-    // Calculate the difference in milliseconds
-    const differenceInMilliseconds = Date.now() - locationTime;
+  var blnGetLocation = false;  
+  if (blnGotPictureLocationTime) {
+    blnGetLocation = true;
+  }
+  else {
+    if (latitude && longitude && locationTime) {
 
-    // Convert to days
-    const millisecondsPerHour = 1000 * 60 * 60;
-    const differenceInHours = Math.floor(differenceInMilliseconds / millisecondsPerHour);
-
-    if (differenceInHours > 0) {
+      // Calculate the difference in milliseconds
+      const differenceInMilliseconds = Date.now() - locationTime;
+  
+      // Convert to days
+      const millisecondsPerHour = 1000 * 60 * 60;
+      const differenceInHours = Math.floor(differenceInMilliseconds / millisecondsPerHour);
+  
+      if (differenceInHours > 0) {
+        blnGetLocation = true;
+      }
+    }
+    else {
       blnGetLocation = true;
     }
   }
-  else {
-    blnGetLocation = true;
-  }
+
+
 
   if (blnGetLocation) {
     if (!navigator.geolocation) {
@@ -169,21 +187,26 @@ async function getLocationData() {
     
       //Get Weather Data - no geo info available so default
       latitude = 43.0731;
-      longitude = -89.4012; 
-      locationTime = Date.now();
-   
+      longitude = -89.4012;
+      if (!blnGotPictureLocationTime) {
+        locationTime = new Date();
+      } 
     } else {
       try {
         const position = await getCurrentPosition();
         latitude = position.coords.latitude;
         longitude = position.coords.longitude;
-        locationTime = Date.now();
+        if (!blnGotPictureLocationTime) {
+          locationTime = new Date();
+        } 
       }
       catch (error) {
         console.log("Unable to retrieve your location");
         latitude = 43.0731;
         longitude = -89.4012; 
-        locationTime = Date.now();
+        if (!blnGotPictureLocationTime) {
+          locationTime = new Date();
+        } 
       }
 
     }
@@ -230,6 +253,66 @@ fishInfoBtn.addEventListener('click', () => {
   
 });
 
+// Load Picture
+loadPictureBtn.addEventListener('click', () => {
+
+  document.getElementById('fileInput').click();
+
+});
+
+document.getElementById('fileInput').addEventListener('change', async function(event) {
+
+  const file = event.target.files[0];
+  const exifTags = await ExifReader.load(file);
+
+  //Reset the fish display
+  imageDescription = "";
+  document.getElementById('fish-info').innerText = imageDescription;
+ 
+  if (file && file.type.startsWith('image/')) {
+    const reader = new FileReader();
+
+    reader.onload = function(e) {
+      photo.src = e.target.result;
+      imageData = photo.src;
+      photo.style.display = "block";
+    
+      //We loaded an images
+      blnImageLoaded = true;
+
+      //Get Location
+      if (exifTags.GPSLongitude && exifTags.GPSLatitude) {
+        longitude = (exifTags.GPSLongitude.description) * -1;
+        latitude =  exifTags.GPSLatitude.description;
+        blnGotPictureLocation = true;
+      }
+      else {
+        blnGotPictureLocation = false;
+      }
+        
+      //Get Timestamp - DateTime, DateTImeDigitized, DateTimeOriginal
+      if (exifTags.DateTime) {
+        locationTime = new Date(convertToISO(exifTags.DateTime.description));
+        blnGotPictureLocationTime = true;
+      }
+      else {
+        locationTime = new Date();
+        blnGotPictureLocationTime = false;
+      }
+
+      blnGotPicture = true;
+      
+      //Show captured display
+      toggleDisplay("capture-image-container", false); //2nd parm is boolean, false is dont show camer, show pic
+      
+    };
+
+    reader.readAsDataURL(file);
+  } else {
+      photo.style.display = 'none';
+      alert('Please select a valid image file.');
+  }
+});
 
 // toggleDisplay for what we want to show
 function toggleDisplay(inputType, blnShowCamera = true) {
@@ -342,19 +425,26 @@ async function getWeatherData(latitude, longitude, dateTimeStamp) {
     weatherInfoDiv.innerText = "Getting weather data...";
 
     // 1. Get the forecast office and grid location based on latitude and longitude
-    const pointResponse = await fetch(apiOpenWeatherURL + `?guid=${keyUserGUID}&lat=${latitude}&lon=${longitude}`);
+    const pointResponse = await fetch(apiOpenWeatherURL + `?guid=${keyUserGUID}&lat=${latitude}&lon=${longitude}&dt=${toTimestamp(locationTime)}`);
     if (!pointResponse.ok) throw new Error(`Point fetch failed: ${pointResponse.statusText}`);
     
     const weatherInfo = await pointResponse.json();
 
     // Build weather output - wind direction 180 = from South
-    var myDesription = toTitleCase(weatherInfo.current.weather[0].description);
-    var myTempDescription = Math.round(weatherInfo.current.temp) + "&deg F";
+    var weatherData;
+    if (weatherInfo.current) {
+      weatherData = weatherInfo.current;
+    }
+    else {
+      weatherData = weatherInfo.data[0];
+    }
+    var myDesription = toTitleCase(weatherData.weather[0].description);
+    var myTempDescription = Math.round(weatherData.temp) + "&deg F";
 
     var weatherInfoText = "Temp: " + myTempDescription + "<br>";
-    weatherInfoText = weatherInfoText + "Wind: " + Math.round(weatherInfo.current.wind_speed) + " MPH at " + weatherInfo.current.wind_deg + "&deg " + windDirection(weatherInfo.current.wind_deg) + "<br>";
-    weatherInfoText = weatherInfoText + "Pressure: " + Math.round(weatherInfo.current.pressure) + " hPa / " + empericalPressure(Math.round(weatherInfo.current.pressure)) + " inHg<br>";
-    weatherInfoText = weatherInfoText + "Dew Point: " + Math.round(weatherInfo.current.dew_point) + "&deg F<br>";
+    weatherInfoText = weatherInfoText + "Wind: " + Math.round(weatherData.wind_speed) + " MPH at " + weatherData.wind_deg + "&deg " + windDirection(weatherData.wind_deg) + "<br>";
+    weatherInfoText = weatherInfoText + "Pressure: " + Math.round(weatherData.pressure) + " hPa / " + empericalPressure(Math.round(weatherData.pressure)) + " inHg<br>";
+    weatherInfoText = weatherInfoText + "Dew Point: " + Math.round(weatherData.dew_point) + "&deg F<br>";
     weatherInfoText = weatherInfoText + "Description: " + myDesription + "<br>";
 
     //All good, lets also get location name
@@ -369,7 +459,28 @@ async function getWeatherData(latitude, longitude, dateTimeStamp) {
 
     //And our weather display buckets
     weatherInfoDiv.innerHTML = locationInfoText + weatherInfoText + latLongTime;
-    weatherMessage = myDesription + " " + myTempDescription;
+
+    if (blnImageLoaded) {
+      if (!blnGotPictureLocationTime && !blnGotPictureLocation) {
+        weatherMessage = "No Place or Time - Using Current"
+      }
+      else {
+        if (!blnGotPictureLocation) {
+          weatherMessage = "No Place - Using Current"
+        } 
+        else {
+          if (!blnGotPictureLocationTime) {
+            weatherMessage = "No Time - Using Current"
+          }
+          else {
+            weatherMessage = myDesription + " " + myTempDescription;
+          }
+        }
+      }
+    }
+    else {
+      weatherMessage = myDesription + " " + myTempDescription;
+    }
 
     document.getElementById("bottom-message").innerHTML = weatherMessage;
 
@@ -637,3 +748,19 @@ function genGUID() {
 
 }
 
+function toTimestamp(inputDate) {
+  return Math.floor(inputDate.getTime() / 1000);
+}
+
+function convertToISO(dateString) {
+  // Split the input string into date and time parts
+  const [datePart, timePart] = dateString.split(' ');
+
+  // Replace colons in the date part with hyphens
+  const formattedDate = datePart.replace(/:/g, '-');
+
+  // Combine the formatted date with the time part
+  const isoString = `${formattedDate}T${timePart}.000Z`;
+
+  return isoString;
+}
