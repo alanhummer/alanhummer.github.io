@@ -57,6 +57,7 @@ var blnGotPicture = false;
 var blnGotPictureLocation = false;
 var blnGotPictureLocationTime = false;
 var blnImageLoaded = false;
+var imageOrientation = "portrait";
 
 //We need user GUID or not?
 if (!keyUserGUID) {
@@ -105,10 +106,12 @@ captureBtn.addEventListener('click', () => {
   document.getElementById('fish-info').innerText = imageDescription;
   photo.src = imageData;
   photo.style.display = "block";
+
   blnGotPicture = true;
   blnGotPictureLocation = false;
   blnGotPictureLocationTime = false;
   blnImageLoaded = false;
+  imageOrientation = "portrait";
 
   //console.log("imageData", imageData);
 
@@ -256,11 +259,15 @@ fishInfoBtn.addEventListener('click', () => {
 // Load Picture
 loadPictureBtn.addEventListener('click', () => {
 
+  document.getElementById('fileInput').value = null;
   document.getElementById('fileInput').click();
 
 });
 
 document.getElementById('fileInput').addEventListener('change', async function(event) {
+
+  //Load message
+  toggleDisplay("loading-message-container", false); 
 
   const file = event.target.files[0];
   const exifTags = await ExifReader.load(file);
@@ -276,42 +283,62 @@ document.getElementById('fileInput').addEventListener('change', async function(e
       photo.src = e.target.result;
       imageData = photo.src;
       photo.style.display = "block";
-    
-      //We loaded an images
-      blnImageLoaded = true;
 
-      //Get Location
-      if (exifTags.GPSLongitude && exifTags.GPSLatitude) {
-        longitude = (exifTags.GPSLongitude.description) * -1;
-        latitude =  exifTags.GPSLatitude.description;
-        if (isNumeric(latitude) && isNumeric(longitude)) {
-          blnGotPictureLocation = true;
+      photo.onload = function () {
+        const width = photo.width;
+        const height = photo.height;
+        if (width > height) {
+          imageOrientation = "landscape";
         }
         else {
-          longitude = "";
-          latitude = "";
-          blnGotPictureLocation = false;
-        }        
-      }
-      else {
-        blnGotPictureLocation = false;
-      }
-        
-      //Get Timestamp - DateTime, DateTImeDigitized, DateTimeOriginal
-      if (exifTags.DateTime) {
-        locationTime = new Date(convertToISO(exifTags.DateTime.description));
-        blnGotPictureLocationTime = true;
-      }
-      else {
-        locationTime = new Date();
-        blnGotPictureLocationTime = false;
-      }
+          imageOrientation = "portrait";
+        }
+      
+        //We loaded an images
+        blnImageLoaded = true;
 
-      blnGotPicture = true;
-      
-      //Show captured display
-      toggleDisplay("capture-image-container", false); //2nd parm is boolean, false is dont show camer, show pic
-      
+        //Get Location
+        if (exifTags.GPSLongitude && exifTags.GPSLatitude) {
+          longitude = (exifTags.GPSLongitude.description) * -1;
+          latitude =  exifTags.GPSLatitude.description;
+          if (isNumeric(latitude) && isNumeric(longitude)) {
+            blnGotPictureLocation = true;
+          }
+          else {
+            longitude = "";
+            latitude = "";
+            blnGotPictureLocation = false;
+          }        
+        }
+        else {
+          blnGotPictureLocation = false;
+        }
+          
+        //Get Timestamp - DateTime, DateTImeDigitized, DateTimeOriginal
+        if (exifTags.DateTime) {
+          locationTime = new Date(convertToISO(exifTags.DateTime.description));
+          blnGotPictureLocationTime = true;
+        }
+        else {
+          locationTime = new Date();
+          blnGotPictureLocationTime = false;
+        }
+
+        blnGotPicture = true;
+
+        //Picture size needs to fit in window....this almost works, but distorts landscape vids
+        if (imageOrientation == "landscape") {
+          //photo.style.width = '80vw';
+          //photo.style.height = 'auto'; // Maintain aspect ratio
+        }
+        else {
+          photo.style.maxHeight = '50vh';
+          //photo.style.width = 'auto'; // Maintain aspect ratio    
+        } 
+        
+        //Show captured display
+        toggleDisplay("capture-image-container", false); //2nd parm is boolean, false is dont show camer, show pic
+      };
     };
 
     reader.readAsDataURL(file);
@@ -325,6 +352,7 @@ document.getElementById('fileInput').addEventListener('change', async function(e
 function toggleDisplay(inputType, blnShowCamera = true) {
 
   //Main content areas
+  document.getElementById("loading-message-container").style.display = "none";
   document.getElementById("capture-image-container").style.display = "none";
   document.getElementById("weather-info-container").style.display = "none";
   document.getElementById("map-info-container").style.display = "none";
@@ -351,6 +379,29 @@ function toggleDisplay(inputType, blnShowCamera = true) {
   document.getElementById("bottom-message").style.display = "block"; //Message at bottom....usually on
 
   switch (inputType) {
+
+    case "loading-message-container":
+
+      if (blnShowCamera) {
+        document.getElementById("top-message").innerHTML = "Catch that fish!";
+        document.getElementById("capture-image").style.display = "block"; //Camera
+        document.getElementById("captured-image").style.display = "none"; //Picture Took
+        document.getElementById("captureBtn").style.display = "block";
+      }
+      else {
+        document.getElementById("top-message").innerHTML = "I saw your fish!";
+        document.getElementById("capture-image").style.display = "none"; //Camera
+        document.getElementById("captured-image").style.display = "block"; //Picture Took
+        document.getElementById("getAnotherBtn").style.display = "block";
+      }
+
+      document.getElementById("capture-buttons").style.display = "flex"; //Big buttons
+      document.getElementById("button-display").style.display = "flex";
+      document.getElementById("tryAgainBtn").disabled = true;
+      document.getElementById("tryAgainBtn").style.opacity = "0.5";
+      document.getElementById("bottom-message").style.display = "none"; //Message at bottom..here we have button instead
+
+      break;  
 
     case "capture-image-container":
 
