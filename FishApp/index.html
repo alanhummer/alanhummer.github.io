@@ -7,6 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>I saw your fish!</title>
   <link rel="stylesheet" href="styles.css">
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAUR5UBkzF2EbJrWlMeH6wl7jid5qgv4z0"></script>
 </head>
 <body>
   <table border="0" cellpadding="0" cellspacing="0" width="100%" height="100%" text-align="center">
@@ -17,17 +18,17 @@
       <td align="center" style="height: 57vh;">
         <!-- Display area for image capture -->
         <div class="container" id="capture-image-container" style="display: none;">
-          <div id="capture-image"><video id="video" autoplay playsinline></video></div>    
+          <div id="capture-image" style="display: none;"><video id="video" autoplay playsinline></video></div>  
+          <div id="captured-image" style="display: none;"><img id="photo" alt="Captured Image" style="display: none;" ></div>  
           <canvas id="canvas" style="display: none;"></canvas>
-        </div>
-        <!-- Display area for image captured -->
-        <div class="container" id="captured-image-container" style="display: none;">
-          <div id="captured-image"><img id="photo" alt="Captured Image" style="display: block; margin: auto;" ></div>
-          <canvas style="display: none;"></canvas> <!-- For spacing, we keep this-->
         </div>
         <!-- Display area for weather info -->
         <div class="container" id="weather-info-container" style="display: none;">
           <div id="weather-info" class="text-display"></div>
+        </div>
+        <!-- Display area for map info -->
+        <div class="container" id="map-info-container" style="display: none;">
+          <div id="map" style="width: 75%; height: 100%;"></div> 
         </div>
         <!-- Display area for fish info -->
         <div class="container" id="fish-info-container" style="display: none;">
@@ -39,8 +40,9 @@
       <td style="height: 15vh;" valign="middle">
         <!-- Buttons / Options and Status -->
         <h1 class="header-bottom" id="bottom-message">You caught em</h1>
-        <div class="bigButtons" id="capture-display" style="display: none;">
+        <div class="bigButtons" id="capture-buttons" style="display: none;">
           <img src="take-picture.png" id="captureBtn" alt="Take a Picture" class="buttonImageWide">
+          <img src="get-another.png" id="getAnotherBtn" alt="Get Another..." class="buttonImageWide" style="display: none;">        
         </div>
       </td>
     </tr>
@@ -48,8 +50,8 @@
       <td style="height: 80px;" valign="bottom">
         <div class="buttons" id="button-display" style="display: none;">
           <img src="camera.png" id="tryAgainBtn" alt="Take a Picture" class="buttonImage">
-          <img src="view-picture.png" id="fishPictureBtn" alt="See Picture" class="buttonImage">
           <img src="weather.png" id="weatherBtn" alt="Weather Info" class="buttonImage">
+          <img src="map.png" id="mapBtn" alt="Location Info" class="buttonImage">
           <img src="favicon.png" id="fishInfoBtn" alt="Fish Info" class="buttonImage">
         </div>
       </td>

@@ -6,11 +6,18 @@
 //3) Camera storage thumbs of inventory to pick from instead of taking pic
 //4) Stored pics select them from camera storage - use date / loc on pic for weather 
 //5) X Gen user GUID and store, then to pass with requests
-//6) Lock screen rotation
+//6) Lock screen rotation w/full screen
+//7) Flash on camera and/or use native camera
+//8) Camera usage sticks to 1 browser instance....when mult open, flip to active
 
 //We use https://openweathermap.org/
 //For Historical: https://api.openweathermap.org/data/3.0/onecall/timemachine?lat=39.099724&lon=-94.578331&dt=1643803200&appid=
 //Fish info here: https://platform.openai.com/docs/overview
+
+//TimeStamp converter: const toTimestamp = date => Math.floor(date.getTime() / 1000); 
+//TimeStamp reverse: const fromTimestamp = timestamp => new Date(timestamp * 1000) 
+ 
+
 
 const video = document.getElementById('video');
 const canvas = document.getElementById('canvas');
@@ -21,9 +28,11 @@ const weatherAPIInfoDiv = document.getElementById('weather-api-info');
 const openAIAPIInfoDiv = document.getElementById('open-ai-api-info');
 
 const captureBtn = document.getElementById('captureBtn');
+const getAnotherBtn = document.getElementById('getAnotherBtn');
 const tryAgainBtn = document.getElementById('tryAgainBtn');
-const fishPictureBtn = document.getElementById('fishPictureBtn');
+//const fishPictureBtn = document.getElementById('fishPictureBtn');
 const weatherBtn = document.getElementById('weatherBtn');
+const mapBtn = document.getElementById('mapBtn');
 const fishInfoBtn = document.getElementById('fishInfoBtn');
 
 //This holds our image stream
@@ -97,8 +106,13 @@ captureBtn.addEventListener('click', () => {
   //console.log("imageData", imageData);
 
   //Show captured display
-  toggleDisplay("captured-image-container");
+  toggleDisplay("capture-image-container", false); //2nd parm is boolean, false is dont show camer, show pic
   
+});
+
+// Capture photo
+getAnotherBtn.addEventListener('click', () => {
+  toggleDisplay("capture-image-container", true); //2nd parm is boolean, show camera
 });
 
 // Capture Another Photo
@@ -108,29 +122,29 @@ tryAgainBtn.addEventListener('click', () => {
   if (tryAgainBtn.disabled) {
     return;
   }  
-  toggleDisplay("capture-image-container");
-
-});
-
-// Show Picture Again
-fishPictureBtn.addEventListener('click', () => {
-
-  //Show capture display
-  if (fishPictureBtn.disabled) {
-    return;
-  }
-  toggleDisplay("captured-image-container");
+  toggleDisplay("capture-image-container", !blnGotPicture); //2nd parm is boolean, show camera
 
 });
 
 // Weather Info
-weatherBtn.addEventListener('click', () => {
+weatherBtn.addEventListener('click', async () => {
 
   if (weatherBtn.disabled) {
     return;
   }
 
-  //Get Location Data - if we timeout of caching it
+  //Get Location Data - if we timeout of caching it (1 hour)
+  await getLocationData();
+
+  //Get Weather Data
+  getWeatherData(latitude, longitude, null); 
+  toggleDisplay("weather-info-container");
+
+});
+
+//Get location data, if not cached and not cache timed out
+async function getLocationData() {
+
   var blnGetLocation = false;
   if (latitude && longitude && locationTime) {
 
@@ -154,37 +168,53 @@ weatherBtn.addEventListener('click', () => {
       console.log("Geolocation is not supported by your browser");
     
       //Get Weather Data - no geo info available so default
-      getWeatherData(43.0731, -89.4012, null); // Coordinates for Madison, WI
-      toggleDisplay("weather-info-container");
-    
+      latitude = 43.0731;
+      longitude = -89.4012; 
+      locationTime = Date.now();
+   
     } else {
-      navigator.geolocation.getCurrentPosition(success, error);
+      try {
+        const position = await getCurrentPosition();
+        latitude = position.coords.latitude;
+        longitude = position.coords.longitude;
+        locationTime = Date.now();
+      }
+      catch (error) {
+        console.log("Unable to retrieve your location");
+        latitude = 43.0731;
+        longitude = -89.4012; 
+        locationTime = Date.now();
+      }
+
     }
   }
-  else {
-    //Get Weather Data
-    getWeatherData(latitude, longitude, null); 
-    toggleDisplay("weather-info-container");
+
+  function getCurrentPosition() {
+    return new Promise((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(resolve, reject);
+    });
   }
 
-  function success(position) {
-    latitude = position.coords.latitude;
-    longitude = position.coords.longitude;
-    locationTime = Date.now();
-   
-    //Get Weather Data
-    getWeatherData(latitude, longitude, null); 
-    toggleDisplay("weather-info-container");
-  }
 
-  function error() {
-    console.log("Unable to retrieve your location");
-    
-    //Get Weather Data - no geo info available so default
-    getWeatherData(43.0731, -89.4012, null); // Coordinates for Madison, WI
-    toggleDisplay("weather-info-container");
-  }
-  
+}
+
+
+// Map and GPS 
+mapBtn.addEventListener('click', async () => {
+
+  //Show capture display
+  if (mapBtn.disabled) {
+    return;
+  }  
+
+  //Get Location Data - if we timeout of caching it (1 hour)
+  await getLocationData();
+
+  //Now show the map
+  showMap(latitude, longitude);
+
+  toggleDisplay("map-info-container");
+
 });
 
 // Fish Info
@@ -202,56 +232,73 @@ fishInfoBtn.addEventListener('click', () => {
 
 
 // toggleDisplay for what we want to show
-function toggleDisplay(inputType) {
+function toggleDisplay(inputType, blnShowCamera = true) {
 
+  //Main content areas
   document.getElementById("capture-image-container").style.display = "none";
-  document.getElementById("captured-image-container").style.display = "none";
   document.getElementById("weather-info-container").style.display = "none";
+  document.getElementById("map-info-container").style.display = "none";
   document.getElementById("fish-info-container").style.display = "none";
 
+  //Main control buttons and big capture button containers
   document.getElementById("button-display").style.display = "none";
-  document.getElementById("capture-display").style.display = "none";
+  document.getElementById("capture-buttons").style.display = "none";
 
+  //And the 2 capture buttons themselves
+  document.getElementById("captureBtn").style.display = "none";
+  document.getElementById("getAnotherBtn").style.display = "none";
+
+  //Reset the control buttons
   document.getElementById("tryAgainBtn").disabled = false;
-  document.getElementById("fishPictureBtn").disabled = false;
   document.getElementById("weatherBtn").disabled = false;
+  document.getElementById("mapBtn").disabled = false;
   document.getElementById("fishInfoBtn").disabled = false;
   document.getElementById("tryAgainBtn").style.opacity = "1";
-  document.getElementById("fishPictureBtn").style.opacity = "1";
   document.getElementById("weatherBtn").style.opacity = "1";
+  document.getElementById("mapBtn").style.opacity = "1";
   document.getElementById("fishInfoBtn").style.opacity = "1";
 
   document.getElementById("bottom-message").style.display = "block"; //Message at bottom....usually on
 
-  document.getElementById(inputType).style.display = "flex";
-
   switch (inputType) {
 
     case "capture-image-container":
-      document.getElementById("top-message").innerHTML = "Catch that fish!";
-      document.getElementById("bottom-message").innerHTML = "Take a picture!";
-      document.getElementById("capture-display").style.display = "flex";
+
+      if (blnShowCamera) {
+        document.getElementById("top-message").innerHTML = "Catch that fish!";
+        document.getElementById("capture-image").style.display = "block"; //Camera
+        document.getElementById("captured-image").style.display = "none"; //Picture Took
+        document.getElementById("captureBtn").style.display = "block";
+      }
+      else {
+        document.getElementById("top-message").innerHTML = "I saw your fish!";
+        document.getElementById("capture-image").style.display = "none"; //Camera
+        document.getElementById("captured-image").style.display = "block"; //Picture Took
+        document.getElementById("getAnotherBtn").style.display = "block";
+      }
+
+      document.getElementById("capture-buttons").style.display = "flex"; //Big buttons
       document.getElementById("button-display").style.display = "flex";
       document.getElementById("tryAgainBtn").disabled = true;
       document.getElementById("tryAgainBtn").style.opacity = "0.5";
-      document.getElementById("bottom-message").style.display = "none"; //Message at bottom..
+      document.getElementById("bottom-message").style.display = "none"; //Message at bottom..here we have button instead
 
       break;  
 
-    case "captured-image-container":
-      document.getElementById("top-message").innerHTML = "I saw your fish!";
-      document.getElementById("bottom-message").innerHTML = "Now you got em'";
-      document.getElementById("button-display").style.display = "flex";
-      document.getElementById("fishPictureBtn").disabled = true;
-      document.getElementById("fishPictureBtn").style.opacity = "0.5";
-      break;  
-  
     case "weather-info-container":
       document.getElementById("top-message").innerHTML = "I saw your fish!";
       document.getElementById("bottom-message").innerHTML = weatherMessage;
       document.getElementById("button-display").style.display = "flex";
       document.getElementById("weatherBtn").disabled = true;
       document.getElementById("weatherBtn").style.opacity = "0.5";
+      break;  
+
+    case "map-info-container":
+      document.getElementById("top-message").innerHTML = "I saw your fish!";
+      document.getElementById("bottom-message").innerHTML = "Where'd ya catch em?";
+      document.getElementById("button-display").style.display = "flex";
+      document.getElementById("mapBtn").disabled = true;
+      document.getElementById("mapBtn").style.opacity = "0.5";
       break;  
   
     case "fish-info-container":
@@ -270,13 +317,15 @@ function toggleDisplay(inputType) {
   if (!blnGotPicture) {
     document.getElementById("tryAgainBtn").disabled = true;
     document.getElementById("tryAgainBtn").style.opacity = "0.5";
-    document.getElementById("fishPictureBtn").disabled = true;
-    document.getElementById("fishPictureBtn").style.opacity = "0.5"
     document.getElementById("weatherBtn").disabled = true;
     document.getElementById("weatherBtn").style.opacity = "0.5";
+    document.getElementById("mapBtn").disabled = true;
+    document.getElementById("mapBtn").style.opacity = "0.5";
     document.getElementById("fishInfoBtn").disabled = true;
     document.getElementById("fishInfoBtn").style.opacity = "0.5";
   }
+
+  document.getElementById(inputType).style.display = "flex";
 
 }
 
@@ -293,7 +342,6 @@ async function getWeatherData(latitude, longitude, dateTimeStamp) {
     weatherInfoDiv.innerText = "Getting weather data...";
 
     // 1. Get the forecast office and grid location based on latitude and longitude
-    //AJH Change to use relay: Lat/long/guid
     const pointResponse = await fetch(apiOpenWeatherURL + `?guid=${keyUserGUID}&lat=${latitude}&lon=${longitude}`);
     if (!pointResponse.ok) throw new Error(`Point fetch failed: ${pointResponse.statusText}`);
     
@@ -334,6 +382,27 @@ async function getWeatherData(latitude, longitude, dateTimeStamp) {
     weatherMessage = "No weather data";
   }
 }
+
+function showMap(inputLatitude, inputLongitude) {
+
+  var mapOptions = {
+      center: { lat: inputLatitude, lng: inputLongitude }, // Replace with your desired coordinates
+      zoom: 15 // Adjust zoom level as needed
+  };
+  var map = new google.maps.Map(document.getElementById('map'), mapOptions);
+
+  const marker = new google.maps.Marker({
+    position:  { lat: inputLatitude, lng: inputLongitude },
+    map: map,
+    title: "I saw your fish!",
+    icon: {
+        url: "fish-marker.png", // Custom icon (optional)
+        scaledSize: new google.maps.Size(40, 40) // Resize icon
+    }
+});
+
+}
+
 
 //***************************
 //Here is the code to call Open AI and figure out what kind of fish it is
