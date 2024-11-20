@@ -77,8 +77,12 @@ if (keyAPIOpenWeatherMap) {
 
 //Lock the screen orientation
 document.documentElement.requestFullscreen().catch(() => {});
+
+//Make sure screen.orientation exists, and then for Safari, have to make sure screen.orientation.lock exists
 if (screen.orientation) {
-  screen.orientation.lock("portrait").catch(() => {});
+  if (screen.orientation.lock) {
+    screen.orientation.lock("portrait").catch(() => {});
+  }  
 }
 
 // Access the camera
