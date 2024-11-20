@@ -76,7 +76,9 @@ if (keyAPIOpenWeatherMap) {
 }
 
 //Lock the screen orientation
-document.documentElement.requestFullscreen().catch(() => {});
+if (document.documentElement.requestFullscreen) {
+  document.documentElement.requestFullscreen().catch(() => {});
+}
 
 //Make sure screen.orientation exists, and then for Safari, have to make sure screen.orientation.lock exists
 if (screen.orientation) {
@@ -86,14 +88,26 @@ if (screen.orientation) {
 }
 
 // Access the camera
-navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
-  .then(stream => {
-    video.srcObject = stream;
-  })
-  .catch(error => {
-    console.error("Error accessing the camera", error);
+if (navigator.mediaDevices) {
+  if (navigator.mediaDevices.getUserMedia) {
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+      .then(stream => {
+        video.srcObject = stream;
+      })
+      .catch(error => {
+        console.error("Error accessing the camera", error);
+        statusDiv.textContent = "Camera access is required to take a photo.";
+    });
+  }
+  else {
+    console.error("Error accessing the camera");
     statusDiv.textContent = "Camera access is required to take a photo.";
-});
+  }
+}
+else {
+  console.error("Error accessing the camera");
+  statusDiv.textContent = "Camera access is required to take a photo.";
+}
 
 toggleDisplay("capture-image-container"); //This is our starting point
 
