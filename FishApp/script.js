@@ -75,7 +75,7 @@ if (keyAPIOpenWeatherMap) {
   deleteStorage("keyAPIOpenWeatherMap");
 }
 
-//Lock the screen orientation
+//Lock the screen orientation, if we can
 if (document.documentElement.requestFullscreen) {
   document.documentElement.requestFullscreen().catch(() => {});
 }
@@ -130,8 +130,6 @@ captureBtn.addEventListener('click', () => {
   blnGotPictureLocationTime = false;
   blnImageLoaded = false;
   imageOrientation = "portrait";
-
-  //console.log("imageData", imageData);
 
   //Show captured display
   toggleDisplay("capture-image-container", false); //2nd parm is boolean, false is dont show camer, show pic
@@ -334,9 +332,14 @@ document.getElementById('fileInput').addEventListener('change', async function(e
           blnGotPictureLocation = false;
         }
           
-        //Get Timestamp - DateTime, DateTImeDigitized, DateTimeOriginal
+        //Get Timestamp - DateTime, DateTImeDigitized, DateTimeOriginal, Date Taken
         if (exifTags.DateTime) {
           locationTime = new Date(convertToISO(exifTags.DateTime.description));
+          if (exifTags.OffsetTime) {
+            //Add the offset time
+            var mySeconds = convertToSeconds(exifTags.OffsetTime.description);
+            locationTime.setTime(locationTime.getTime() + (-1 * mySeconds * 1000)); 
+          }
           blnGotPictureLocationTime = true;
         }
         else {
@@ -845,4 +848,9 @@ function convertToISO(dateString) {
 
 function isNumeric(n) {
   return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
+function convertToSeconds(timeString) {
+  const [hours, minutes] = timeString.split(":").map(Number);
+  return hours * 3600 + minutes * 60;
 }
