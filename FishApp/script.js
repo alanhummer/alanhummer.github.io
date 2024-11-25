@@ -16,7 +16,19 @@
 
 //TimeStamp converter: const toTimestamp = date => Math.floor(date.getTime() / 1000); 
 //TimeStamp reverse: const fromTimestamp = timestamp => new Date(timestamp * 1000) 
- 
+
+//First up, register the service worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load' , () => {
+      navigator.serviceWorker.register('/sw.js')
+                .then(registration => {
+          console.log('Service Worker registered with scope:' , registration.scope);
+      }).catch(error => {
+          console.log('Service Worker registration failed:' , error);
+      });
+  });
+}
+
 import ExifReader from "https://esm.sh/exifreader";
 
 const video = document.getElementById('video');
