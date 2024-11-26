@@ -1,10 +1,11 @@
 {
     "name": "I saw your fish!",
-    "short_name": "FishApp",
+    "short_name": "I saw your fish!",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#ffffff",
     "description": "Take a picture of your fish and gather lots of info.",
+    "orientation": "portrait",
     "icons": [
         {
             "src": "favicon-192x192.png",

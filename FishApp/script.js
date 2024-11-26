@@ -95,7 +95,18 @@ if (document.documentElement.requestFullscreen) {
 //Make sure screen.orientation exists, and then for Safari, have to make sure screen.orientation.lock exists
 if (screen.orientation) {
   if (screen.orientation.lock) {
-    screen.orientation.lock("portrait").catch(() => {});
+    try {
+      await screen.orientation.lock("portrait");
+      console.log("Orientation locked to portrait");
+    } catch (error) {
+        console.error("Failed to lock orientation:", error);
+        try {
+          await document.documentElement.requestFullscreen();
+          await screen.orientation.lock("portrait");
+        } catch (fullscreenError) {
+            console.error("Fullscreen mode failed:", fullscreenError);
+        }
+    }
   }  
 }
 
