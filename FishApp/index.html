@@ -8,6 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>I saw your fish!</title>
   <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/piexifjs"></script>
   <script data-goatcounter="https://alanhummer.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
   <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAUR5UBkzF2EbJrWlMeH6wl7jid5qgv4z0"></script>
 </head>
@@ -36,28 +37,37 @@
         <!-- Display area for map info -->
         <div class="container" id="map-info-container" style="display: none;">
           <div id="map" style="width: 75%; height: 100%;"></div> 
+          <div id="map-error" class="text-display" style="display: none;"></div>
         </div>
         <!-- Display area for fish info -->
         <div class="container" id="fish-info-container" style="display: none;">
-          <img id="fish-info-photo" alt="Captured Image" style="max-height: 150px; width: auto; ">
-          <div id="fish-info" class="text-display"></div>
+          <img id="fish-info-photo" alt="Captured Image" style="max-height: 150px; width: auto; float:center">
+          <img src="save-picture.png" id="savePictureBtn" alt="Save Picture..." class="buttonImage" style="float:right; position: fixed; top: 0; right: 0; display:none;">
+          <div id="fish-info" class="text-display"></div>          
         </div>
       </td>
     </tr>
     <tr>
       <td style="height: 15vh;" valign="middle">
         <!-- Buttons / Options and Status -->
-        <h1 class="header-bottom" id="bottom-message">You caught em</h1>
+        <h1 class="header-bottom" id="bottom-message">You caught em!</h1>
+        <div id="bottom-message-save" style="display: none;">
+          <table cellpadding="0" cellspacing="0" border="0" width="100%">
+            <tr>
+              <td style="text-align: right; width: 100vw;"><h1 class="header-bottom" >Any size?</h1></td>
+            </tr>
+          </table>
+        </div>        
         <div class="bigButtons" id="capture-buttons" style="display: none;">
           <table cellspacing="0" cellpadding="0" border="0" width="100%">
             <tr>
               <td width="25px"><td>
-              <td width="280px" align="right">
+              <td width="280px" text-align="right">
                 <img src="take-picture.png" id="captureBtn" alt="Take a Picture" class="buttonImageWide">
                 <img src="get-another.png" id="getAnotherBtn" alt="Get Another..." class="buttonImageWide" style="display: none;">        
               </td>
               <td width="10px"><td>
-              <td width="65px" align="left">
+              <td width="65px" text-align="left">
                 <img src="load-picture.png" id="loadPictureBtn" alt="Load Picture..." class="buttonImage" style="height:65px">     
               </td>
               <td width="25px"><td>
@@ -79,7 +89,7 @@
   </table>
   <!-- And our script -->
   <script src="script.js" type="module"></script>
-  <br><div class="status" id="status">v2024.11.25.03</div>
+  <br><div class="status" id="status">v2024.11.30.01</div>
 </body>
 </html>
 

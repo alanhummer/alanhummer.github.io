@@ -1,21 +1,8 @@
-//To do's:
-//1) X Store Lat / Long so don't query alwasy...time out in 1 hour
-//2) X API Keys for Weather and Open AI in local storage? Get from server? Or setup host relay?
-//2b) X Deno as a relay server w/Keys
-//2c) X  If not keys, ask for key and store in local storage
-//3) Camera storage thumbs of inventory to pick from instead of taking pic
-//4) Stored pics select them from camera storage - use date / loc on pic for weather 
-//5) X Gen user GUID and store, then to pass with requests
-//6) Lock screen rotation w/full screen
-//7) Flash on camera and/or use native camera
-//8) Camera usage sticks to 1 browser instance....when mult open, flip to active
-
-//We use https://openweathermap.org/
-//For Historical: https://api.openweathermap.org/data/3.0/onecall/timemachine?lat=39.099724&lon=-94.578331&dt=1643803200&appid=
-//Fish info here: https://platform.openai.com/docs/overview
-
-//TimeStamp converter: const toTimestamp = date => Math.floor(date.getTime() / 1000); 
-//TimeStamp reverse: const fromTimestamp = timestamp => new Date(timestamp * 1000) 
+//I Saw Your Fish! PWA App - just take a picture and we gather:
+// - Location
+// - Date / Time Taken
+// - Weather details - lots of them
+// - Species and Size of the fish
 
 //First up, register the service worker
 if ('serviceWorker' in navigator) {
@@ -29,27 +16,29 @@ if ('serviceWorker' in navigator) {
   });
 }
 
+//Exif data is the meta data stored with the picture - we will use it for storing our stuff
 import ExifReader from "https://esm.sh/exifreader";
 
+//Display areas
 const video = document.getElementById('video');
 const canvas = document.getElementById('canvas');
 const photo = document.getElementById('photo');
 const statusDiv = document.getElementById('status');
 const weatherInfoDiv = document.getElementById('weather-info');
-const weatherAPIInfoDiv = document.getElementById('weather-api-info');
-const openAIAPIInfoDiv = document.getElementById('open-ai-api-info');
 
-const captureBtn = document.getElementById('captureBtn');
-const getAnotherBtn = document.getElementById('getAnotherBtn');
-const tryAgainBtn = document.getElementById('tryAgainBtn');
-//const fishPictureBtn = document.getElementById('fishPictureBtn');
-const weatherBtn = document.getElementById('weatherBtn');
-const mapBtn = document.getElementById('mapBtn');
-const fishInfoBtn = document.getElementById('fishInfoBtn');
-const loadPictureBtn = document.getElementById('loadPictureBtn');
+//Buttons
+const captureBtn = document.getElementById('captureBtn'); //Take Picture
+const getAnotherBtn = document.getElementById('getAnotherBtn'); //Reset to turn camera on
+const tryAgainBtn = document.getElementById('tryAgainBtn'); //Back to the camera/capture content
+const weatherBtn = document.getElementById('weatherBtn'); //Show Weather info
+const mapBtn = document.getElementById('mapBtn'); //Show Map info
+const fishInfoBtn = document.getElementById('fishInfoBtn'); //Show Fish info
+const loadPictureBtn = document.getElementById('loadPictureBtn'); //Load existing picture
+const savePictureBtn = document.getElementById('savePictureBtn'); //Save picture w/meta data
 
-//This holds our image stream
+//This holds our image stream and data
 var imageData = ""; 
+var imageDataBinary = "";
 var imageDescription = "";
 
 //API URLs
@@ -65,6 +54,7 @@ var latitude = null;
 var longitude = null;
 var locationTime = null;
 var weatherMessage = "";
+var mapMessage = "";
 var blnGotPicture = false;
 var blnGotPictureLocation = false;
 var blnGotPictureLocationTime = false;
@@ -75,16 +65,6 @@ var imageOrientation = "portrait";
 if (!keyUserGUID) {
   keyUserGUID = genGUID();
   setStorage("keyUserGUID", keyUserGUID);
-}
-
-//Zap any local storage keys if i have them
-var keyAPIOpenAI = getStorage("keyAPIOpenAI");
-if (keyAPIOpenAI) {
-  deleteStorage("keyAPIOpenAI");
-}
-var keyAPIOpenWeatherMap = getStorage("keyAPIOpenWeatherMap");
-if (keyAPIOpenWeatherMap) {
-  deleteStorage("keyAPIOpenWeatherMap");
 }
 
 //Lock the screen orientation, if we can
@@ -134,24 +114,30 @@ else {
 
 toggleDisplay("capture-image-container"); //This is our starting point
 
-// Capture photo
-captureBtn.addEventListener('click', () => {
+// Capture photo button
+captureBtn.addEventListener('click', async () => {
+
+  //We got a picture
+  blnGotPicture = true;
+
+  //Draw it on the page
   const context = canvas.getContext('2d');
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
   context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
   // Show the captured image
-  imageData = canvas.toDataURL('image/png');
+  imageData = canvas.toDataURL('image/jpeg');
+  imageDataBinary = context.getImageData(0, 0, canvas.width, canvas.height);
   imageDescription = "";
   document.getElementById('fish-info').innerText = imageDescription;
   photo.src = imageData;
   photo.style.display = "block";
 
-  blnGotPicture = true;
-  blnGotPictureLocation = false;
-  blnGotPictureLocationTime = false;
-  blnImageLoaded = false;
+   //Get Location Data - if we timeout of caching it (1 hour)
+  await getLocationData();
+  
+  //Then add these
   imageOrientation = "portrait";
 
   //Show captured display
@@ -160,7 +146,11 @@ captureBtn.addEventListener('click', () => {
 });
 
 // Capture photo
-getAnotherBtn.addEventListener('click', () => {
+getAnotherBtn.addEventListener('click', async () => {
+  
+  //Reset all of of data element
+  initializeApp();
+
   toggleDisplay("capture-image-container", true); //2nd parm is boolean, show camera
 });
 
@@ -171,6 +161,7 @@ tryAgainBtn.addEventListener('click', () => {
   if (tryAgainBtn.disabled) {
     return;
   }  
+
   toggleDisplay("capture-image-container", !blnGotPicture); //2nd parm is boolean, show camera
 
 });
@@ -182,76 +173,47 @@ weatherBtn.addEventListener('click', async () => {
     return;
   }
 
-  //Get Location Data - if we timeout of caching it (1 hour)
-  await getLocationData();
+  weatherMessage = "Loading...";
+  toggleDisplay("weather-info-container");
 
   //Get Weather Data
   getWeatherData(latitude, longitude, locationTime); 
-  toggleDisplay("weather-info-container");
 
 });
 
 //Get location data, if not cached and not cache timed out
 async function getLocationData() {
 
-  if (blnGotPictureLocation) {
-    return;
-  }
+  //TimeStamp first and flag that we got it
+  locationTime = new Date();
+  blnGotPictureLocation = true;
+  blnGotPictureLocationTime = true;
 
-  var blnGetLocation = false;  
-  if (blnGotPictureLocationTime) {
-    blnGetLocation = true;
-  }
-  else {
-    if (latitude && longitude && locationTime) {
-
-      // Calculate the difference in milliseconds
-      const differenceInMilliseconds = Date.now() - locationTime;
+  //Get our location
+  if (!navigator.geolocation) {
+    console.log("Geolocation is not supported by your browser");
   
-      // Convert to days
-      const millisecondsPerHour = 1000 * 60 * 60;
-      const differenceInHours = Math.floor(differenceInMilliseconds / millisecondsPerHour);
-  
-      if (differenceInHours > 0) {
-        blnGetLocation = true;
-      }
-    }
-    else {
-      blnGetLocation = true;
-    }
-  }
+    //Get Geo Data - no geo info available so default 0
+    latitude = 0;
+    longitude = 0;
 
+  } else {
+    try {
 
-
-  if (blnGetLocation) {
-    if (!navigator.geolocation) {
-      console.log("Geolocation is not supported by your browser");
+      //Get our position
+      const position = await getCurrentPosition();
+      latitude = position.coords.latitude;
+      longitude = position.coords.longitude;
     
-      //Get Weather Data - no geo info available so default
-      latitude = 43.0731;
-      longitude = -89.4012;
-      if (!blnGotPictureLocationTime) {
-        locationTime = new Date();
-      } 
-    } else {
-      try {
-        const position = await getCurrentPosition();
-        latitude = position.coords.latitude;
-        longitude = position.coords.longitude;
-        if (!blnGotPictureLocationTime) {
-          locationTime = new Date();
-        } 
-      }
-      catch (error) {
-        console.log("Unable to retrieve your location");
-        latitude = 43.0731;
-        longitude = -89.4012; 
-        if (!blnGotPictureLocationTime) {
-          locationTime = new Date();
-        } 
-      }
-
     }
+    catch (error) {
+
+      //Get Geo Data - no geo info available so default 0
+      console.log("Unable to retrieve your location");
+      latitude = 0;
+      longitude = 0;
+    }
+
   }
 
   function getCurrentPosition() {
@@ -259,10 +221,7 @@ async function getLocationData() {
       navigator.geolocation.getCurrentPosition(resolve, reject);
     });
   }
-
-
 }
-
 
 // Map and GPS 
 mapBtn.addEventListener('click', async () => {
@@ -271,12 +230,21 @@ mapBtn.addEventListener('click', async () => {
   if (mapBtn.disabled) {
     return;
   }  
-
-  //Get Location Data - if we timeout of caching it (1 hour)
-  await getLocationData();
-
-  //Now show the map
-  showMap(latitude, longitude);
+  
+  mapMessage = "Loading...";
+  if (blnGotPictureLocation) {
+    //Now show the map
+    showMap(latitude, longitude);
+    document.getElementById('map-error').style.display = "none";
+    document.getElementById('map').style.display = "block";
+    mapMessage = "Where'd ya catch em?";
+  }
+  else {
+    document.getElementById('map-error').innerHTML = "Unable to show location information or map.";
+    document.getElementById('map-error').style.display = "block";
+    document.getElementById('map').style.display = "none";
+    mapMessage = "Location information not available";
+  }
 
   toggleDisplay("map-info-container");
 
@@ -289,17 +257,19 @@ fishInfoBtn.addEventListener('click', () => {
     return;
   }
 
+  toggleDisplay("fish-info-container");
+
   //Show info on the image
   identifyFish(); // We'll want to pass in the picture here
   document.getElementById('fish-info-photo').src = imageData;
   document.getElementById('fish-info-photo').style.display = "block";
-  toggleDisplay("fish-info-container");
   
 });
 
 // Load Picture
 loadPictureBtn.addEventListener('click', () => {
 
+  blnGotPicture = false;
   document.getElementById('fileInput').value = null;
   document.getElementById('fileInput').click();
 
@@ -321,11 +291,21 @@ document.getElementById('fileInput').addEventListener('change', async function(e
     const reader = new FileReader();
 
     reader.onload = function(e) {
+
       photo.src = e.target.result;
       imageData = photo.src;
       photo.style.display = "block";
 
-      photo.onload = function () {
+      photo.onload = function () { //This gets called when the image changes
+
+        //If loaded from camera, skip this
+        if (blnGotPicture) {
+          return;
+        }
+
+        //Reset all of of data element
+        initializeApp();
+
         const width = photo.width;
         const height = photo.height;
         if (width > height) {
@@ -394,6 +374,22 @@ document.getElementById('fileInput').addEventListener('change', async function(e
   }
 });
 
+// Save the picture and info
+savePictureBtn.addEventListener('click', () => {
+
+  if (savePictureBtn.disabled) {
+    return;
+  }
+
+  //Save the picture and the GPS, DateTIme, Fish info
+  addExifAndSave();
+
+  toggleDisplay("fish-info-container");
+  
+});
+
+
+
 // toggleDisplay for what we want to show
 function toggleDisplay(inputType, blnShowCamera = true) {
 
@@ -422,7 +418,9 @@ function toggleDisplay(inputType, blnShowCamera = true) {
   document.getElementById("mapBtn").style.opacity = "1";
   document.getElementById("fishInfoBtn").style.opacity = "1";
 
+  document.getElementById("bottom-message").innerHTML = "Loading...";
   document.getElementById("bottom-message").style.display = "block"; //Message at bottom....usually on
+  document.getElementById("bottom-message-save").style.display = "none";
 
   switch (inputType) {
 
@@ -446,7 +444,7 @@ function toggleDisplay(inputType, blnShowCamera = true) {
       document.getElementById("tryAgainBtn").disabled = true;
       document.getElementById("tryAgainBtn").style.opacity = "0.5";
       document.getElementById("bottom-message").style.display = "none"; //Message at bottom..here we have button instead
-
+      document.getElementById("bottom-message-save").style.display = "none";
       break;  
 
     case "capture-image-container":
@@ -456,19 +454,28 @@ function toggleDisplay(inputType, blnShowCamera = true) {
         document.getElementById("capture-image").style.display = "block"; //Camera
         document.getElementById("captured-image").style.display = "none"; //Picture Took
         document.getElementById("captureBtn").style.display = "block";
+        document.getElementById("tryAgainBtn").disabled = true;
+        document.getElementById("tryAgainBtn").style.opacity = "0.5";
+        document.getElementById("weatherBtn").disabled = true;
+        document.getElementById("weatherBtn").style.opacity = "0.5";
+        document.getElementById("mapBtn").disabled = true;
+        document.getElementById("mapBtn").style.opacity = "0.5";
+        document.getElementById("fishInfoBtn").disabled = true;
+        document.getElementById("fishInfoBtn").style.opacity = "0.5";
       }
       else {
         document.getElementById("top-message").innerHTML = "I saw your fish!";
         document.getElementById("capture-image").style.display = "none"; //Camera
         document.getElementById("captured-image").style.display = "block"; //Picture Took
         document.getElementById("getAnotherBtn").style.display = "block";
+        document.getElementById("tryAgainBtn").disabled = true;
+        document.getElementById("tryAgainBtn").style.opacity = "0.5";
       }
 
       document.getElementById("capture-buttons").style.display = "flex"; //Big buttons
       document.getElementById("button-display").style.display = "flex";
-      document.getElementById("tryAgainBtn").disabled = true;
-      document.getElementById("tryAgainBtn").style.opacity = "0.5";
       document.getElementById("bottom-message").style.display = "none"; //Message at bottom..here we have button instead
+      document.getElementById("bottom-message-save").style.display = "none"; 
 
       break;  
 
@@ -478,14 +485,16 @@ function toggleDisplay(inputType, blnShowCamera = true) {
       document.getElementById("button-display").style.display = "flex";
       document.getElementById("weatherBtn").disabled = true;
       document.getElementById("weatherBtn").style.opacity = "0.5";
+      document.getElementById("bottom-message-save").style.display = "none";
       break;  
 
     case "map-info-container":
       document.getElementById("top-message").innerHTML = "I saw your fish!";
-      document.getElementById("bottom-message").innerHTML = "Where'd ya catch em?";
+      document.getElementById("bottom-message").innerHTML = mapMessage;
       document.getElementById("button-display").style.display = "flex";
       document.getElementById("mapBtn").disabled = true;
       document.getElementById("mapBtn").style.opacity = "0.5";
+      document.getElementById("bottom-message-save").style.display = "none";
       break;  
   
     case "fish-info-container":
@@ -494,6 +503,8 @@ function toggleDisplay(inputType, blnShowCamera = true) {
       document.getElementById("button-display").style.display = "flex";
       document.getElementById("fishInfoBtn").disabled = true;
       document.getElementById("fishInfoBtn").style.opacity = "0.5";
+      document.getElementById("bottom-message").style.display = "none";
+      document.getElementById("bottom-message-save").style.display = "block";
       break;  
       
     default:
@@ -522,6 +533,52 @@ function toggleDisplay(inputType, blnShowCamera = true) {
 
 // Function to fetch and parse weather data
 async function getWeatherData(latitude, longitude, dateTimeStamp) {
+
+  var noWeatherMessage = "";
+  var blnGotNeccessaryWeatherData = false;
+  var locationInfoText = "";
+
+  if (blnImageLoaded) { //Uploade from afile
+    if (!blnGotPictureLocationTime && !blnGotPictureLocation) {
+      noWeatherMessage = "Unable to show any weather informatation";
+      weatherMessage = "Location and Time of Picture Not Available";
+    }
+    else {
+      if (!blnGotPictureLocation) {
+        noWeatherMessage = "Date / Time of Picture is: " + getDateTime(dateTimeStamp) + "<br>But unable to show weather information.";
+        weatherMessage = "Location of Picture Not Available";
+      } 
+      else {
+        if (!blnGotPictureLocationTime) {
+          locationInfoText = await getLocationInfo();
+          noWeatherMessage = "Location of Picture is: <br>Lat: " + latitude + "<br>Lon: " +  longitude + "<br>" + locationInfoText + "<br>But unable to show weather information.";
+          weatherMessage = "Time of Picture Not Available";
+        }
+        else {
+          //We got it so we can continue and go get the info
+          blnGotNeccessaryWeatherData = true;
+        }
+      }
+    }
+  }
+  else {
+    if (blnGotPictureLocationTime && blnGotPictureLocation) {
+      blnGotNeccessaryWeatherData = true;
+    }
+    else {
+      noWeatherMessage = "Unable to show any weather informatation";
+      weatherMessage = "Location and Time of Picture Not Available";
+    }
+  }
+
+  if (!blnGotNeccessaryWeatherData) {
+    weatherInfoDiv.innerHTML = noWeatherMessage;
+    document.getElementById("bottom-message").innerHTML = weatherMessage;
+    return weatherInfoDiv.innerHTML;
+  }
+  else {
+    //We continue on and get the weather info
+  }
 
   //Let's get location description first and then weather info
   try {
@@ -552,11 +609,7 @@ async function getWeatherData(latitude, longitude, dateTimeStamp) {
     weatherInfoText = weatherInfoText + "Description: " + myDesription + "<br>";
 
     //All good, lets also get location name
-    //AJH Change to use relay: Lat/long/guid
-    const locationResponse = await fetch(apiOpenWeatherMapURL + `?guid=${keyUserGUID}&lat=${latitude}&lon=${longitude}`);
-    if (!locationResponse.ok) throw new Error(`Location fetch failed: ${locationResponse.statusText}`);
-    const locationinfo = await locationResponse.json();
-    var locationInfoText = locationinfo[0].name + " " + locationinfo[0].state + "<br>";
+    locationInfoText = await getLocationInfo();
 
     //Add latitude, longitue, time
     var latLongTime = "<hr>Latt:  " + latitude + "<br>Long: " + longitude + "<br>Time: " + getDateTime(dateTimeStamp);
@@ -564,27 +617,7 @@ async function getWeatherData(latitude, longitude, dateTimeStamp) {
     //And our weather display buckets
     weatherInfoDiv.innerHTML = locationInfoText + weatherInfoText + latLongTime;
 
-    if (blnImageLoaded) {
-      if (!blnGotPictureLocationTime && !blnGotPictureLocation) {
-        weatherMessage = "Location and Time of Picture Not Available"
-      }
-      else {
-        if (!blnGotPictureLocation) {
-          weatherMessage = "Location of Picture Not Available"
-        } 
-        else {
-          if (!blnGotPictureLocationTime) {
-            weatherMessage = "Time of Picture Not Available"
-          }
-          else {
-            weatherMessage = myDesription + " " + myTempDescription;
-          }
-        }
-      }
-    }
-    else {
-      weatherMessage = myDesription + " " + myTempDescription;
-    }
+    weatherMessage = myDesription + " " + myTempDescription;
 
     document.getElementById("bottom-message").innerHTML = weatherMessage;
 
@@ -598,6 +631,19 @@ async function getWeatherData(latitude, longitude, dateTimeStamp) {
   }
 }
 
+//Find location information
+async function getLocationInfo() {
+
+  const locationResponse = await fetch(apiOpenWeatherMapURL + `?guid=${keyUserGUID}&lat=${latitude}&lon=${longitude}`);
+  if (!locationResponse.ok) throw new Error(`Location fetch failed: ${locationResponse.statusText}`);
+  const locationinfo = await locationResponse.json();
+  var locationInfoText = locationinfo[0].name + " " + locationinfo[0].state + "<br>";
+
+  return locationInfoText;
+
+}
+
+//Show off map with icon of location
 function showMap(inputLatitude, inputLongitude) {
 
   var mapOptions = {
@@ -618,7 +664,6 @@ function showMap(inputLatitude, inputLongitude) {
 
 }
 
-
 //***************************
 //Here is the code to call Open AI and figure out what kind of fish it is
 //***************************
@@ -636,37 +681,17 @@ async function identifyFish() {
 
   imageDescription = "Not a fish. Move on.";
   document.getElementById('fish-info').innerText = imageDescription;
+  document.getElementById('savePictureBtn').style.display = "none";
   document.body.style.cursor  = 'default';
   
   try {
     document.body.style.cursor  = 'wait';
     document.getElementById('fish-info').innerText = "Studying picture...";
   
-    // Convert the image to base64
-    //const imageData = await toBase64(file);
-    //var imageContent = "data:image/jpeg;base64," + imageData;
-    var imageContent = imageData;
-
-    // Prepare the request payload
-    const payload = {
-        model: "gpt-4o", 
-        messages: [
-          {
-            "role": "user",
-            "content": [
-              {"type": "text", "text": "What kind of fish is this and how big is it? If it is not a fish, what is it a picture of?"},
-              {"type": "image_url", "image_url": { "url": imageContent}}
-              ]
-            }
-        ],
-        max_tokens: 300
-    };
-
-    // Call OpenAI API
-    //AJH Change to use relay Image + GUID
+    // Call AI to figure out fish and size
     const response = await fetch(apiOpenAIURL + `?guid=${keyUserGUID}`, {
         method: 'POST',
-        body: imageContent
+        body: imageData
     });
 
     if (!response.ok) throw new Error("Failed to get response from OpenAI");
@@ -681,6 +706,7 @@ async function identifyFish() {
     }
 
     document.getElementById('fish-info').innerText = imageDescription;
+    document.getElementById('savePictureBtn').style.display = "block";
     document.body.style.cursor  = 'default';
 
   } catch (error) {
@@ -876,4 +902,151 @@ function isNumeric(n) {
 function convertToSeconds(timeString) {
   const [hours, minutes] = timeString.split(":").map(Number);
   return hours * 3600 + minutes * 60;
+}
+
+
+//Here is the file save stuff
+ // Helper functions for GPS EXIF formatting
+ function toDMS(value) {
+  const degrees = Math.floor(value);
+  const minutesFloat = (value - degrees) * 60;
+  const minutes = Math.floor(minutesFloat);
+  const seconds = Math.round((minutesFloat - minutes) * 60 * 100) / 100;
+  return [
+      [degrees, 1],
+      [minutes, 1],
+      [seconds * 100, 100] // Stored as rational numbers
+  ];
+}
+
+function getGPSRef(value, positiveRef, negativeRef) {
+  return value >= 0 ? positiveRef : negativeRef;
+}
+
+// Function to add EXIF metadata and save the image
+async function addExifAndSave() {
+
+  var exifObj;
+
+  //Take image and make it binary
+  const binaryImage = atob(imageData.split(',')[1]);
+
+  // Create an array buffer from the binary image
+  const arrayBuffer = new Uint8Array(binaryImage.length);
+  for (let i = 0; i < binaryImage.length; i++) {
+      arrayBuffer[i] = binaryImage.charCodeAt(i);
+  }
+
+  // Current datetime
+  if (!locationTime) {
+    locationTime = new Date();
+  }
+  const dateTime = locationTime.toISOString().replace(/-/g, ':').split('T').join(' ').split('.')[0];
+
+  // Insert EXIF metadata using piexifjs
+  if (blnGotPictureLocation) {
+    exifObj = {
+      "0th": {
+          [piexif.ImageIFD.ImageDescription]: imageDescription, //Titel and Subject are in this
+          [piexif.ImageIFD.DocumentName]: "I saw your fish!",
+          [piexif.ImageIFD.DateTime]: dateTime // Date and time in the main image metadata
+      },
+      "Exif": {
+          [piexif.ExifIFD.DateTimeOriginal]: dateTime, // Original datetime
+          [piexif.ExifIFD.DateTimeDigitized]: dateTime // Digitization datetime
+      },
+      "GPS": {
+          [piexif.GPSIFD.GPSLatitudeRef]: getGPSRef(latitude, "N", "S"),
+          [piexif.GPSIFD.GPSLatitude]: toDMS(Math.abs(latitude)),
+          [piexif.GPSIFD.GPSLongitudeRef]: getGPSRef(longitude, "E", "W"),
+          [piexif.GPSIFD.GPSLongitude]: toDMS(Math.abs(longitude))
+      }
+    };
+  }
+  else {
+    exifObj = {
+      "0th": {
+          [piexif.ImageIFD.ImageDescription]: imageDescription, //Titel and Subject are in this
+          [piexif.ImageIFD.DocumentName]: "I saw your fish!",
+          [piexif.ImageIFD.DateTime]: dateTime // Date and time in the main image metadata
+      },
+      "Exif": {
+          [piexif.ExifIFD.DateTimeOriginal]: dateTime, // Original datetime
+          [piexif.ExifIFD.DateTimeDigitized]: dateTime // Digitization datetime
+      }
+    };
+  }
+
+
+  // Generate EXIF data and insert it into the binary image
+  const exifBytes = piexif.dump(exifObj);
+  const binaryImageWithExif = piexif.insert(exifBytes, binaryImage);
+
+  // Convert again to array buffer after added exif dat
+  const arrayBuffer2 = new Uint8Array(binaryImageWithExif.length);
+  for (let i = 0; i < binaryImageWithExif.length; i++) {
+      arrayBuffer2[i] = binaryImageWithExif.charCodeAt(i);
+  }
+
+  // Create a Blob for saving
+  const blob = new Blob([arrayBuffer2], { type: "image/jpeg" });
+  const url = URL.createObjectURL(blob);
+ 
+  // Create a download link
+  const linkB = document.createElement("a");
+  linkB.href = url;
+  //linkB.download = "image_with_exif.jpg";
+  linkB.download = generateImageName();
+  linkB.click();
+}
+
+//Generate name of image
+function generateImageName() {
+
+  var fileDateTime = getDateTime(locationTime).toString().replaceAll(" ", "-").replaceAll("_", "-").replaceAll("/", "-").replaceAll(":", "-");
+  var responseName = "_FILENAME_" + fileDateTime + ".jpg";
+  var tempFishInfo = "";
+
+  //See if a fish, and if so, use that in the file name
+  if (!imageDescription.includes("This is not a fish.")) {
+
+    //It is a fish and output is in this format
+    //Species: Walleye
+    //Length: 23.4 in.
+
+    // Split the string into lines
+    const tempArray = imageDescription.split(/\r?\n|\r/);
+
+    // Iterate through each line and display it
+    tempArray.forEach((line, index) => {
+
+        if (line.includes("Species: ")) {
+          tempFishInfo = tempFishInfo + line.replace("Species: ", "") + "-";
+        }
+        if (line.includes("Length: ")) {
+          tempFishInfo = tempFishInfo + line.replace("Length: ", "") + "-";
+        }
+    });
+
+    //Clean it up
+    tempFishInfo = tempFishInfo.replaceAll(".", "-").replaceAll(":", "-").replaceAll(" ", "-");
+    responseName = responseName.replace("_FILENAME_", "i-saw-your-fish-" + tempFishInfo);
+  }
+  else {
+    responseName = responseName.replace("_FILENAME_", "i-did-not-see-your-fish-");
+  }
+
+  return responseName;
+
+}
+
+//Reset all of our key data pieces
+function initializeApp() {
+
+  blnGotPictureLocation = false;
+  blnGotPictureLocationTime = false;
+  blnImageLoaded = false;
+  weatherInfoDiv.innerHTML = "Nothing to see here";
+  document.getElementById('fish-info').innerText = "Nothing to see here";
+
 }
