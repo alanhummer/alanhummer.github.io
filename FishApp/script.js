@@ -35,6 +35,7 @@ const mapBtn = document.getElementById('mapBtn'); //Show Map info
 const fishInfoBtn = document.getElementById('fishInfoBtn'); //Show Fish info
 const loadPictureBtn = document.getElementById('loadPictureBtn'); //Load existing picture
 const savePictureBtn = document.getElementById('savePictureBtn'); //Save picture w/meta data
+const retryBtn = document.getElementById('retryBtn'); //Retry image / fish info
 
 //This holds our image stream and data
 var imageData = ""; 
@@ -390,6 +391,19 @@ savePictureBtn.addEventListener('click', () => {
   
 });
 
+// Retry picture / fish information
+retryBtn.addEventListener('click', () => {
+
+  if (retryBtn.disabled) {
+    return;
+  }
+
+  //Rest descripation and then reload it
+  imageDescription = "";
+  toggleDisplay("fish-info-container");
+  identifyFish();
+  
+});
 
 
 // toggleDisplay for what we want to show
@@ -684,6 +698,7 @@ async function identifyFish() {
   imageDescription = "Not a fish. Move on.";
   document.getElementById('fish-info').innerText = imageDescription;
   document.getElementById('savePictureBtn').style.display = "none";
+  document.getElementById('retryBtn').style.display = "none";
   document.body.style.cursor  = 'default';
   
   try {
@@ -709,6 +724,7 @@ async function identifyFish() {
 
     document.getElementById('fish-info').innerText = imageDescription;
     document.getElementById('savePictureBtn').style.display = "block";
+    document.getElementById('retryBtn').style.display = "block";
     document.body.style.cursor  = 'default';
 
   } catch (error) {
@@ -1052,3 +1068,4 @@ function initializeApp() {
   document.getElementById('fish-info').innerText = "Nothing to see here";
 
 }
+
