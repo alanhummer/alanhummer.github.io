@@ -120,6 +120,8 @@ captureBtn.addEventListener('click', async () => {
   //We got a picture
   blnGotPicture = true;
 
+  toggleDisplay("loading-message-container", false);
+
   //Draw it on the page
   const context = canvas.getContext('2d');
   canvas.width = video.videoWidth;
