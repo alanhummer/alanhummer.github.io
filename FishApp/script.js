@@ -706,7 +706,7 @@ async function identifyFish() {
     document.getElementById('fish-info').innerText = "Studying picture...";
   
     // Call AI to figure out fish and size
-    const response = await fetch(apiOpenAIURL + `?guid=${keyUserGUID}`, {
+    const response = await fetch(apiOpenAIURL + `?guid=${keyUserGUID}&lat=${latitude}&lon=${longitude}`, {
         method: 'POST',
         body: imageData
     });
