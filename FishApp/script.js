@@ -92,26 +92,7 @@ if (screen.orientation) {
 }
 
 // Access the camera
-if (navigator.mediaDevices) {
-  if (navigator.mediaDevices.getUserMedia) {
-    navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
-      .then(stream => {
-        video.srcObject = stream;
-      })
-      .catch(error => {
-        console.error("Error accessing the camera", error);
-        statusDiv.textContent = "Camera access is required to take a photo.";
-    });
-  }
-  else {
-    console.error("Error accessing the camera");
-    statusDiv.textContent = "Camera access is required to take a photo.";
-  }
-}
-else {
-  console.error("Error accessing the camera");
-  statusDiv.textContent = "Camera access is required to take a photo.";
-}
+setupCamera();
 
 toggleDisplay("capture-image-container"); //This is our starting point
 
@@ -151,8 +132,6 @@ captureBtn.addEventListener('click', async () => {
 // Capture photo
 getAnotherBtn.addEventListener('click', async () => {
   
-  location.reload();
-
   //Reset all of of data element
   initializeApp();
 
@@ -1071,3 +1050,28 @@ function initializeApp() {
 
 }
 
+//Turn Camera on
+function setupCamera() {
+
+  if (navigator.mediaDevices) {
+    if (navigator.mediaDevices.getUserMedia) {
+      navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+        .then(stream => {
+          video.srcObject = stream;
+        })
+        .catch(error => {
+          console.error("Error accessing the camera", error);
+          statusDiv.textContent = "Camera access is required to take a photo.";
+      });
+    }
+    else {
+      console.error("Error accessing the camera");
+      statusDiv.textContent = "Camera access is required to take a photo.";
+    }
+  }
+  else {
+    console.error("Error accessing the camera");
+    statusDiv.textContent = "Camera access is required to take a photo.";
+  }
+
+}
