@@ -36,6 +36,7 @@ async function getEnvironmentVariable() {
             valueDescription = "Version: Original";
         }
         document.getElementById('value-description').innerText = valueDescription;
+        document.body.style.cursor  = 'default';
 
     } catch (error) {
         console.error("Error getting data:", error);

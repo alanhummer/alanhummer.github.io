@@ -151,6 +151,8 @@ captureBtn.addEventListener('click', async () => {
 // Capture photo
 getAnotherBtn.addEventListener('click', async () => {
   
+  location.reload();
+
   //Reset all of of data element
   initializeApp();
 
