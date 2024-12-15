@@ -41,6 +41,9 @@ const retryBtn = document.getElementById('retryBtn'); //Retry image / fish info
 var imageData = ""; 
 var imageDataBinary = "";
 var imageDescription = "";
+var imageQuery = "IMAGE_QUERY";
+var imageType = "FISH";
+var topMessage = "I saw your fish!";
 
 //API URLs
 var apiOpenWeatherURL = "https://i-saw-your-fish.deno.dev/getweatherinfo";
@@ -123,6 +126,9 @@ captureBtn.addEventListener('click', async () => {
   
   //Then add these
   imageOrientation = "portrait";
+
+  //And get Image Type
+  identifyImage();
 
   //Show captured display
   toggleDisplay("capture-image-container", false); //2nd parm is boolean, false is dont show camer, show pic
@@ -244,7 +250,7 @@ fishInfoBtn.addEventListener('click', () => {
   toggleDisplay("fish-info-container");
 
   //Show info on the image
-  identifyFish(); // We'll want to pass in the picture here
+  identifyFish(imageQuery); // We'll want to pass in the picture here
   document.getElementById('fish-info-photo').src = imageData;
   document.getElementById('fish-info-photo').style.display = "block";
   
@@ -346,6 +352,9 @@ document.getElementById('fileInput').addEventListener('change', async function(e
           //photo.style.width = 'auto'; // Maintain aspect ratio    
         } 
         
+        //And get Image Type
+        identifyImage();
+
         //Show captured display
         toggleDisplay("capture-image-container", false); //2nd parm is boolean, false is dont show camer, show pic
       };
@@ -382,7 +391,7 @@ retryBtn.addEventListener('click', () => {
   //Rest descripation and then reload it
   imageDescription = "";
   toggleDisplay("fish-info-container");
-  identifyFish();
+  identifyFish(imageQuery);
   
 });
 
@@ -430,7 +439,7 @@ function toggleDisplay(inputType, blnShowCamera = true) {
         document.getElementById("captureBtn").style.display = "block";
       }
       else {
-        document.getElementById("top-message").innerHTML = "I saw your fish!";
+        document.getElementById("top-message").innerHTML = topMessage;
         document.getElementById("capture-image").style.display = "none"; //Camera
         document.getElementById("captured-image").style.display = "block"; //Picture Took
         document.getElementById("getAnotherBtn").style.display = "block";
@@ -461,7 +470,7 @@ function toggleDisplay(inputType, blnShowCamera = true) {
         document.getElementById("fishInfoBtn").style.opacity = "0.5";
       }
       else {
-        document.getElementById("top-message").innerHTML = "I saw your fish!";
+        document.getElementById("top-message").innerHTML = topMessage;
         document.getElementById("capture-image").style.display = "none"; //Camera
         document.getElementById("captured-image").style.display = "block"; //Picture Took
         document.getElementById("getAnotherBtn").style.display = "block";
@@ -477,7 +486,7 @@ function toggleDisplay(inputType, blnShowCamera = true) {
       break;  
 
     case "weather-info-container":
-      document.getElementById("top-message").innerHTML = "I saw your fish!";
+      document.getElementById("top-message").innerHTML = topMessage;
       document.getElementById("bottom-message").innerHTML = weatherMessage;
       document.getElementById("button-display").style.display = "flex";
       document.getElementById("weatherBtn").disabled = true;
@@ -486,7 +495,7 @@ function toggleDisplay(inputType, blnShowCamera = true) {
       break;  
 
     case "map-info-container":
-      document.getElementById("top-message").innerHTML = "I saw your fish!";
+      document.getElementById("top-message").innerHTML = topMessage;
       document.getElementById("bottom-message").innerHTML = mapMessage;
       document.getElementById("button-display").style.display = "flex";
       document.getElementById("mapBtn").disabled = true;
@@ -495,7 +504,7 @@ function toggleDisplay(inputType, blnShowCamera = true) {
       break;  
   
     case "fish-info-container":
-      document.getElementById("top-message").innerHTML = "I saw your fish!";
+      document.getElementById("top-message").innerHTML = topMessage;
       document.getElementById("bottom-message").innerHTML = "Any size?";
       document.getElementById("button-display").style.display = "flex";
       document.getElementById("fishInfoBtn").disabled = true;
@@ -652,7 +661,7 @@ function showMap(inputLatitude, inputLongitude) {
   const marker = new google.maps.Marker({
     position:  { lat: inputLatitude, lng: inputLongitude },
     map: map,
-    title: "I saw your fish!",
+    title: topMessage,
     icon: {
         url: "fish-marker.png", // Custom icon (optional)
         scaledSize: new google.maps.Size(40, 40) // Resize icon
@@ -664,7 +673,7 @@ function showMap(inputLatitude, inputLongitude) {
 //***************************
 //Here is the code to call Open AI and figure out what kind of fish it is
 //***************************
-async function identifyFish() {
+async function identifyFish(inputImageQuery) {
 
   if (imageData.length <= 0) {
       alert("Please select an image first.");
@@ -681,13 +690,32 @@ async function identifyFish() {
   document.getElementById('savePictureBtn').style.display = "none";
   document.getElementById('retryBtn').style.display = "none";
   document.body.style.cursor  = 'default';
+
+  switch (imageType.toUpperCase()) {
+
+    case "FISH":
+      inputImageQuery = inputImageQuery + "_FISH";
+      break;
+    case "FOOD":
+      inputImageQuery = inputImageQuery + "_FOOD";
+      break;
+    case "DEER":
+      inputImageQuery = inputImageQuery + "_DEER";
+      break;
+    case "OTHER":
+      inputImageQuery = inputImageQuery + "_OTHER";
+      break;
+    default:
+      //do nothing
+      break;
+  }  
   
   try {
     document.body.style.cursor  = 'wait';
     document.getElementById('fish-info').innerText = "Studying picture...";
   
     // Call AI to figure out fish and size
-    const response = await fetch(apiOpenAIURL + `?guid=${keyUserGUID}&lat=${latitude}&lon=${longitude}`, {
+    const response = await fetch(apiOpenAIURL + `?guid=${keyUserGUID}&lat=${latitude}&lon=${longitude}&query=${inputImageQuery}`, {
         method: 'POST',
         body: imageData
     });
@@ -699,11 +727,16 @@ async function identifyFish() {
     // Display the result
     imageDescription = `${data.choices[0].message.content}`;
 
+    imageDescription = imageDescription.replace("**", "<b>")
+    imageDescription = imageDescription.replace("**", ":</b> ")
+    imageDescription = imageDescription.replaceAll("\n", "<br>")
+    imageDescription = imageDescription.replaceAll("\r", "<br>")
+
     if (imageDescription.length > 500) {
       imageDescription = imageDescription.substring(0, 500) + "...";
     }
 
-    document.getElementById('fish-info').innerText = imageDescription;
+    document.getElementById('fish-info').innerHTML = imageDescription;
     document.getElementById('savePictureBtn').style.display = "block";
     document.getElementById('retryBtn').style.display = "block";
     document.body.style.cursor  = 'default';
@@ -714,6 +747,65 @@ async function identifyFish() {
       document.body.style.cursor  = 'default';
   }
 }
+
+//***************************
+//Here is the code to get what type of picture this is
+//***************************
+async function identifyImage() {
+
+  if (imageData.length <= 0) {
+      alert("Please select an image first.");
+      return;
+  }
+
+  try {
+    document.body.style.cursor  = 'wait';
+
+    document.getElementById("top-message").innerHTML = "Studying picture...";
+  
+    // Call AI to figure out fish and size
+    const response = await fetch(apiOpenAIURL + `?guid=${keyUserGUID}&lat=${latitude}&lon=${longitude}&query=${imageQuery}`, {
+        method: 'POST',
+        body: imageData
+    });
+
+    if (!response.ok) throw new Error("Failed to get response from OpenAI");
+
+    const data = await response.json();
+
+    // Process the result
+    imageType = `${data.choices[0].message.content}`;
+
+    switch (imageType.toUpperCase()) {
+
+      case "FISH":
+        topMessage = "I saw your fish!";
+        break;
+
+      case "FOOD":
+        topMessage = "Hog Up!";
+        break;
+
+      case "DEER":
+        topMessage = "That's not my Deer!";
+        break;
+
+      default:
+        topMessage = "Catch that fish!";
+        break;
+
+    }
+
+    document.getElementById("top-message").innerHTML = topMessage;
+
+    document.body.style.cursor  = 'default';
+
+  } catch (error) {
+      console.error("Error identifying fish:", error);
+      document.body.style.cursor  = 'default';
+  }
+}
+
 
 // Helper function to convert file to base64
 function toBase64(file) {
@@ -947,7 +1039,7 @@ async function addExifAndSave() {
     exifObj = {
       "0th": {
           [piexif.ImageIFD.ImageDescription]: imageDescription, //Titel and Subject are in this
-          [piexif.ImageIFD.DocumentName]: "I saw your fish!",
+          [piexif.ImageIFD.DocumentName]: topMessage,
           [piexif.ImageIFD.DateTime]: dateTime // Date and time in the main image metadata
       },
       "Exif": {
@@ -966,7 +1058,7 @@ async function addExifAndSave() {
     exifObj = {
       "0th": {
           [piexif.ImageIFD.ImageDescription]: imageDescription, //Titel and Subject are in this
-          [piexif.ImageIFD.DocumentName]: "I saw your fish!",
+          [piexif.ImageIFD.DocumentName]: topMessage,
           [piexif.ImageIFD.DateTime]: dateTime // Date and time in the main image metadata
       },
       "Exif": {
