@@ -681,7 +681,7 @@ async function identifyFish(inputImageQuery) {
   }
 
   if (imageDescription.length > 0) {
-    document.getElementById('fish-info').innerText = imageDescription;
+    document.getElementById('fish-info').innerHTML = imageDescription;
     return;
   }
 
