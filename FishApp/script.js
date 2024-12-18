@@ -127,12 +127,13 @@ captureBtn.addEventListener('click', async () => {
   //Then add these
   imageOrientation = "portrait";
 
+  //Show captured display
+  toggleDisplay("capture-image-container", false); //2nd parm is boolean, false is dont show camer
+
   //And get Image Type
   identifyImage();
 
-  //Show captured display
-  toggleDisplay("capture-image-container", false); //2nd parm is boolean, false is dont show camer, show pic
-  
+
 });
 
 // Capture photo
@@ -152,7 +153,7 @@ tryAgainBtn.addEventListener('click', () => {
     return;
   }  
 
-  toggleDisplay("capture-image-container", !blnGotPicture); //2nd parm is boolean, show camera
+  toggleDisplay("capture-image-container", !blnGotPicture, blnGotPicture); //2nd parm is boolean, show camera
 
 });
 
@@ -397,7 +398,7 @@ retryBtn.addEventListener('click', () => {
 
 
 // toggleDisplay for what we want to show
-function toggleDisplay(inputType, blnShowCamera = true) {
+function toggleDisplay(inputType, blnShowCamera = true, blnButtonsEnabled = false) {
 
   //Main content areas
   document.getElementById("loading-message-container").style.display = "none";
@@ -456,26 +457,29 @@ function toggleDisplay(inputType, blnShowCamera = true) {
     case "capture-image-container":
 
       if (blnShowCamera) {
-        document.getElementById("top-message").innerHTML = "Catch that fish!";
+        document.getElementById("top-message").innerHTML = topMessage;
         document.getElementById("capture-image").style.display = "block"; //Camera
         document.getElementById("captured-image").style.display = "none"; //Picture Took
         document.getElementById("captureBtn").style.display = "block";
-        document.getElementById("tryAgainBtn").disabled = true;
-        document.getElementById("tryAgainBtn").style.opacity = "0.5";
-        document.getElementById("weatherBtn").disabled = true;
-        document.getElementById("weatherBtn").style.opacity = "0.5";
-        document.getElementById("mapBtn").disabled = true;
-        document.getElementById("mapBtn").style.opacity = "0.5";
-        document.getElementById("fishInfoBtn").disabled = true;
-        document.getElementById("fishInfoBtn").style.opacity = "0.5";
       }
       else {
         document.getElementById("top-message").innerHTML = topMessage;
         document.getElementById("capture-image").style.display = "none"; //Camera
         document.getElementById("captured-image").style.display = "block"; //Picture Took
         document.getElementById("getAnotherBtn").style.display = "block";
-        document.getElementById("tryAgainBtn").disabled = true;
-        document.getElementById("tryAgainBtn").style.opacity = "0.5";
+
+      }
+
+      document.getElementById("tryAgainBtn").disabled = true;
+      document.getElementById("tryAgainBtn").style.opacity = "0.5";
+
+      if (!blnButtonsEnabled) {
+        document.getElementById("weatherBtn").disabled = true;
+        document.getElementById("weatherBtn").style.opacity = "0.5";
+        document.getElementById("mapBtn").disabled = true;
+        document.getElementById("mapBtn").style.opacity = "0.5";
+        document.getElementById("fishInfoBtn").disabled = true;
+        document.getElementById("fishInfoBtn").style.opacity = "0.5";
       }
 
       document.getElementById("capture-buttons").style.display = "flex"; //Big buttons
@@ -761,7 +765,8 @@ async function identifyImage() {
   try {
     document.body.style.cursor  = 'wait';
 
-    document.getElementById("top-message").innerHTML = "Studying picture...";
+    topMessage = "Studying picture...";
+    document.getElementById("top-message").innerHTML = topMessage;
   
     // Call AI to figure out fish and size
     const response = await fetch(apiOpenAIURL + `?guid=${keyUserGUID}&lat=${latitude}&lon=${longitude}&query=${imageQuery}`, {
@@ -787,7 +792,7 @@ async function identifyImage() {
         break;
 
       case "DEER":
-        topMessage = "That's not my Deer!";
+        topMessage = "That's not my deer!";
         break;
 
       default:
@@ -797,7 +802,7 @@ async function identifyImage() {
     }
 
     document.getElementById("top-message").innerHTML = topMessage;
-
+    toggleDisplay("capture-image-container", false, true); //2nd = show camer, 3rd = enable buttons
     document.body.style.cursor  = 'default';
 
   } catch (error) {
