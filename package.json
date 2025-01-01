@@ -1,0 +1,22 @@
+{
+  "name": "alanhummer.github.io",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alanhummer/alanhummer.github.io.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alanhummer/alanhummer.github.io/issues"
+  },
+  "homepage": "https://github.com/alanhummer/alanhummer.github.io#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.49.0",
+    "@types/node": "^22.9.1"
+  }
+}

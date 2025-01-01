@@ -4,7 +4,11 @@
 // - Weather details - lots of them
 // - Species and Size of the fish
 
-//First up, register the service worker
+//To Do: Get lake/body of water name from GeoNames API and show it on weather page and on location
+
+
+//First up, register the service worker - part of PWA's
+
 if ('serviceWorker' in navigator) {
   window.addEventListener('load' , () => {
       navigator.serviceWorker.register('/sw.js')
@@ -47,7 +51,7 @@ var topMessage = "I saw your fish!";
 
 //API URLs
 var apiOpenWeatherURL = "https://i-saw-your-fish.deno.dev/getweatherinfo";
-var apiOpenWeatherMapURL = "https://i-saw-your-fish.deno.dev/getlocationinfo";
+var apiGeoLocationURL = "https://i-saw-your-fish.deno.dev/getlocationinfo";
 var apiOpenAIURL = "https://i-saw-your-fish.deno.dev/getfishinfo";
 
 //Hold our GUID
@@ -57,6 +61,7 @@ var keyUserGUID = getStorage("keyUserGUID");
 var latitude = null;
 var longitude = null;
 var locationTime = null;
+var locationInfoText = "";
 var weatherMessage = "";
 var mapMessage = "";
 var blnGotPicture = false;
@@ -123,6 +128,9 @@ captureBtn.addEventListener('click', async () => {
 
    //Get Location Data - if we timeout of caching it (1 hour)
   await getLocationData();
+
+  //All good, lets also get location name for use
+  locationInfoText = await getLocationInfo();
   
   //Then add these
   imageOrientation = "portrait";
@@ -226,13 +234,14 @@ mapBtn.addEventListener('click', async () => {
   if (blnGotPictureLocation) {
     //Now show the map
     showMap(latitude, longitude);
-    document.getElementById('map-error').style.display = "none";
     document.getElementById('map').style.display = "block";
+    document.getElementById('map-info').innerHTML = locationInfoText;
+    document.getElementById('map-info').style.display = "block";
     mapMessage = "Where'd ya catch em?";
   }
   else {
-    document.getElementById('map-error').innerHTML = "Unable to show location information or map.";
-    document.getElementById('map-error').style.display = "block";
+    document.getElementById('map-info').innerHTML = "Unable to show location information or map.";
+    document.getElementById('map-info').style.display = "block";
     document.getElementById('map').style.display = "none";
     mapMessage = "Location information not available";
   }
@@ -546,7 +555,6 @@ async function getWeatherData(latitude, longitude, dateTimeStamp) {
 
   var noWeatherMessage = "";
   var blnGotNeccessaryWeatherData = false;
-  var locationInfoText = "";
 
   if (blnImageLoaded) { //Uploade from afile
     if (!blnGotPictureLocationTime && !blnGotPictureLocation) {
@@ -644,10 +652,12 @@ async function getWeatherData(latitude, longitude, dateTimeStamp) {
 //Find location information
 async function getLocationInfo() {
 
-  const locationResponse = await fetch(apiOpenWeatherMapURL + `?guid=${keyUserGUID}&lat=${latitude}&lon=${longitude}`);
+  //AJH THIS IS WHERE WE PARSE DIFFERENT RESULT WHEN CHANGE OUT GEOLOCTION
+
+  const locationResponse = await fetch(apiGeoLocationURL + `?guid=${keyUserGUID}&lat=${latitude}&lon=${longitude}&type=${imageType}`);
   if (!locationResponse.ok) throw new Error(`Location fetch failed: ${locationResponse.statusText}`);
   const locationinfo = await locationResponse.json();
-  var locationInfoText = locationinfo[0].name + " " + locationinfo[0].state + "<br>";
+  var locationInfoText = locationinfo.locationInfo + "<br>";
 
   return locationInfoText;
 
@@ -694,19 +704,23 @@ async function identifyFish(inputImageQuery) {
   document.getElementById('savePictureBtn').style.display = "none";
   document.getElementById('retryBtn').style.display = "none";
   document.body.style.cursor  = 'default';
-
+  
   switch (imageType.toUpperCase()) {
 
     case "FISH":
       inputImageQuery = inputImageQuery + "_FISH";
+      fishInfoBtn.src = "fish-information.png";
       break;
     case "FOOD":
       inputImageQuery = inputImageQuery + "_FOOD";
+      fishInfoBtn.src = "food-information.png";
       break;
     case "DEER":
+      fishInfoBtn.src = "deer-information.png";
       inputImageQuery = inputImageQuery + "_DEER";
       break;
     case "OTHER":
+      fishInfoBtn.src = "information.png";
       inputImageQuery = inputImageQuery + "_OTHER";
       break;
     default:
@@ -785,18 +799,22 @@ async function identifyImage() {
 
       case "FISH":
         topMessage = "I saw your fish!";
+        fishInfoBtn.src = "fish-information.png";
         break;
 
       case "FOOD":
         topMessage = "Hog Up!";
+        fishInfoBtn.src = "food-information.png";
         break;
 
       case "DEER":
         topMessage = "That's not my deer!";
+        fishInfoBtn.src = "deer-information.png";
         break;
 
       default:
         topMessage = "Catch that fish!";
+        fishInfoBtn.src = "information.png";
         break;
 
     }
