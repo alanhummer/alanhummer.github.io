@@ -800,21 +800,25 @@ async function identifyImage() {
       case "FISH":
         topMessage = "I saw your fish!";
         fishInfoBtn.src = "fish-information.png";
+        document.getElementById('fish-info').className = "text-display";
         break;
 
       case "FOOD":
         topMessage = "Hog Up!";
         fishInfoBtn.src = "food-information.png";
+        document.getElementById('fish-info').className = "small-text-display";
         break;
 
       case "DEER":
         topMessage = "That's not my deer!";
         fishInfoBtn.src = "deer-information.png";
+        document.getElementById('fish-info').className = "text-display";
         break;
 
       default:
         topMessage = "Catch that fish!";
         fishInfoBtn.src = "information.png";
+        document.getElementById('fish-info').className = "text-display";
         break;
 
     }
