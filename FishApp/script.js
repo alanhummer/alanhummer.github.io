@@ -657,7 +657,7 @@ async function getLocationInfo() {
   const locationResponse = await fetch(apiGeoLocationURL + `?guid=${keyUserGUID}&lat=${latitude}&lon=${longitude}&type=${imageType}`);
   if (!locationResponse.ok) throw new Error(`Location fetch failed: ${locationResponse.statusText}`);
   const locationinfo = await locationResponse.json();
-  var locationInfoText = locationinfo.locationInfo + "<br>";
+  var locationInfoText = locationinfo.locationInfo.replace(" - ", "<br>") + "<br>";
 
   return locationInfoText;
 
