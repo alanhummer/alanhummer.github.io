@@ -62,6 +62,7 @@ var latitude = null;
 var longitude = null;
 var locationTime = null;
 var locationInfoText = "";
+var placeName = "";
 var weatherMessage = "";
 var mapMessage = "";
 var blnGotPicture = false;
@@ -203,7 +204,7 @@ async function getLocationData() {
       const position = await getCurrentPosition();
       latitude = position.coords.latitude;
       longitude = position.coords.longitude;
-    
+   
     }
     catch (error) {
 
@@ -235,9 +236,33 @@ mapBtn.addEventListener('click', async () => {
     //Now show the map
     showMap(latitude, longitude);
     document.getElementById('map').style.display = "block";
-    document.getElementById('map-info').innerHTML = locationInfoText;
+    if (placeName != "") {
+      document.getElementById('map-info').innerHTML = placeName + "<br>" + locationInfoText;
+    }
+    else {
+      document.getElementById('map-info').innerHTML = locationInfoText;
+    }
     document.getElementById('map-info').style.display = "block";
-    mapMessage = "Where'd ya catch em?";
+
+    switch (imageType.toUpperCase()) {
+
+      case "FISH":
+        mapMessage = "Where ya caught em'";
+        break;
+
+      case "FOOD":
+        mapMessage = "A great place to eat!";
+        break;
+
+      case "DEER":
+        mapMessage = "Where ya got em'";
+        break;
+
+      default:
+        mapMessage = "Where ya at";
+        break;
+
+    }    
   }
   else {
     document.getElementById('map-info').innerHTML = "Unable to show location information or map.";
@@ -518,12 +543,31 @@ function toggleDisplay(inputType, blnShowCamera = true, blnButtonsEnabled = fals
   
     case "fish-info-container":
       document.getElementById("top-message").innerHTML = topMessage;
-      document.getElementById("bottom-message").innerHTML = "Any size?";
       document.getElementById("button-display").style.display = "flex";
       document.getElementById("fishInfoBtn").disabled = true;
       document.getElementById("fishInfoBtn").style.opacity = "0.5";
       document.getElementById("bottom-message").style.display = "none";
       document.getElementById("bottom-message-save").style.display = "block";
+
+      switch (imageType.toUpperCase()) {
+
+        case "FISH":
+          document.getElementById("bottom-message-save-detail").innerHTML = "Any size?";
+          break;
+  
+        case "FOOD":
+          document.getElementById("bottom-message-save-detail").innerHTML = "Them's vittles!";
+          break;
+  
+        case "DEER":
+          document.getElementById("bottom-message-save-detail").innerHTML = "That's a nice one...";
+          break;
+  
+        default:
+          document.getElementById("bottom-message-save-detail").innerHTML = "Any size?";
+          break;
+  
+      }    
       break;  
       
     default:
@@ -633,7 +677,13 @@ async function getWeatherData(latitude, longitude, dateTimeStamp) {
     var latLongTime = "<hr>Latt:  " + latitude + "<br>Long: " + longitude + "<br>Time: " + getDateTime(dateTimeStamp);
 
     //And our weather display buckets
-    weatherInfoDiv.innerHTML = locationInfoText + weatherInfoText + latLongTime;
+    if (placeName != "") {
+      weatherInfoDiv.innerHTML = placeName + "<br>" + weatherInfoText + latLongTime;
+    }
+    else {
+      weatherInfoDiv.innerHTML = locationInfoText + weatherInfoText + latLongTime;
+    }
+
 
     weatherMessage = myDesription + " " + myTempDescription;
 
@@ -654,10 +704,30 @@ async function getLocationInfo() {
 
   //AJH THIS IS WHERE WE PARSE DIFFERENT RESULT WHEN CHANGE OUT GEOLOCTION
 
+  var addressLines = "";
+  var locationInfoText = "";
+
   const locationResponse = await fetch(apiGeoLocationURL + `?guid=${keyUserGUID}&lat=${latitude}&lon=${longitude}&type=${imageType}`);
   if (!locationResponse.ok) throw new Error(`Location fetch failed: ${locationResponse.statusText}`);
   const locationinfo = await locationResponse.json();
-  var locationInfoText = locationinfo.locationInfo.replace(" - ", "<br>") + "<br>";
+  if (locationinfo.locationInfo.includes(" - ")) {
+    //We have a place name to parse
+    var arrayAddressLinePieces = locationinfo.locationInfo.split(' - ');
+    placeName = arrayAddressLinePieces[0];
+    addressLines = arrayAddressLinePieces[1];
+  }
+  else {
+    placeName = "";
+    addressLines = locationinfo.locationInfo;
+  }
+  if (addressLines.includes(",")) {
+    //Split out address lines into pieces
+    var arrayAddressPieces = addressLines.split(',');
+    locationInfoText = arrayAddressPieces[0] + "<br>" + arrayAddressPieces[1] + arrayAddressPieces[2] + "<br>";
+  }
+  else {
+    locationInfoText = addressLines + "<br>";
+  }
 
   return locationInfoText;
 
@@ -794,6 +864,9 @@ async function identifyImage() {
 
     // Process the result
     imageType = `${data.choices[0].message.content}`;
+
+    //Testing...
+    imageType = "DEER";
 
     switch (imageType.toUpperCase()) {
 
