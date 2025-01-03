@@ -713,8 +713,8 @@ async function getLocationInfo() {
   if (locationinfo.locationInfo.includes(" - ")) {
     //We have a place name to parse
     var arrayAddressLinePieces = locationinfo.locationInfo.split(' - ');
-    placeName = arrayAddressLinePieces[0];
-    addressLines = arrayAddressLinePieces[1];
+    placeName = arrayAddressLinePieces[0].trim();
+    addressLines = arrayAddressLinePieces[1].trim();
   }
   else {
     placeName = "";
@@ -723,7 +723,7 @@ async function getLocationInfo() {
   if (addressLines.includes(",")) {
     //Split out address lines into pieces
     var arrayAddressPieces = addressLines.split(',');
-    locationInfoText = arrayAddressPieces[0] + "<br>" + arrayAddressPieces[1] + arrayAddressPieces[2] + "<br>";
+    locationInfoText = arrayAddressPieces[0].trim() + "<br>" + arrayAddressPieces[1].trim() + " " + arrayAddressPieces[2].trim() + "<br>";
   }
   else {
     locationInfoText = addressLines + "<br>";
@@ -864,6 +864,7 @@ async function identifyImage() {
 
     // Process the result
     imageType = `${data.choices[0].message.content}`;
+    imageType = "FOOD";
 
     switch (imageType.toUpperCase()) {
 
