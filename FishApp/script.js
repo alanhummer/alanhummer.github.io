@@ -864,7 +864,6 @@ async function identifyImage() {
 
     // Process the result
     imageType = `${data.choices[0].message.content}`;
-    imageType = "FOOD";
 
     switch (imageType.toUpperCase()) {
 
