@@ -30,6 +30,9 @@ const photo = document.getElementById('photo');
 const statusDiv = document.getElementById('status');
 const weatherInfoDiv = document.getElementById('weather-info');
 
+//Set the version in the status
+statusDiv.textContent = "v2025.01.03.03";
+
 //Buttons
 const captureBtn = document.getElementById('captureBtn'); //Take Picture
 const getAnotherBtn = document.getElementById('getAnotherBtn'); //Reset to turn camera on
