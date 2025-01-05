@@ -254,7 +254,7 @@ mapBtn.addEventListener('click', async () => {
         break;
 
       case "FOOD":
-        mapMessage = "A great place to eat!";
+        mapMessage = "Lookin' to eat!";
         break;
 
       case "DEER":
