@@ -31,7 +31,7 @@ const statusDiv = document.getElementById('status');
 const weatherInfoDiv = document.getElementById('weather-info');
 
 //Set the version in the status
-statusDiv.textContent = "v2025.01.03.03";
+statusDiv.textContent = "v2025.01.11.01";
 
 //Buttons
 const captureBtn = document.getElementById('captureBtn'); //Take Picture
@@ -65,6 +65,8 @@ var latitude = null;
 var longitude = null;
 var locationTime = null;
 var locationInfoText = "";
+var imageTitle = "";
+var imageSubject = "";
 var placeName = "";
 var weatherMessage = "";
 var mapMessage = "";
@@ -130,6 +132,10 @@ captureBtn.addEventListener('click', async () => {
   photo.src = imageData;
   photo.style.display = "block";
 
+  //Reset some data
+  imageTitle = "";
+  imageSubject = "";
+
    //Get Location Data - if we timeout of caching it (1 hour)
   await getLocationData();
 
@@ -143,7 +149,7 @@ captureBtn.addEventListener('click', async () => {
   toggleDisplay("capture-image-container", false); //2nd parm is boolean, false is dont show camer
 
   //And get Image Type
-  identifyImage();
+  identifyImage(imageTitle, imageSubject);
 
 
 });
@@ -346,6 +352,8 @@ document.getElementById('fileInput').addEventListener('change', async function(e
         //We loaded an images
         blnImageLoaded = true;
 
+        console.log("EXIFTAGS:", exifTags);
+
         //Get Location
         if (exifTags.GPSLongitude && exifTags.GPSLatitude) {
           longitude = (exifTags.GPSLongitude.description) * -1;
@@ -378,6 +386,17 @@ document.getElementById('fileInput').addEventListener('change', async function(e
           blnGotPictureLocationTime = false;
         }
 
+        //Get Title/Subject
+        if (exifTags.ImageDescription) {
+          imageTitle = exifTags.ImageDescription.description;
+          imageSubject = exifTags.DocumentName.description.toUpperCase();
+
+        }
+        else {
+          imageTitle = "";
+          imageSubject = "";
+        }
+        
         blnGotPicture = true;
 
         //Picture size needs to fit in window....this almost works, but distorts landscape vids
@@ -390,11 +409,8 @@ document.getElementById('fileInput').addEventListener('change', async function(e
           //photo.style.width = 'auto'; // Maintain aspect ratio    
         } 
         
-        //And get Image Type
-        identifyImage();
-
-        //Show captured display
-        toggleDisplay("capture-image-container", false); //2nd parm is boolean, false is dont show camer, show pic
+        //And get Image Type, if we need to
+        identifyImage(imageTitle, imageSubject);
       };
     };
 
@@ -428,6 +444,8 @@ retryBtn.addEventListener('click', () => {
 
   //Rest descripation and then reload it
   imageDescription = "";
+  imageTitle = "";
+  imageSubject = "";
   toggleDisplay("fish-info-container");
   identifyFish(imageQuery);
   
@@ -767,8 +785,18 @@ async function identifyFish(inputImageQuery) {
       return;
   }
 
+  //If we loaded title/subject from image, use it
+  if (imageTitle.length > 10 && imageSubject.length > 3) {
+    imageDescription = imageTitle;
+    if (imageSubject == "FISH" || imageSubject == "FOOD" || imageSubject == "DEER" || "OTHER") {
+      imageType = imageSubject;
+    }
+  }
+
   if (imageDescription.length > 0) {
     document.getElementById('fish-info').innerHTML = imageDescription;
+    document.getElementById('savePictureBtn').style.display = "block";
+    document.getElementById('retryBtn').style.display = "block";
     return;
   }
 
@@ -842,7 +870,7 @@ async function identifyFish(inputImageQuery) {
 //***************************
 //Here is the code to get what type of picture this is
 //***************************
-async function identifyImage() {
+async function identifyImage(inputImageDescription, inputImageType) {
 
   if (imageData.length <= 0) {
       alert("Please select an image first.");
@@ -854,20 +882,27 @@ async function identifyImage() {
 
     topMessage = "Studying picture...";
     document.getElementById("top-message").innerHTML = topMessage;
-  
-    // Call AI to figure out fish and size
-    const response = await fetch(apiOpenAIURL + `?guid=${keyUserGUID}&lat=${latitude}&lon=${longitude}&query=${imageQuery}`, {
-        method: 'POST',
-        body: imageData
-    });
 
-    if (!response.ok) throw new Error("Failed to get response from OpenAI");
+    if (inputImageDescription != "" && inputImageType != "") {
+      imageType = inputImageType;
+      imageDescription = inputImageDescription;
+    }
+    else {
 
-    const data = await response.json();
+      // Call AI to figure out fish and size
+      const response = await fetch(apiOpenAIURL + `?guid=${keyUserGUID}&lat=${latitude}&lon=${longitude}&query=${imageQuery}`, {
+          method: 'POST',
+          body: imageData
+      });
 
-    // Process the result
-    imageType = `${data.choices[0].message.content}`;
+      if (!response.ok) throw new Error("Failed to get response from OpenAI");
 
+      const data = await response.json();
+
+      // Process the result
+      imageType = `${data.choices[0].message.content}`;
+    
+    }
     switch (imageType.toUpperCase()) {
 
       case "FISH":
@@ -895,7 +930,6 @@ async function identifyImage() {
         break;
 
     }
-
     document.getElementById("top-message").innerHTML = topMessage;
     toggleDisplay("capture-image-container", false, true); //2nd = show camer, 3rd = enable buttons
     document.body.style.cursor  = 'default';
@@ -1139,7 +1173,7 @@ async function addExifAndSave() {
     exifObj = {
       "0th": {
           [piexif.ImageIFD.ImageDescription]: imageDescription, //Titel and Subject are in this
-          [piexif.ImageIFD.DocumentName]: topMessage,
+          [piexif.ImageIFD.DocumentName]: imageType,
           [piexif.ImageIFD.DateTime]: dateTime // Date and time in the main image metadata
       },
       "Exif": {
@@ -1158,7 +1192,7 @@ async function addExifAndSave() {
     exifObj = {
       "0th": {
           [piexif.ImageIFD.ImageDescription]: imageDescription, //Titel and Subject are in this
-          [piexif.ImageIFD.DocumentName]: topMessage,
+          [piexif.ImageIFD.DocumentName]: imageType,
           [piexif.ImageIFD.DateTime]: dateTime // Date and time in the main image metadata
       },
       "Exif": {
