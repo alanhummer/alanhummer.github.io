@@ -61,7 +61,7 @@ const statusDiv = document.getElementById('status');
 const weatherInfoDiv = document.getElementById('weather-info');
 
 //Set the version in the status
-statusDiv.textContent = "v2025.01.11.02";
+statusDiv.textContent = "v2025.01.11.03";
 
 //Buttons
 const captureBtn = document.getElementById('captureBtn'); //Take Picture
