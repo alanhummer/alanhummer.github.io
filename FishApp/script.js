@@ -61,7 +61,7 @@ const statusDiv = document.getElementById('status');
 const weatherInfoDiv = document.getElementById('weather-info');
 
 //Set the version in the status
-statusDiv.textContent = "v2025.01.11.06";
+statusDiv.textContent = "v2025.01.11.07";
 
 //Buttons
 const captureBtn = document.getElementById('captureBtn'); //Take Picture
@@ -812,12 +812,14 @@ function showMap(inputLatitude, inputLongitude) {
 
   console.log("mapOptions", mapOptions);
 
+  var mapMarker = imageType.toLowerCase() + "-marker.png";
+
   const marker = new google.maps.Marker({
     position:  { lat: inputLatitude, lng: inputLongitude },
     map: map,
     title: topMessage,
     icon: {
-        url: "fish-marker.png", // Custom icon (optional)
+        url: mapMarker, // Custom icon (optional)
         scaledSize: new google.maps.Size(40, 40) // Resize icon
     }
 });
