@@ -271,7 +271,6 @@ mapBtn.addEventListener('click', async () => {
     return;
   }  
   
-  console.log("DOING MAP: " + latitude + " and " + longitude);
   mapMessage = "Loading...";
   if (blnGotPictureLocation) {
     //Now show the map
@@ -429,7 +428,6 @@ document.getElementById('fileInput').addEventListener('change', async function(e
                 longitude = parseFloat(locationArray[2]);
                 blnGotPictureLocation = true;
               }
-              console.log("WE GOT LOC: " + latitude + " LONG: " + longitude);              
             }
           }
           else {
@@ -809,8 +807,6 @@ function showMap(inputLatitude, inputLongitude) {
       zoom: 15 // Adjust zoom level as needed
   };
   var map = new google.maps.Map(document.getElementById('map'), mapOptions);
-
-  console.log("mapOptions", mapOptions);
 
   var mapMarker = imageType.toLowerCase() + "-marker.png";
 
