@@ -61,7 +61,7 @@ const statusDiv = document.getElementById('status');
 const weatherInfoDiv = document.getElementById('weather-info');
 
 //Set the version in the status
-statusDiv.textContent = "v2025.01.11.05";
+statusDiv.textContent = "v2025.01.11.06";
 
 //Buttons
 const captureBtn = document.getElementById('captureBtn'); //Take Picture
@@ -182,9 +182,6 @@ captureBtn.addEventListener('click', async () => {
 
   //And get Image Type
   identifyImage(imageTitle, imageSubject);
-
-  console.log("Here we go");
-
 
 });
 
@@ -387,8 +384,6 @@ document.getElementById('fileInput').addEventListener('change', async function(e
         //We loaded an images
         blnImageLoaded = true;
 
-        console.log("EXIFTAGS:", exifTags);
-
         //Get Location
         if (exifTags.GPSLongitude && exifTags.GPSLatitude) {
           longitude = (exifTags.GPSLongitude.description) * -1;
@@ -423,17 +418,15 @@ document.getElementById('fileInput').addEventListener('change', async function(e
 
         //Get Title/Subject
         if (exifTags.ImageDescription) {
-          console.log("WE GOT SOMETHIG");
           imageTitle = exifTags.ImageDescription.description;
           imageSubject = exifTags.DocumentName.description.toUpperCase();
-          console.log("XPCommnet:", exifTags.XPComment.description);
           if (exifTags.XPComment && !blnGotPictureLocation) {
             imageLocation = exifTags.XPComment.description.toUpperCase();
             if (imageLocation.includes("|")) {
               var locationArray = imageLocation.split("|")
               if (isNumeric(locationArray[1]) && isNumeric(locationArray[2])) {
-                latitude = locationArray[1];
-                longitude = locationArray[2];
+                latitude = parseFloat(locationArray[1]);
+                longitude = parseFloat(locationArray[2]);
                 blnGotPictureLocation = true;
               }
               console.log("WE GOT LOC: " + latitude + " LONG: " + longitude);              
@@ -816,6 +809,8 @@ function showMap(inputLatitude, inputLongitude) {
       zoom: 15 // Adjust zoom level as needed
   };
   var map = new google.maps.Map(document.getElementById('map'), mapOptions);
+
+  console.log("mapOptions", mapOptions);
 
   const marker = new google.maps.Marker({
     position:  { lat: inputLatitude, lng: inputLongitude },
