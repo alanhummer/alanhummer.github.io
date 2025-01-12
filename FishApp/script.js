@@ -97,6 +97,7 @@ var locationTime = null;
 var locationInfoText = "";
 var imageTitle = "";
 var imageSubject = "";
+var imageLocation = "";
 var placeName = "";
 var weatherMessage = "";
 var mapMessage = "";
@@ -165,6 +166,7 @@ captureBtn.addEventListener('click', async () => {
   //Reset some data
   imageTitle = "";
   imageSubject = "";
+  imageLocation = "";
 
    //Get Location Data - if we timeout of caching it (1 hour)
   await getLocationData();
@@ -420,13 +422,33 @@ document.getElementById('fileInput').addEventListener('change', async function(e
 
         //Get Title/Subject
         if (exifTags.ImageDescription) {
+          console.log("WE GOT SOMETHIG");
           imageTitle = exifTags.ImageDescription.description;
           imageSubject = exifTags.DocumentName.description.toUpperCase();
+          console.log("XPCommnet:", exifTags.XPComment.description);
+          if (exifTags.XPComment) {
+            imageLocation = exifTags.XPComment.description.toUpperCase();
+            console.log("LATITUTUDE IS " + latitude);
+            //Get location if we don't already have it
+            if (latitude == "0" || latitude == "" || true) {
+              if (imageLocation.includes("|")) {
+                var locationArray = imageLocation.split("|")
+                latitude = locationArray[1];
+                longitude = locationArray[2];
+                console.log("WE GOT LOC: " + latitude + " LONG: " + longitude);
+              }
+            }
+          }
+          else {
+            imageLocation = "";
+          }
+          
 
         }
         else {
           imageTitle = "";
           imageSubject = "";
+          imageLocation = "";
         }
         
         blnGotPicture = true;
@@ -1184,6 +1206,7 @@ function getGPSRef(value, positiveRef, negativeRef) {
 async function addExifAndSave() {
 
   var exifObj;
+  var imageLocationString = "GPS|" + latitude + "|" + longitude;
 
   //Take image and make it binary
   const binaryImage = atob(imageData.split(',')[1]);
@@ -1206,7 +1229,8 @@ async function addExifAndSave() {
       "0th": {
           [piexif.ImageIFD.ImageDescription]: imageDescription, //Titel and Subject are in this
           [piexif.ImageIFD.DocumentName]: imageType,
-          [piexif.ImageIFD.DateTime]: dateTime // Date and time in the main image metadata
+          [piexif.ImageIFD.DateTime]: dateTime, // Date and time in the main image metadata
+          [piexif.ImageIFD.XPComment]: stringToUCS2Array(imageLocationString) //We will hijack this for location information
       },
       "Exif": {
           [piexif.ExifIFD.DateTimeOriginal]: dateTime, // Original datetime
@@ -1334,3 +1358,12 @@ function setupCamera() {
 
 }
 
+function stringToUCS2Array(str) {
+  const arr = [];
+  for (let i = 0; i < str.length; i++) {
+    // 2 bytes per character, low-order byte first
+    arr.push(str.charCodeAt(i));  // low-order byte
+    arr.push(0);                  // high-order byte
+  }
+  return arr;
+}
