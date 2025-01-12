@@ -20,6 +20,36 @@ if ('serviceWorker' in navigator) {
   });
 }
 
+//Setup for mobile console debugging
+// Reference to an output container, use 'pre' styling for JSON output
+var consoleOutput;
+var oldLog;
+
+const urlParams = new URLSearchParams(window.location.search);
+const myParam = urlParams.get('debug');
+
+if (myParam == "true") {
+
+  consoleOutput = document.createElement('pre');
+  document.body.appendChild(consoleOutput);
+
+  // Reference to native method(s)
+  oldLog = console.log;
+
+  console.log = function( ...items ) {
+
+      // Call native method first
+      oldLog.apply(this,items);
+
+      // Use JSON to transform objects, all others display normally
+      items.forEach( (item,i)=>{
+          items[i] = (typeof item === 'object' ? JSON.stringify(item,null,4) : item);
+      });
+      consoleOutput.innerHTML += items.join(' ') + '<br /><br /><br />';
+
+  };
+};
+
 //Exif data is the meta data stored with the picture - we will use it for storing our stuff
 import ExifReader from "https://esm.sh/exifreader";
 
@@ -31,7 +61,7 @@ const statusDiv = document.getElementById('status');
 const weatherInfoDiv = document.getElementById('weather-info');
 
 //Set the version in the status
-statusDiv.textContent = "v2025.01.11.01";
+statusDiv.textContent = "v2025.01.11.02";
 
 //Buttons
 const captureBtn = document.getElementById('captureBtn'); //Take Picture
@@ -150,6 +180,8 @@ captureBtn.addEventListener('click', async () => {
 
   //And get Image Type
   identifyImage(imageTitle, imageSubject);
+
+  console.log("Here we go");
 
 
 });
@@ -1301,3 +1333,4 @@ function setupCamera() {
   }
 
 }
+
