@@ -61,7 +61,7 @@ const statusDiv = document.getElementById('status');
 const weatherInfoDiv = document.getElementById('weather-info');
 
 //Set the version in the status
-statusDiv.textContent = "v2025.01.11.03";
+statusDiv.textContent = "v2025.01.11.04";
 
 //Buttons
 const captureBtn = document.getElementById('captureBtn'); //Take Picture
@@ -274,6 +274,7 @@ mapBtn.addEventListener('click', async () => {
     return;
   }  
   
+  console.log("DOING MAP: " + latitude + " and " + longitude);
   mapMessage = "Loading...";
   if (blnGotPictureLocation) {
     //Now show the map
@@ -436,6 +437,7 @@ document.getElementById('fileInput').addEventListener('change', async function(e
                 latitude = locationArray[1];
                 longitude = locationArray[2];
                 console.log("WE GOT LOC: " + latitude + " LONG: " + longitude);
+                blnGotPictureLocation = true;
               }
             }
           }
