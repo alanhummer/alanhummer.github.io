@@ -61,7 +61,7 @@ const statusDiv = document.getElementById('status');
 const weatherInfoDiv = document.getElementById('weather-info');
 
 //Set the version in the status
-statusDiv.textContent = "v2025.01.11.07";
+statusDiv.textContent = "v2025.01.12.01";
 
 //Buttons
 const captureBtn = document.getElementById('captureBtn'); //Take Picture
@@ -1280,6 +1280,11 @@ function generateImageName() {
   var fileDateTime = getDateTime(locationTime).toString().replaceAll(" ", "-").replaceAll("_", "-").replaceAll("/", "-").replaceAll(":", "-");
   var responseName = "_FILENAME_" + fileDateTime + ".jpg";
   var tempFishInfo = "";
+
+  responseName = responseName.replace("_FILENAME_", imageType + "-");
+
+  return responseName;
+
 
   //See if a fish, and if so, use that in the file name
   if (!imageDescription.includes("This is not a fish.")) {
