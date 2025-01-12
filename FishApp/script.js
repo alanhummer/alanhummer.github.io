@@ -61,7 +61,7 @@ const statusDiv = document.getElementById('status');
 const weatherInfoDiv = document.getElementById('weather-info');
 
 //Set the version in the status
-statusDiv.textContent = "v2025.01.11.04";
+statusDiv.textContent = "v2025.01.11.05";
 
 //Buttons
 const captureBtn = document.getElementById('captureBtn'); //Take Picture
@@ -427,18 +427,16 @@ document.getElementById('fileInput').addEventListener('change', async function(e
           imageTitle = exifTags.ImageDescription.description;
           imageSubject = exifTags.DocumentName.description.toUpperCase();
           console.log("XPCommnet:", exifTags.XPComment.description);
-          if (exifTags.XPComment) {
+          if (exifTags.XPComment && !blnGotPictureLocation) {
             imageLocation = exifTags.XPComment.description.toUpperCase();
-            console.log("LATITUTUDE IS " + latitude);
-            //Get location if we don't already have it
-            if (latitude == "0" || latitude == "" || true) {
-              if (imageLocation.includes("|")) {
-                var locationArray = imageLocation.split("|")
+            if (imageLocation.includes("|")) {
+              var locationArray = imageLocation.split("|")
+              if (isNumeric(locationArray[1]) && isNumeric(locationArray[2])) {
                 latitude = locationArray[1];
                 longitude = locationArray[2];
-                console.log("WE GOT LOC: " + latitude + " LONG: " + longitude);
                 blnGotPictureLocation = true;
               }
+              console.log("WE GOT LOC: " + latitude + " LONG: " + longitude);              
             }
           }
           else {
