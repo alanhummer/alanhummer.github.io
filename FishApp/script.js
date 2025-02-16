@@ -3,10 +3,10 @@
 // - Date / Time Taken
 // - Weather details - lots of them
 // - Species and Size of the fish
-
-//To Do: Get lake/body of water name from GeoNames API and show it on weather page and on location
-
-
+//
+//To test w/local HTTP server, lower right "Go Live" --> Startups server on port 5500 and launches browser
+//X To Do: Get lake/body of water name from GeoNames API and show it on weather page and on location
+//
 //First up, register the service worker - part of PWA's
 
 if ('serviceWorker' in navigator) {
@@ -59,9 +59,10 @@ const canvas = document.getElementById('canvas');
 const photo = document.getElementById('photo');
 const statusDiv = document.getElementById('status');
 const weatherInfoDiv = document.getElementById('weather-info');
+const debugMessage = document.getElementById('debug');
 
 //Set the version in the status
-statusDiv.textContent = "v2025.01.12.01";
+statusDiv.textContent = "v2025.02.16.01";
 
 //Buttons
 const captureBtn = document.getElementById('captureBtn'); //Take Picture
@@ -325,7 +326,7 @@ fishInfoBtn.addEventListener('click', () => {
   toggleDisplay("fish-info-container");
 
   //Show info on the image
-  identifyFish(imageQuery); // We'll want to pass in the picture here
+  identifyFish(imageQuery, 1); // We'll want to pass in the picture here and may do mult tries, to try parameter included
   document.getElementById('fish-info-photo').src = imageData;
   document.getElementById('fish-info-photo').style.display = "block";
   
@@ -492,7 +493,7 @@ retryBtn.addEventListener('click', () => {
   imageTitle = "";
   imageSubject = "";
   toggleDisplay("fish-info-container");
-  identifyFish(imageQuery);
+  identifyFish(imageQuery, 1);
   
 });
 
@@ -825,12 +826,16 @@ function showMap(inputLatitude, inputLongitude) {
 //***************************
 //Here is the code to call Open AI and figure out what kind of fish it is
 //***************************
-async function identifyFish(inputImageQuery) {
+async function identifyFish(inputImageQuery, tryAttemptNumber) {
 
   if (imageData.length <= 0) {
       alert("Please select an image first.");
       return;
   }
+
+  var inputImageQuerySave = inputImageQuery;
+
+  debugMessage.innerHTML = "FISH ID TRY #" + tryAttemptNumber;
 
   //If we loaded title/subject from image, use it
   if (imageTitle.length > 10 && imageSubject.length > 3) {
@@ -890,6 +895,7 @@ async function identifyFish(inputImageQuery) {
 
     const data = await response.json();
 
+
     // Display the result
     imageDescription = `${data.choices[0].message.content}`;
 
@@ -900,6 +906,20 @@ async function identifyFish(inputImageQuery) {
 
     if (imageDescription.length > 500) {
       imageDescription = imageDescription.substring(0, 500) + "...";
+    }
+
+    //If bogus, try again
+    if (imageType.toUpperCase() == "FISH") {
+      if (!imageDescription.includes("Length:")) {
+        //Bogus - Try again...only try 2x
+        if (tryAttemptNumber < 2) {
+          tryAttemptNumber = tryAttemptNumber + 1;
+          debugMessage.innerHTML = "FISH ID TRY CALL #" + tryAttemptNumber;
+          document.body.style.cursor  = 'default';
+          identifyFish(inputImageQuerySave, tryAttemptNumber); //Recursive call       
+          return;
+        }
+      }
     }
 
     document.getElementById('fish-info').innerHTML = imageDescription;
@@ -985,6 +1005,9 @@ async function identifyImage(inputImageDescription, inputImageType) {
       console.error("Error identifying fish:", error);
       document.body.style.cursor  = 'default';
   }
+
+  debugMessage.innerHTML = "IMAGE TYPE:" + imageType;
+
 }
 
 
