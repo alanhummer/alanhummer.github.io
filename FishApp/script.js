@@ -8,6 +8,9 @@
 //X To Do: Get lake/body of water name from GeoNames API and show it on weather page and on location
 //
 //First up, register the service worker - part of PWA's
+//
+//car outline (trace outline or guide) PNG Overlay 
+
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load' , () => {
@@ -108,6 +111,12 @@ var blnGotPictureLocationTime = false;
 var blnImageLoaded = false;
 var imageOrientation = "portrait";
 
+// PNG overlay image
+const overlayImg = new Image();
+overlayImg.src = "car-outline.png"; // Change this to your PNG file's path
+
+const context = canvas.getContext('2d');
+
 //We need user GUID or not?
 if (!keyUserGUID) {
   keyUserGUID = genGUID();
@@ -151,7 +160,6 @@ captureBtn.addEventListener('click', async () => {
   toggleDisplay("loading-message-container", false);
 
   //Draw it on the page
-  const context = canvas.getContext('2d');
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
   context.drawImage(video, 0, 0, canvas.width, canvas.height);
@@ -297,6 +305,10 @@ mapBtn.addEventListener('click', async () => {
 
       case "DEER":
         mapMessage = "Where ya got em'";
+        break;
+
+      case "AUTOMOBILE":
+        mapMessage = "Where it happened'";
         break;
 
       default:
@@ -630,6 +642,10 @@ function toggleDisplay(inputType, blnShowCamera = true, blnButtonsEnabled = fals
           document.getElementById("bottom-message-save-detail").innerHTML = "That's a nice one...";
           break;
   
+        case "AUTOMOBILE":
+          document.getElementById("bottom-message-save-detail").innerHTML = "Not so bad...";
+          break;
+
         default:
           document.getElementById("bottom-message-save-detail").innerHTML = "Any size?";
           break;
@@ -840,7 +856,7 @@ async function identifyFish(inputImageQuery, tryAttemptNumber) {
   //If we loaded title/subject from image, use it
   if (imageTitle.length > 10 && imageSubject.length > 3) {
     imageDescription = imageTitle;
-    if (imageSubject == "FISH" || imageSubject == "FOOD" || imageSubject == "DEER" || "OTHER") {
+    if (imageSubject == "FISH" || imageSubject == "FOOD" || imageSubject == "DEER" || imageSubject == "AUTOMOBILE" || imageSubject == "OTHER") {
       imageType = imageSubject;
     }
   }
@@ -871,6 +887,10 @@ async function identifyFish(inputImageQuery, tryAttemptNumber) {
     case "DEER":
       fishInfoBtn.src = "deer-information.png";
       inputImageQuery = inputImageQuery + "_DEER";
+      break;
+    case "AUTOMOBILE":
+      fishInfoBtn.src = "automobile-information.png";
+      inputImageQuery = inputImageQuery + "_AUTOMOBILE";
       break;
     case "OTHER":
       fishInfoBtn.src = "information.png";
@@ -990,6 +1010,12 @@ async function identifyImage(inputImageDescription, inputImageType) {
         document.getElementById('fish-info').className = "text-display";
         break;
 
+      case "AUTOMOBILE":
+        topMessage = "I got in a wreck!";
+        fishInfoBtn.src = "automobile-information.png";
+        document.getElementById('fish-info').className = "text-display";
+        break;
+  
       default:
         topMessage = "Catch that fish!";
         fishInfoBtn.src = "information.png";
@@ -1361,6 +1387,18 @@ function setupCamera() {
       navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
         .then(stream => {
           video.srcObject = stream;
+
+          //console.log("SETTING UP CAMERA"); AJHAJHAJH
+          //Adding overlay stuff
+          video.play();
+
+          video.onloadedmetadata = () => {
+              canvas.width = video.videoWidth;
+              canvas.height = video.videoHeight;
+              //console.log("DID META DATA"); AJHAJHAJH
+              requestAnimationFrame(drawFrame);
+          };
+          
         })
         .catch(error => {
           console.error("Error accessing the camera", error);
@@ -1378,6 +1416,15 @@ function setupCamera() {
   }
 
 }
+
+// Function to draw the camera frame and overlay
+function drawFrame() {
+  context.drawImage(video, 0, 0, canvas.width, canvas.height);
+  //context.drawImage(overlayImg, 0, 0, canvas.width, canvas.height); // Draw PNG overlay AJHAJHAJH
+  requestAnimationFrame(drawFrame);
+}
+
+
 
 function stringToUCS2Array(str) {
   const arr = [];
