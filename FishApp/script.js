@@ -290,7 +290,7 @@ mapBtn.addEventListener('click', async () => {
     }
     else {
       document.getElementById('map-info').innerHTML = locationInfoText;
-    }
+    }    
     document.getElementById('map-info').style.display = "block";
 
     switch (imageType.toUpperCase()) {
@@ -410,7 +410,7 @@ document.getElementById('fileInput').addEventListener('change', async function(e
           }        
         }
         else {
-          blnGotPictureLocation = false;
+          blnGotPictureLocation = false;     
         }
           
         //Get Timestamp - DateTime, DateTImeDigitized, DateTimeOriginal, Date Taken
@@ -923,7 +923,11 @@ async function identifyFish(inputImageQuery, tryAttemptNumber) {
     document.getElementById('fish-info').innerText = "Studying picture...";
   
     // Call AI to figure out fish and size
-    const response = await fetch(apiOpenAIURL + `?guid=${keyUserGUID}&lat=${latitude}&lon=${longitude}&query=${inputImageQuery}`, {
+    var sendAddress = locationInfoText;
+    if (sendAddress.length <= 3) {
+      sendAddress = "unknown";
+    }
+    const response = await fetch(apiOpenAIURL + `?guid=${keyUserGUID}&lat=${latitude}&lon=${longitude}&address=${sendAddress}&query=${inputImageQuery}`, {
         method: 'POST',
         body: imageData
     });
@@ -941,7 +945,7 @@ async function identifyFish(inputImageQuery, tryAttemptNumber) {
     imageDescription = imageDescription.replaceAll("\n", "<br>")
     imageDescription = imageDescription.replaceAll("\r", "<br>")
 
-    if (imageDescription.length > 500) {
+    if (imageDescription.length > 500 && imageType.toUpperCase() != "AUTOMOBILE") {
       imageDescription = imageDescription.substring(0, 500) + "...";
     }
 
@@ -1031,6 +1035,10 @@ async function identifyImage(inputImageDescription, inputImageType) {
         topMessage = "I got in a wreck!";
         fishInfoBtn.src = "automobile-information.png";
         document.getElementById('fish-info').className = "text-display";
+        if (!blnGotPictureLocation) { 
+          //For cars, get local time
+          await getLocationData();
+        }
         break;
   
       default:
