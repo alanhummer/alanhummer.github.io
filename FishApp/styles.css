@@ -56,6 +56,24 @@
     margin: 10px 0;
   }
   
+  #overlay {
+    position:absolute;
+    top:0px;
+    left:0px;
+    height:100%;
+    width:100%;
+  }
+  #picture-type {
+    height:50px; 
+    width: 50px;
+    margin: auto;     /* Centers vertically */
+    display: block;
+  }
+
+  #capture-image {
+    position:relative;
+  }
+
   button {
     padding: 5px 5px;
     font-size: 16px;

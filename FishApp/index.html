@@ -15,10 +15,10 @@
 <body>
   <table border="0" cellpadding="0" cellspacing="0" width="100%" height="100%" text-align="center">
     <tr>
-      <td align="center" valign="bottom" style="height: 8vh;"><h1 id="top-message">I saw your fish!</h1><div id="debug" style="display: none;">Debug</div></td>
+      <td align="center" valign="bottom" style="height: 8vh;"><h1 id="top-message">I saw your fish!</h1><div id="debug" style="display: none;">Debug</div></td><td valign="bottom""><img id="picture-type" src="automobile-marker.png"></td>
     </tr>
     <tr>
-      <td align="center" style="height: 57vh;">
+      <td colspan="2" align="center" style="height: 57vh;">
         <!-- Loading message container -->
         <div class="container" id="loading-message-container" style="display: none;">
           <div id="message-info" class="text-display">Loading...</div>
@@ -26,7 +26,7 @@
         <!-- Display area for image capture -->
         <div class="container" id="capture-image-container" style="display: none;">
           <input type="file" id="fileInput" accept="image/*" />
-          <div id="capture-image" style="display: none;"><video id="video" autoplay playsinline></video></div>  
+          <div id="capture-image" style="display: none;"><video id="video" autoplay playsinline></video><img id="overlay" style="display: none;" src="car-outline.png"></div> 
           <div id="captured-image" style="display: none;"><img id="photo" alt="Captured Image" style="display: none;" ></div>  
           <canvas id="canvas" style="display: none;"></canvas>
         </div>
@@ -49,7 +49,7 @@
       </td>
     </tr>
     <tr>
-      <td style="height: 15vh;" valign="middle">
+      <td colspan="2" style="height: 15vh;" valign="middle">
         <!-- Buttons / Options and Status -->
         <h1 class="header-bottom" id="bottom-message">You caught em!</h1>
         <div id="bottom-message-save" style="display: none;">
@@ -78,7 +78,7 @@
       </td>
     </tr>
     <tr>
-      <td style="height: 80px;" valign="bottom">
+      <td colspan="2" style="height: 80px;" valign="bottom">
         <div class="buttons" id="button-display" style="display: none;">
           <img src="camera.png" id="tryAgainBtn" alt="Take a Picture" class="buttonImage">
           <img src="weather.png" id="weatherBtn" alt="Weather Info" class="buttonImage">

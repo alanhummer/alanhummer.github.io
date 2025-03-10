@@ -58,6 +58,9 @@ import ExifReader from "https://esm.sh/exifreader";
 
 //Display areas
 const video = document.getElementById('video');
+// PNG overlay image
+const overlay = document.getElementById('overlay');
+overlay.style.display = "none";
 const canvas = document.getElementById('canvas');
 const photo = document.getElementById('photo');
 const statusDiv = document.getElementById('status');
@@ -77,6 +80,7 @@ const fishInfoBtn = document.getElementById('fishInfoBtn'); //Show Fish info
 const loadPictureBtn = document.getElementById('loadPictureBtn'); //Load existing picture
 const savePictureBtn = document.getElementById('savePictureBtn'); //Save picture w/meta data
 const retryBtn = document.getElementById('retryBtn'); //Retry image / fish info
+const imageTypeBtn = document.getElementById('picture-type'); //Retry image / fish info
 
 //This holds our image stream and data
 var imageData = ""; 
@@ -110,10 +114,6 @@ var blnGotPictureLocation = false;
 var blnGotPictureLocationTime = false;
 var blnImageLoaded = false;
 var imageOrientation = "portrait";
-
-// PNG overlay image
-const overlayImg = new Image();
-overlayImg.src = "car-outline.png"; // Change this to your PNG file's path
 
 const context = canvas.getContext('2d');
 
@@ -506,6 +506,23 @@ retryBtn.addEventListener('click', () => {
   imageSubject = "";
   toggleDisplay("fish-info-container");
   identifyFish(imageQuery, 1);
+  
+});
+
+// Image type
+imageTypeBtn.addEventListener('click', () => {
+
+  if (imageTypeBtn.disabled) {
+    return;
+  }
+
+  //Toggle the overlay
+  if (overlay.style.display == "none") {
+    overlay.style.display = "block"
+  }
+  else {
+    overlay.style.display = "none"
+  }
   
 });
 
@@ -1387,18 +1404,7 @@ function setupCamera() {
       navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
         .then(stream => {
           video.srcObject = stream;
-
-          //console.log("SETTING UP CAMERA"); AJHAJHAJH
-          //Adding overlay stuff
-          video.play();
-
-          video.onloadedmetadata = () => {
-              canvas.width = video.videoWidth;
-              canvas.height = video.videoHeight;
-              //console.log("DID META DATA"); AJHAJHAJH
-              requestAnimationFrame(drawFrame);
-          };
-          
+         
         })
         .catch(error => {
           console.error("Error accessing the camera", error);
@@ -1416,15 +1422,6 @@ function setupCamera() {
   }
 
 }
-
-// Function to draw the camera frame and overlay
-function drawFrame() {
-  context.drawImage(video, 0, 0, canvas.width, canvas.height);
-  //context.drawImage(overlayImg, 0, 0, canvas.width, canvas.height); // Draw PNG overlay AJHAJHAJH
-  requestAnimationFrame(drawFrame);
-}
-
-
 
 function stringToUCS2Array(str) {
   const arr = [];
