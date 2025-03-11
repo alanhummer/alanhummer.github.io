@@ -10,6 +10,15 @@
 //First up, register the service worker - part of PWA's
 //
 //car outline (trace outline or guide) PNG Overlay 
+//
+//OpenAI Models: 
+//o1 Good
+//o1-mini no support images
+//o3-mini no support images
+//gpt-4o fails
+//gpt-4o-mini
+//gpt-4.5-preview Good
+
 
 
 if ('serviceWorker' in navigator) {
@@ -68,7 +77,7 @@ const weatherInfoDiv = document.getElementById('weather-info');
 const debugMessage = document.getElementById('debug');
 
 //Set the version in the status
-statusDiv.textContent = "v2025.03.08.01";
+statusDiv.textContent = "v2025.03.10.01";
 
 //Buttons
 const captureBtn = document.getElementById('captureBtn'); //Take Picture
@@ -374,7 +383,7 @@ document.getElementById('fileInput').addEventListener('change', async function(e
       imageData = photo.src;
       photo.style.display = "block";
 
-      photo.onload = function () { //This gets called when the image changes
+      photo.onload = async function () { //This gets called when the image changes
 
         //If loaded from camera, skip this
         if (blnGotPicture) {
@@ -457,6 +466,10 @@ document.getElementById('fileInput').addEventListener('change', async function(e
         
         blnGotPicture = true;
 
+        if (latitude != "" && longitude != "") {
+          locationInfoText = await getLocationInfo();
+        }
+        
         //Picture size needs to fit in window....this almost works, but distorts landscape vids
         if (imageOrientation == "landscape") {
           //photo.style.width = '80vw';
@@ -828,7 +841,6 @@ async function getLocationInfo() {
   else {
     locationInfoText = addressLines + "<br>";
   }
-
   return locationInfoText;
 
 }
