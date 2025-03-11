@@ -77,7 +77,7 @@ const weatherInfoDiv = document.getElementById('weather-info');
 const debugMessage = document.getElementById('debug');
 
 //Set the version in the status
-statusDiv.textContent = "v2025.03.10.01";
+statusDiv.textContent = "v2025.03.10.02";
 
 //Buttons
 const captureBtn = document.getElementById('captureBtn'); //Take Picture
@@ -272,12 +272,6 @@ async function getLocationData() {
       longitude = 0;
     }
 
-  }
-
-  function getCurrentPosition() {
-    return new Promise((resolve, reject) => {
-      navigator.geolocation.getCurrentPosition(resolve, reject);
-    });
   }
 }
 
@@ -816,6 +810,13 @@ async function getWeatherData(latitude, longitude, dateTimeStamp) {
 async function getLocationInfo() {
 
   //AJH THIS IS WHERE WE PARSE DIFFERENT RESULT WHEN CHANGE OUT GEOLOCTION
+
+  if (!latitude || !longitude) {
+    //Get our position
+    const position = await getCurrentPosition();
+    latitude = position.coords.latitude;
+    longitude = position.coords.longitude;
+  }
 
   var addressLines = "";
   var locationInfoText = "";
@@ -1451,4 +1452,10 @@ function stringToUCS2Array(str) {
     arr.push(0);                  // high-order byte
   }
   return arr;
+}
+
+function getCurrentPosition() {
+  return new Promise((resolve, reject) => {
+    navigator.geolocation.getCurrentPosition(resolve, reject);
+  });
 }
