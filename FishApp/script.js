@@ -77,7 +77,7 @@ const weatherInfoDiv = document.getElementById('weather-info');
 const debugMessage = document.getElementById('debug');
 
 //Set the version in the status
-statusDiv.textContent = "v2025.03.10.02";
+statusDiv.textContent = "v2025.03.13.01";
 
 //Buttons
 const captureBtn = document.getElementById('captureBtn'); //Take Picture
@@ -940,6 +940,7 @@ async function identifyFish(inputImageQuery, tryAttemptNumber) {
     if (sendAddress.length <= 3) {
       sendAddress = "unknown";
     }
+
     const response = await fetch(apiOpenAIURL + `?guid=${keyUserGUID}&lat=${latitude}&lon=${longitude}&address=${sendAddress}&query=${inputImageQuery}`, {
         method: 'POST',
         body: imageData
@@ -948,15 +949,16 @@ async function identifyFish(inputImageQuery, tryAttemptNumber) {
     if (!response.ok) throw new Error("Failed to get response from OpenAI");
 
     const data = await response.json();
-
-
+        
     // Display the result
     imageDescription = `${data.choices[0].message.content}`;
 
     imageDescription = imageDescription.replace("**", "<b>")
     imageDescription = imageDescription.replace("**", ":</b> ")
-    imageDescription = imageDescription.replaceAll("\n", "<br>")
-    imageDescription = imageDescription.replaceAll("\r", "<br>")
+    if (imageType.toUpperCase() != "AUTOMOBILE") {
+      imageDescription = imageDescription.replaceAll("\n", "<br>");
+      imageDescription = imageDescription.replaceAll("\r", "<br>");
+    }
 
     if (imageDescription.length > 500 && imageType.toUpperCase() != "AUTOMOBILE") {
       imageDescription = imageDescription.substring(0, 500) + "...";
@@ -973,6 +975,44 @@ async function identifyFish(inputImageQuery, tryAttemptNumber) {
           identifyFish(inputImageQuerySave, tryAttemptNumber); //Recursive call       
           return;
         }
+      }
+    }
+
+    if (imageType.toUpperCase() == "AUTOMOBILE") {
+      var automobileYear = "";
+      var automobileMake = "";
+      var automobileModel = "";
+      var automobileLocation = "";
+      var automobileDamageAssessment = "";
+      var automobileRepairShop = "";
+      var automobileEstimate = "";
+
+      if (imageDescription.includes("Year:") && imageDescription.includes("Make:") && imageDescription.includes("Model:")) {
+        var dataArray = imageDescription.split("\n");
+        dataArray.forEach(dataElement => {
+          if (dataElement.includes("Year:")) {
+            automobileYear = dataElement.replace("Year:", "").trim();
+          }
+          if (dataElement.includes("Make:")) {
+            automobileMake = dataElement.replace("Make:", "").trim();
+          }
+          if (dataElement.includes("Model:")) {
+            automobileModel= dataElement.replace("Model:", "").trim();
+          }
+          if (dataElement.includes("Damage Assessment:")) {
+            automobileDamageAssessment = dataElement.replace("Damage Assessment:", "").trim();
+          }
+          if (dataElement.includes("Location:")) {
+            automobileLocation = dataElement.replace("Location:", "").replace(",", "<br>").trim();
+          }
+          if (dataElement.includes("Repair Shop:")) {
+            automobileRepairShop = dataElement.replace("Repair Shop:", "").replace(",", "<br>").replace(",", "<br>").trim();
+          }
+          if (dataElement.includes("Estimate:")) {
+            automobileEstimate = dataElement.replace("Estimate:", "").trim();
+          }
+        });
+        imageDescription = automobileYear + " " + automobileMake + " " + automobileModel + "<br>" + automobileLocation + "<br>" + automobileDamageAssessment + "<br><br><hr><br>" + automobileRepairShop + "<br><br>" + automobileEstimate;
       }
     }
 
