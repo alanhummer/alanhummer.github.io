@@ -13,6 +13,7 @@
   <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAUR5UBkzF2EbJrWlMeH6wl7jid5qgv4z0"></script>
 </head>
 <body>
+  <div id="fishapp" style="display: block;">
   <table border="0" cellpadding="0" cellspacing="0" width="100%" height="100%" text-align="center">
     <tr>
       <td align="center" valign="bottom" style="height: 8vh;"><h1 id="top-message">I saw your fish!</h1><div id="debug" style="display: none;">Debug</div></td><td valign="bottom""><img id="picture-type" src="automobile-marker.png"></td>
@@ -26,7 +27,7 @@
         <!-- Display area for image capture -->
         <div class="container" id="capture-image-container" style="display: none;">
           <input type="file" id="fileInput" accept="image/*" />
-          <div id="capture-image" style="display: none;"><video id="video" autoplay playsinline></video><img id="overlay" style="display: none;" src="car-outline.png"></div> 
+          <div id="capture-image" style="display: none;"><video id="video" autoplay playsinline></video><img id="overlay" style="display: none;" src="car-outline-new.png"></div> 
           <div id="captured-image" style="display: none;"><img id="photo" alt="Captured Image" style="display: none;" ></div>  
           <canvas id="canvas" style="display: none;"></canvas>
         </div>
@@ -88,7 +89,17 @@
       </td>
     </tr>
   </table>
-  <!-- And our script -->
+  </div>
+  <!-- And the card app-->
+  <div id="cardapp" style="display: none;" class="small-text-display">
+    <input id="cardapp-message" type="text" size=45px" value="(message here)" text-align="left"><img src="send.png" id="cardapp-send" alt="Send Message" class="buttonImage" text-align="right">
+    <div id="cardapp-log">
+      Card App Log<br>
+    <br>
+    </div>
+  </div>
+  <!-- And our scripts -->
+  <script src="cardgame.js""></script>
   <script src="script.js?ver=v2025.01.12.01" type="module"></script>
   <br><div class="status" id="status">v2025.01.11.01</div>
 </body>
