@@ -10,6 +10,7 @@
 //First up, register the service worker - part of PWA's
 //
 //car outline (trace outline or guide) PNG Overlay 
+//- To remove white background and make transparent, remove.bg or photopea.com
 //
 //OpenAI Models: 
 //o1 Good
@@ -38,8 +39,16 @@ var consoleOutput;
 var oldLog;
 
 const urlParams = new URLSearchParams(window.location.search);
-const myParam = urlParams.get('debug');
+const cardGame = urlParams.get('cardgame');
 
+if (cardGame) {
+
+  //run the card game
+  runTheCardGame();
+
+}
+
+const myParam = urlParams.get('debug');
 if (myParam == "true") {
 
   consoleOutput = document.createElement('pre');
@@ -77,7 +86,7 @@ const weatherInfoDiv = document.getElementById('weather-info');
 const debugMessage = document.getElementById('debug');
 
 //Set the version in the status
-statusDiv.textContent = "v2025.03.13.01";
+statusDiv.textContent = "v2025.04.13.01";
 
 //Buttons
 const captureBtn = document.getElementById('captureBtn'); //Take Picture
@@ -90,6 +99,7 @@ const loadPictureBtn = document.getElementById('loadPictureBtn'); //Load existin
 const savePictureBtn = document.getElementById('savePictureBtn'); //Save picture w/meta data
 const retryBtn = document.getElementById('retryBtn'); //Retry image / fish info
 const imageTypeBtn = document.getElementById('picture-type'); //Retry image / fish info
+
 
 //This holds our image stream and data
 var imageData = ""; 
