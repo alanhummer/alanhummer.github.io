@@ -20,6 +20,9 @@
 //gpt-4o-mini
 //gpt-4.5-preview Good
 
+//
+
+
 
 
 if ('serviceWorker' in navigator) {
@@ -86,7 +89,7 @@ const weatherInfoDiv = document.getElementById('weather-info');
 const debugMessage = document.getElementById('debug');
 
 //Set the version in the status
-statusDiv.textContent = "v2025.04.13.01";
+statusDiv.textContent = "v2025.04.01.01";
 
 //Buttons
 const captureBtn = document.getElementById('captureBtn'); //Take Picture
@@ -112,7 +115,7 @@ var topMessage = "I saw your fish!";
 //API URLs
 var apiOpenWeatherURL = "https://i-saw-your-fish.deno.dev/getweatherinfo";
 var apiGeoLocationURL = "https://i-saw-your-fish.deno.dev/getlocationinfo";
-var apiOpenAIURL = "https://i-saw-your-fish.deno.dev/getfishinfo";
+var apiAIURL = "https://i-saw-your-fish.deno.dev/getfishinfo";
 
 //Hold our GUID
 var keyUserGUID = getStorage("keyUserGUID");
@@ -951,17 +954,16 @@ async function identifyFish(inputImageQuery, tryAttemptNumber) {
       sendAddress = "unknown";
     }
 
-    const response = await fetch(apiOpenAIURL + `?guid=${keyUserGUID}&lat=${latitude}&lon=${longitude}&address=${sendAddress}&query=${inputImageQuery}`, {
+    const response = await fetch(apiAIURL + `?guid=${keyUserGUID}&lat=${latitude}&lon=${longitude}&address=${sendAddress}&query=${inputImageQuery}`, {
         method: 'POST',
         body: imageData
     });
 
     if (!response.ok) throw new Error("Failed to get response from OpenAI");
 
-    const data = await response.json();
-        
+       
     // Display the result
-    imageDescription = `${data.choices[0].message.content}`;
+    imageDescription = await response.text();
 
     imageDescription = imageDescription.replace("**", "<b>")
     imageDescription = imageDescription.replace("**", ":</b> ")
@@ -1061,17 +1063,15 @@ async function identifyImage(inputImageDescription, inputImageType) {
     else {
 
       // Call AI to figure out fish and size
-      const response = await fetch(apiOpenAIURL + `?guid=${keyUserGUID}&lat=${latitude}&lon=${longitude}&query=${imageQuery}`, {
+      const response = await fetch(apiAIURL + `?guid=${keyUserGUID}&lat=${latitude}&lon=${longitude}&query=${imageQuery}`, {
           method: 'POST',
           body: imageData
       });
 
       if (!response.ok) throw new Error("Failed to get response from OpenAI");
 
-      const data = await response.json();
-
       // Process the result
-      imageType = `${data.choices[0].message.content}`;
+      imageType = await response.text();
     
     }
     switch (imageType.toUpperCase()) {
