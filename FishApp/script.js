@@ -89,7 +89,7 @@ const weatherInfoDiv = document.getElementById('weather-info');
 const debugMessage = document.getElementById('debug');
 
 //Set the version in the status
-statusDiv.textContent = "v2025.04.03.01";
+statusDiv.textContent = "v2025.04.03.02";
 
 //Buttons
 const captureBtn = document.getElementById('captureBtn'); //Take Picture
@@ -541,12 +541,12 @@ imageTypeBtn.addEventListener('click', () => {
     overlay.style.display = "block"
   }
   else {
-    if (overlay.src.includes("car-outline-right")) {
-      overlay.src = "car-outline-left.png";
+    if (overlay.src.includes("car-outline-right-small")) {
+      overlay.src = "car-outline-left-small.png";
     }
     else {
       overlay.style.display = "none";
-      overlay.src = "car-outline-right.png";
+      overlay.src = "car-outline-right-small.png";
     }
   }
 });
