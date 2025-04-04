@@ -541,9 +541,14 @@ imageTypeBtn.addEventListener('click', () => {
     overlay.style.display = "block"
   }
   else {
-    overlay.style.display = "none"
+    if (overlay.src.includes("car-outline-right")) {
+      overlay.src = "car-outline-left.png";
+    }
+    else {
+      overlay.style.display = "none";
+      overlay.src = "car-outline-right.png";
+    }
   }
-  
 });
 
 
