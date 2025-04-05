@@ -89,7 +89,7 @@ const weatherInfoDiv = document.getElementById('weather-info');
 const debugMessage = document.getElementById('debug');
 
 //Set the version in the status
-statusDiv.textContent = "v2025.04.05.01";
+statusDiv.textContent = "v2025.04.05.02";
 
 //Buttons
 const captureBtn = document.getElementById('captureBtn'); //Take Picture
@@ -214,6 +214,8 @@ captureBtn.addEventListener('click', async () => {
 
   //And get Image Type
   identifyImage(imageTitle, imageSubject);
+
+  setStencil();
 
 });
 
@@ -536,33 +538,44 @@ imageTypeBtn.addEventListener('click', () => {
   if (imageTypeBtn.disabled) {
     return;
   }
+  overlay.style.display = "block";
+  setStencil();
+ 
+});
+
+function setStencil() {
 
   //Toggle the overlay
   stencilCount = stencilCount + 1;
-  overlay.style.display = "block"
+  
   switch (stencilCount) {
 
     case 1:
-      overlay.src = "car-outline-left-small.png";
+      overlay.src = "car-outline-left-full.png";
       break;
 
     case 2:
-      overlay.src = "car-outline-right-small.png";
+      overlay.src = "car-outline-left-front.png";
       break;
 
     case 3:
-      overlay.src = "car-outline-left-full.png";
+      overlay.src = "car-outline-right-front.png";
       break;
   
     case 4:
       overlay.src = "car-outline-right-full.png";
-      stencilCount = 0;
       break;
-  
-  
+
+    default:
+      overlay.src = "car-outline-left-full.png";
+      stencilCount = 0;
+      overlay.style.display = "none";
+      break;
+ 
   }
 
-});
+
+}
 
 
 // toggleDisplay for what we want to show
