@@ -89,7 +89,7 @@ const weatherInfoDiv = document.getElementById('weather-info');
 const debugMessage = document.getElementById('debug');
 
 //Set the version in the status
-statusDiv.textContent = "v2025.04.04.01";
+statusDiv.textContent = "v2025.04.05.01";
 
 //Buttons
 const captureBtn = document.getElementById('captureBtn'); //Take Picture
@@ -111,6 +111,7 @@ var imageDescription = "";
 var imageQuery = "IMAGE_QUERY";
 var imageType = "FISH";
 var topMessage = "I saw your fish!";
+var stencilCount = 0; //for stencil rotation
 
 //API URLs
 var apiOpenWeatherURL = "https://i-saw-your-fish.deno.dev/getweatherinfo";
@@ -537,18 +538,30 @@ imageTypeBtn.addEventListener('click', () => {
   }
 
   //Toggle the overlay
-  if (overlay.style.display == "none") {
-    overlay.style.display = "block"
-  }
-  else {
-    if (overlay.src.includes("car-outline-right-full")) {
+  stencilCount = stencilCount + 1;
+  overlay.style.display = "block"
+  switch (stencilCount) {
+
+    case 1:
+      overlay.src = "car-outline-left-small.png";
+      break;
+
+    case 2:
+      overlay.src = "car-outline-right-small.png";
+      break;
+
+    case 3:
       overlay.src = "car-outline-left-full.png";
-    }
-    else {
-      overlay.style.display = "none";
+      break;
+  
+    case 4:
       overlay.src = "car-outline-right-full.png";
-    }
+      stencilCount = 0;
+      break;
+  
+  
   }
+
 });
 
 
