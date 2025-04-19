@@ -44,10 +44,6 @@ document.getElementById('cardgamestart').addEventListener('click', async () => {
 //***************************
 function runTheCardGame() {
 
-    document.getElementById('fishapp').style.display = "none";
-    document.getElementById('cardbutton').style.display = "none";
-    document.getElementById('cardapp').style.display = "block";
-
     const urlParams = new URLSearchParams(window.location.search);
     myName = urlParams.get('name');
     if (!myName) {
