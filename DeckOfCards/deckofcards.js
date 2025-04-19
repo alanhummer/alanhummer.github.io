@@ -52,6 +52,8 @@ function runTheCardGame() {
         myName = "Nobody";
     }
 
+    document.getElementById('cardapp').style.display = "block";
+
     //start web socket, add listeners for the events we want
     socket = new WebSocket('wss://i-saw-your-cards.deno.dev?name=' + myName);
 
