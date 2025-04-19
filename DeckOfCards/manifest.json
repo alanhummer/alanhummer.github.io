@@ -1,6 +1,6 @@
 {
-    "name": "I saw your cards!",
-    "short_name": "I saw your cads!",
+    "name": "Deck of Cards",
+    "short_name": "Deck of Cards",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#ffffff",
