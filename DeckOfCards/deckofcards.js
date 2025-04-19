@@ -39,6 +39,8 @@ document.getElementById('cardgamestart').addEventListener('click', async () => {
     runTheCardGame();
 });
 
+document.getElementById('status').innerHTML = "v2025.04.19.02";
+
 //***************************
 //This handle all of the card game app presentation and logic
 //***************************
