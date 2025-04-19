@@ -25,6 +25,20 @@ var tableCardCount = 0;
 var myPlayerCards = [];
 var myTableCards = [];
 
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load' , () => {
+        navigator.serviceWorker.register('/sw.js').then(registration => {
+            console.log('Service Worker registered with scope:' , registration.scope);
+        }).catch(error => {
+            console.log('Service Worker registration failed:' , error);
+        });
+    });
+}
+
+document.getElementById('cardgamestart').addEventListener('click', async () => {
+    runTheCardGame();
+});
+
 //***************************
 //This handle all of the card game app presentation and logic
 //***************************

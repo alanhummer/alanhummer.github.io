@@ -6,92 +6,12 @@
   <link rel="icon" type="image/png" href="favicon.png">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>I saw your fish!</title>
+  <title>I saw your cards!</title>
   <link rel="stylesheet" href="styles.css">
-  <script src="https://cdn.jsdelivr.net/npm/piexifjs"></script>
-  <script data-goatcounter="https://alanhummer.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
-  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAUR5UBkzF2EbJrWlMeH6wl7jid5qgv4z0"></script>
-</head>
+ </head>
 <body>
-  <div id="fishapp" style="display: block;">
-  <table border="0" cellpadding="0" cellspacing="0" width="100%" height="100%" text-align="center">
-    <tr>
-      <td align="center" valign="bottom" style="height: 8vh;"><h1 id="top-message">I saw your fish!</h1><div id="debug" style="display: none;">Debug</div></td><td valign="bottom""><img id="picture-type" src="automobile-marker.png"></td>
-    </tr>
-    <tr>
-      <td colspan="2" align="center" style="height: 57vh;">
-        <!-- Loading message container -->
-        <div class="container" id="loading-message-container" style="display: none;">
-          <div id="message-info" class="text-display">Loading...</div>
-        </div>
-        <!-- Display area for image capture -->
-        <div class="container" id="capture-image-container" style="display: none;">
-          <input type="file" id="fileInput" accept="image/*" />
-          <div id="capture-image" style="display: none;"><video id="video" autoplay playsinline></video></div> 
-          <div id="captured-image" style="display: none;"><img id="photo" alt="Captured Image" style="display: none;" ></div>  
-          <canvas id="canvas" style="display: none;"></canvas>
-        </div>
-        <!-- Display area for weather info -->
-        <div class="container" id="weather-info-container" style="display: none;">
-          <div id="weather-info" class="text-display"></div>
-        </div>
-        <!-- Display area for map info -->
-        <div class="container" id="map-info-container" style="display: none; vertical-align: top;">
-          <div id="map" style="width: 75%; height: 100%; vertical-align: top;"></div> 
-          <div id="map-info" class="text-display" style="display: none;"></div>
-        </div>
-        <!-- Display area for fish info -->
-        <div class="container" id="fish-info-container" style="display: none;">
-          <img id="fish-info-photo" alt="Captured Image" style="max-height: 150px; width: auto; float:center">
-          <img src="save-picture.png" id="savePictureBtn" alt="Save Picture..." class="buttonImage" style="float:right; position: fixed; top: 0; right: 0; display:none;">
-          <img src="refresh.png" id="retryBtn" alt="Try Again..." class="buttonImage" style="float:left; position: fixed; top: 0; left: 0; display:none;">
-          <div id="fish-info" class="text-display"></div>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td colspan="2" style="height: 15vh;" valign="middle">
-        <!-- Buttons / Options and Status -->
-        <h1 class="header-bottom" id="bottom-message">You caught em!</h1>
-        <div id="bottom-message-save" style="display: none;">
-          <table cellpadding="0" cellspacing="0" border="0" width="100%">
-            <tr>
-              <td style="text-align: right; width: 100vw;"><h1 class="header-bottom" id="bottom-message-save-detail" >Any size?</h1></td>
-            </tr>
-          </table>
-        </div>        
-        <div class="bigButtons" id="capture-buttons" style="display: none;">
-          <table cellspacing="0" cellpadding="0" border="0" width="100%">
-            <tr>
-              <td width="25px"><td>
-              <td width="280px" text-align="right">
-                <img src="take-picture.png" id="captureBtn" alt="Take a Picture" class="buttonImageWide">
-                <img src="get-another.png" id="getAnotherBtn" alt="Get Another..." class="buttonImageWide" style="display: none;">        
-              </td>
-              <td width="10px"><td>
-              <td width="65px" text-align="left">
-                <img src="load-picture.png" id="loadPictureBtn" alt="Load Picture..." class="buttonImage" style="height:65px">     
-              </td>
-              <td width="25px"><td>
-            </tr>
-          </table>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td colspan="2" style="height: 80px;" valign="bottom">
-        <div class="buttons" id="button-display" style="display: none;">
-          <img src="camera.png" id="tryAgainBtn" alt="Take a Picture" class="buttonImage">
-          <img src="weather.png" id="weatherBtn" alt="Weather Info" class="buttonImage">
-          <img src="map.png" id="mapBtn" alt="Location Info" class="buttonImage">
-          <img src="information.png" id="fishInfoBtn" alt="Fish Info" class="buttonImage">
-        </div>
-      </td>
-    </tr>
-  </table>
-  </div>
   <!-- And the card app-->
-  <div id="cardbutton" style="display:none;" class="small-text-display">
+  <div id="cardbutton" style="display:block;" class="small-text-display">
     <img src="card-cover.png" id="cardgamestart" alt="Card Game" class="buttonImage" text-align="right">
   </div>
 
@@ -119,8 +39,7 @@
     <div id="table-cards-back" style="position:relative;height: 250px;display:none"></div>
   </div>
   <!-- And our scripts -->
-  <script src="cardgame.js"></script>
-  <script src="script.js?ver=v2025.01.12.01" type="module"></script>
+  <script src="cardgame.js?ver=v2025.01.19.01"  type="module"></script>
   <br><div class="status" id="status">v2025.01.11.01</div>
 
 </body>
