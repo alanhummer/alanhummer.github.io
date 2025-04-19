@@ -1,67 +1,263 @@
-body, html {
-    height: 100%;
+* {
     margin: 0;
-    display: flex;
-    justify-content: center;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: Arial, sans-serif;
+    display: block;
     align-items: center;
-    background-color: green;
-}
-
-#players {
-    position: absolute;
-    width: 100%;
+    justify-content: center;
+    background-color: #f0f0f0;
     height: 100%;
+    width: 100%;
+  }
+  
+  .container {
+    text-align: center;
+    justify-content: center; /* Centers horizontally */
+    align-items: center;     /* Centers vertically */
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.side-players {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    position: absolute;
-    left: 0;
-}
-
-.player {
-    display: flex;
-    justify-content: center;
-}
-
-.player > div {
-    width: 70px;
-    height: 100px;
-    margin: 5px;
-    background-color: #FFF;
-    border: 1px solid black;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.5);
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 20px; /* Increased font size */
-    font-weight: bold;
+    gap: 10px; /* Optional: Adds spacing between elements */
     text-align: center;
-    line-height: 1.2;
-    color: transparent; /* Hide the text initially */
-    background-color: #666; /* Dark background for face-down cards */
-}
-
-.player > div.face-up {
-    color: black; /* Show text for face-up cards */
-    background-color: #FFF; /* Light background for readability */
-}
-
-#table {
-    position: absolute;
+    width: 100%;
+    height: 75%;
+    vertical-align: top;
+  }
+  .buttons {
+    text-align: center;
+    align-items: center;     /* Centers vertically */
+    display: block;
+  }
+  .bigButtons {
+    text-align: center;
+    justify-content: center; /* Centers horizontally */
+    align-items: center;     /* Centers vertically */
+    display: block;
+  }
+  .buttonImage {
+    height:75px; 
+    width: 75px;
+    margin: auto;     /* Centers vertically */
+    display: block;
+  }
+  .buttonImageWide {
+    height: 65px;
     width: 300px;
-    height: 200px;
-    border: 2px dashed white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
+    display: block;
+  }
+  .cardButtonImage {
+    height:75px; 
+    width: 75px;
+    margin: auto;     /* Centers vertically */
+  }
+ 
+  video, img {
+    width: 100%;
+    max-width: 320px;
+    max-height: 450px;
+    margin: 10px 0;
+  }
+ 
+  #picture-type {
+    height:50px; 
+    width: 50px;
+    margin: auto;     /* Centers vertically */
+    display: block;
+  }
+
+  #capture-image {
+    position:relative;
+  }
+
+  button {
+    padding: 5px 5px;
+    font-size: 16px;
+    margin: 5px;
+    cursor: pointer;
+  }
+  
+  .status {
+    text-align: center;
+    justify-content: center; /* Centers horizontally */
+    align-items: bottom;     /* Centers vertically */
+    display: block;
+    width: 100%;
+    margin-bottom: 0em;
+    font-size: 12px;
+    color: #333;
+  }
+  
+  .header-top {
+    text-align: center;
+    justify-content: center; /* Centers horizontally */
+    align-items: center;     /* Centers vertically */
+    display: block;
+    flex-direction: row;
+    gap: 0px; /* Optional: Adds spacing between elements */
+    width: 100%;
+    margin-top: 1em;
+  }
+
+  .header-bottom {
+    text-align: center;
+    justify-content: center; /* Centers horizontally */
+    align-items: center;     /* Centers vertically */
+    display: block;
+    flex-direction: row;
+    gap: 0px; /* Optional: Adds spacing between elements */
+    width: 100%;
+  }
+
+  .text-display {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    margin-left: 25px;
+    margin-right: 25px;
+    font-size: 24px;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .small-text-display {
+    margin-top: 3px;
+    margin-bottom: 3px;
+    margin-left: 15px;
+    margin-right: 15px;
+    font-size: 16px;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  #canvas {
+    background: url('car-outline.png');
+    opacity: 0.5;
+    z-index: 100;
+  }
+
+  hr {
+    border: 0px;
+    height: 10px;
+    /* Set the hr color */
+    color: #1faee2;  /* old IE */
+    background-color: #1faee2;  /* Modern Browsers */
+    margin-top: 10px;
+    margin-bottom: 10px;
+    width: 100%;
+  }
+
+  input[type="file"] {
+    display: none;
+  }
+  
+.card::before{content:attr(data-rank)}
+.card-red::before{content:attr(data-rank);color:red;font-size:40px;}
+.card-black::before{content:attr(data-rank);color:black;font-size:40px;}
+.spades::after{content:"\2660";color:black;font-size:50px;}
+.hearts::after{content:"\2665";color:red;font-size:50px;}
+.diamonds::after{content:"\2666";color:red;font-size:50px;}
+.clubs::after{content:"\2663";color:black;font-size:50px;}
+
+
+.card-red{
+  border:1px solid #ccc;
+  border-radius: 2px;
+  background: #fff;
+  color:#444;
+  width: 150px;
+  height:250px;
+  margin: 10px;
+  display: inline-block;
 }
+.card-black{
+  border:1px solid #ccc;
+  border-radius: 2px;
+  background: #fff;
+  color:#444;
+  width: 150px;
+  height:250px;
+  margin: 10px;
+  display: inline-block;
+}
+.top, .bottom{
+  font-size:24px;
+  padding: 10px;
+}
+.bottom{
+  float: right;
+}
+.number, .icon{
+  display: block;
+}
+.rotate{
+  transform: rotate(180deg);
+   -ms-transform: rotate(180deg); /* IE 9 */
+  -webkit-transform: rotate(180deg); /* Chrome, Safari, Opera */
+}
+.lg_icon{
+  font-size: 70px;
+  text-align: center;
+  display: block;
+}
+.fade-in {
+opacity:0;  /* make things invisible upon start */
+-webkit-animation:fadeIn ease-in 1;  /* call our keyframe named fadeIn, use animattion ease-in and repeat it only 1 time */
+-moz-animation:fadeIn ease-in 1;
+animation:fadeIn ease-in 1;
+
+-webkit-animation-fill-mode:forwards;  /* this makes sure that after animation is done we remain at the last keyframe value (opacity: 1)*/
+-moz-animation-fill-mode:forwards;
+animation-fill-mode:forwards;
+
+-webkit-animation-duration:1s;
+-moz-animation-duration:1s;
+animation-duration:1s;
+}
+
+.card{
+    border:1px solid #ccc;
+    border-radius: 2px;
+    background: #fff;
+    color:#444;
+    width: 150px;
+    height:250px;
+    margin: 10px;
+    display: inline-block;
+}
+.top, .bottom{
+    font-size:24px;
+    padding: 10px;
+}
+.bottom{
+    float: right;
+}
+.number, .icon{
+    display: block;
+}
+.rotate{
+    transform: rotate(180deg);
+     -ms-transform: rotate(180deg); /* IE 9 */
+    -webkit-transform: rotate(180deg); /* Chrome, Safari, Opera */
+}
+.lg_icon{
+    font-size: 70px;
+    text-align: center;
+    display: block;
+}
+.fade-in {
+  opacity:0;  /* make things invisible upon start */
+  -webkit-animation:fadeIn ease-in 1;  /* call our keyframe named fadeIn, use animattion ease-in and repeat it only 1 time */
+  -moz-animation:fadeIn ease-in 1;
+  animation:fadeIn ease-in 1;
+
+  -webkit-animation-fill-mode:forwards;  /* this makes sure that after animation is done we remain at the last keyframe value (opacity: 1)*/
+  -moz-animation-fill-mode:forwards;
+  animation-fill-mode:forwards;
+
+  -webkit-animation-duration:1s;
+  -moz-animation-duration:1s;
+  animation-duration:1s;
+}
+
