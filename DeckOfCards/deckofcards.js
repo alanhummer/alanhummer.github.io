@@ -5,7 +5,7 @@
 //
 //Things you can do with a deck of cards:
 //- X Shuffle the deck (shuffle)
-//- X Get palyers (clients)
+//- X Get palyers
 //- X Start Game (start-game)
 //- X Deal a card to players..face up or face down (deale-all-up, deal-all-down, deal-one-up, deal-one-down)
 //- X Move deal pointer one more (next-player)
@@ -77,7 +77,7 @@ function runTheCardGame() {
             console.log('Message from server:', event.data);
             var leftPosition = 0;
             var cardData = "";
-            document.getElementById('play-message').innerHTML = "";
+            document.getElementById('play-message').innerHTML = "Playing Cards...";
 
             if (event.data.startsWith("CARD:") || event.data.startsWith("TABLE CARD:")) {
                 if (event.data.startsWith("TABLE CARD:")) {
@@ -151,7 +151,7 @@ function runTheCardGame() {
                 myTableCards = [];
             });
             document.getElementById('cardapp-players').addEventListener('click', async () => {
-                sendCardCommand("clients");
+                sendCardCommand("players");
             });
             document.getElementById('cardapp-startGame').addEventListener('click', async () => {
                 sendCardCommand("start-game");
