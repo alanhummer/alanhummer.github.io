@@ -10,15 +10,25 @@
   <link rel="stylesheet" href="styles.css">
   <script src="deckofcards.js"  type="module"></script>
  </head>
-<body>
+<body style="background-color:black;">
   <!-- And the card app-->
-  <div id="cardbutton" style="display:block;height: 232px;display: flex;justify-content: center;align-items: center;" class="small-text-display">
-    Welcom _NAME_!
-    <img src="card-cover-blue.png" id="cardgamestart" alt="Card Game" class="buttonImage" text-align="center">
+  <div id="cardbutton" style="height:300px;display:flex;justify-content:center;align-items:center;" class="small-text-display">
+    <div style="justify-content:center;align-items:center;text-align:center;"> 
+     Welcome _NAME_!<br>
+    <img src="card-cover-blue.png" id="cardgamestart" alt="Card Game" text-align="center"><br>
     Touch card to begin....
+    </div>
   </div>
 
   <div id="cardapp" style="display: none;" class="small-text-display">
+    <!--Cards-->
+    <div id="play-message">We are all set. When players ready, play begins and cards will show here.</div>
+    <div id="player-cards" style="position:relative;height:250px;display:none;display:none;"></div>
+    <div id="player-cards-back" style="position:relative;height:250px;display:block;"></div>
+    <div id="table-cards" style="position:relative;height:250px;display:block;"></div>
+    <div id="table-cards-back" style="position:relative;height:250px;display:none;"></div>
+    
+    <!--Controls-->
     <img src="shuffle.png" id="cardapp-shuffle" alt="Send Message" class="cardButtonImage" text-align="right">
     <img src="players.png" id="cardapp-players" alt="Get Player List" class="cardButtonImage" text-align="right">
     <img src="startGame.png" id="cardapp-startGame" alt="Start Game" class="cardButtonImage" text-align="right">
@@ -32,16 +42,14 @@
     <img src="tablePlayUp.png" id="cardapp-tablePlayUp" alt="Table Play Up" class="cardButtonImage" text-align="right">
     <img src="tablePlayDown.png" id="cardapp-tablePlayDown" alt="Table Play Down" class="cardButtonImage" text-align="right">
     <img src="flushLog.png" id="cardapp-flushLog" alt="Flush Log" class="cardButtonImage" text-align="right">
-    <div id="cardapp-log">
-      Card App Log<br>
-    <br>
-    </div>
-    <div id="player-cards" style="position:relative;height:250px;display:none;display:none;background-color:black;"></div>
-    <div id="player-cards-back" style="position:relative;height:250px;display:block;background-color:black;"></div>
-    <div id="table-cards" style="position:relative;height:250px;display:block;background-color:black;"></div>
-    <div id="table-cards-back" style="position:relative;height:250px;display:none;background-color:black;"></div>
   </div>
-  <br><div class="status" id="status">v2025.04.19.0?</div>
+  <br><br><br>
+
+  <!--Logging Info here-->
+  <div id="cardapp-log" class="small-text-display">
+  <br>
+  </div>
+  <div class="status" id="status">v2025.04.19.0?</div>
 </body>
 </html>
 

@@ -29,8 +29,8 @@
   border-radius: 2px;
   background: #fff;
   color:#444;
-  width: 150px;
-  height:250px;
+  width: 166px;
+  height:232px;
   margin: 10px;
   display: inline-block;
 }
@@ -39,8 +39,8 @@
   border-radius: 2px;
   background: #fff;
   color:#444;
-  width: 150px;
-  height:250px;
+  width: 166px;
+  height:232px;
   margin: 10px;
   display: inline-block;
 }
@@ -84,8 +84,8 @@ animation-duration:1s;
     border-radius: 2px;
     background: #fff;
     color:#444;
-    width: 150px;
-    height:250px;
+    width: 166px;
+    height:232px;
     margin: 10px;
     display: inline-block;
 }
@@ -124,3 +124,37 @@ animation-duration:1s;
   animation-duration:1s;
 }
 
+.status {
+  text-align: center;
+  justify-content: center; /* Centers horizontally */
+  align-items: bottom;     /* Centers vertically */
+  display: block;
+  width: 100%;
+  margin-bottom: 0em;
+  font-size: 12px;
+  color: white;
+}
+
+.small-text-display {
+  margin-top: 3px;
+  margin-bottom: 3px;
+  margin-left: 15px;
+  margin-right: 15px;
+  font-size: 16px;
+  color: white;
+  text-align: left;
+  vertical-align: top;
+}
+
+.buttonImage {
+  height:75px; 
+  width: 75px;
+  margin: auto;     /* Centers vertically */
+  display: block;
+}
+
+.cardButtonImage {
+  height:75px; 
+  width: 75px;
+  margin: auto;     /* Centers vertically */
+}

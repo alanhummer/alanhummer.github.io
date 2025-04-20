@@ -77,6 +77,7 @@ function runTheCardGame() {
             console.log('Message from server:', event.data);
             var leftPosition = 0;
             var cardData = "";
+            document.getElementById('play-message').innerHTML = "";
 
             if (event.data.startsWith("CARD:") || event.data.startsWith("TABLE CARD:")) {
                 if (event.data.startsWith("TABLE CARD:")) {
@@ -136,6 +137,7 @@ function runTheCardGame() {
                 
             }
             else {
+                document.getElementById('play-message').innerHTML =  event.data;
                 document.getElementById('cardapp-log').innerHTML = "<li>" + event.data + "</li>";
             }
         });
