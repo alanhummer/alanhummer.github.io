@@ -24,6 +24,8 @@ var cardCount = 0;
 var tableCardCount = 0;
 var myPlayerCards = [];
 var myTableCards = [];
+var handCount = 0;
+var cardCover = "card-cover-blue.png";
 
 if ('serviceWorker' in navigator) {
     window.addEventListener('load' , () => {
@@ -39,7 +41,7 @@ document.getElementById('cardgamestart').addEventListener('click', async () => {
     runTheCardGame();
 });
 
-document.getElementById('status').innerHTML = "v2025.04.19.03";
+document.getElementById('status').innerHTML = "v2025.04.19.04";
 
 //***************************
 //This handle all of the card game app presentation and logic
@@ -119,7 +121,7 @@ function runTheCardGame() {
 
                 var cardClass = "card-" + cardColor + " " + cardSuit;
                 var myCard = "<span data-rank='" + cardNumber + "' class='" + cardClass + "' style='position:absolute;top:" + 0 + "px;left:" + leftPosition + "px;'></span>";
-                var myCardBack = "<span class='card' style='position:absolute;top:" + 0 + "px;left:" + leftPosition + "px;'><img src='card-cover.png'></span>";
+                var myCardBack = "<span class='card' style='position:absolute;top:" + 0 + "px;left:" + leftPosition + "px;'><img src='" + cardCover + "'></span>";
                 if (event.data.startsWith("TABLE CARD:")) {
                     document.getElementById('table-cards').innerHTML = document.getElementById('table-cards').innerHTML + myCard;
                     document.getElementById('table-cards-back').innerHTML = document.getElementById('table-cards-back').innerHTML + myCardBack;
@@ -150,6 +152,13 @@ function runTheCardGame() {
                 sendCardCommand("start-game");
                 myPlayerCards = [];
                 myTableCards = [];
+                handCount = handCount + 1;
+                if (isEven(handCount)) {
+                    cardCover = "card-cover-blue.png";
+                }
+                else {
+                    cardCover = "card-cover-red.png";        
+                }
             });           
             document.getElementById('cardapp-dealAllUp').addEventListener('click', async () => {
                 sendCardCommand("deal-all-up");
@@ -265,3 +274,7 @@ function toggleShowCards(inputCardType) {
     }
 
 }
+
+function isEven(n) {
+    return n % 2 == 0;
+ }
