@@ -37,6 +37,14 @@ if ('serviceWorker' in navigator) {
     });
 }
 
+const urlParams = new URLSearchParams(window.location.search);
+myName = urlParams.get('name');
+if (!myName) {
+    myName = "Nobody";
+}
+
+document.getElementById('cardbutton').innerHTML = document.getElementById('cardbutton').innerHTML.replace("_NAME_", myName);
+
 document.getElementById('cardgamestart').addEventListener('click', async () => {
     runTheCardGame();
 });
@@ -47,12 +55,6 @@ document.getElementById('status').innerHTML = "v2025.04.19.04";
 //This handle all of the card game app presentation and logic
 //***************************
 function runTheCardGame() {
-
-    const urlParams = new URLSearchParams(window.location.search);
-    myName = urlParams.get('name');
-    if (!myName) {
-        myName = "Nobody";
-    }
 
     document.getElementById('cardbutton').style.display = "none";
     document.getElementById('cardapp').style.display = "block";
@@ -235,12 +237,7 @@ function sendCardCommand(inputCommand) {
 
     if (socket.readyState === WebSocket.CLOSED) {
 
-        // The connection is closed
-        const urlParams = new URLSearchParams(window.location.search);
-        myName = urlParams.get('name');
-        if (!myName) {
-            myName = "Nobody";
-        }
+        //Re-open connection
         socket = new WebSocket('wss://i-saw-your-cards.deno.dev?name=' + myName);
     }
 
