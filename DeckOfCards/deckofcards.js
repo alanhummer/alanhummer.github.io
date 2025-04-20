@@ -125,7 +125,7 @@ function runTheCardGame() {
 
                 var cardClass = "card-" + cardColor + " " + cardSuit;
                 var myCard = "<span data-rank='" + cardNumber + "' class='" + cardClass + "' style='position:absolute;top:" + 0 + "px;left:" + leftPosition + "px;'></span>";
-                var myCardBack = "<span class='card' style='position:absolute;top:" + 0 + "px;left:" + leftPosition + "px;'><img src='" + cardCover + "'></span>";
+                var myCardBack = "<span class='card' style='position:absolute;top:" + 0 + "px;left:" + leftPosition + "px;'><img src='" + cardCover + "' class='card-cover'></span>";
                 if (event.data.startsWith("TABLE CARD:")) {
                     document.getElementById('table-cards').innerHTML = document.getElementById('table-cards').innerHTML + myCard;
                     document.getElementById('table-cards-back').innerHTML = document.getElementById('table-cards-back').innerHTML + myCardBack;
