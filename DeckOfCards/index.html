@@ -14,9 +14,9 @@
   <!-- And the card app-->
   <div id="cardbutton" style="height:80%;display:flex;justify-content:center;align-items:center;" class="large-text-display">
     <div style="justify-content:center;align-items:center;text-align:center;height:80%"> 
-     Welcome _NAME_!<br>
+     _WELCOMEMESSAGE_<br>
     <img src="card-cover-blue.png" id="cardgamestart" alt="Card Game" text-align="center" class="card-cover-big"><br>
-    Touch card to begin....
+    _WELCOMEINSTRUCTIONS_
     </div>
   </div>
 
@@ -25,14 +25,20 @@
     <!-- Message-->
     <div id="play-message" style="justify-content:center;align-items:center;" class="small-text-display">We are all set. When players ready, play begins and cards will show here.</div>
 
-        <!--Cards-->
-    <div id="table-cards" style="position:relative;height:125px;display:block;"></div>
-    <div id="table-cards-back" style="position:relative;height:125px;display:none;"></div>
-    <div id="player-cards" style="position:relative;height:125px;display:none;"></div>
-    <div id="player-cards-back" style="position:relative;height:125px;display:block;"></div>
+    <!--Table Cards-->
+    <div id="table-cards" style="display:relative;height:125px;">
+      <div id="table-cards-front" style="position:relative;height:125px;display:block;"></div>
+      <div id="table-cards-back" style="position:relative;height:125px;display:none;"></div>
+    </div>
+    
+    <!-- Player Cards-->
+    <div id="player-cards" style="display:relative;height:125px;">
+      <div id="player-cards-front" style="position:relative;height:125px;display:none;"></div>
+      <div id="player-cards-back" style="position:relative;height:125px;display:block;"></div>
+    </div>
 
     <!--Players-->
-    <div id="players" style="display:inline-block;height:150px;">
+    <div id="players" style="display:inline-block;height:125px;">
       <div class="player">Larry</div>
       <div class="player">Curly</div>
       <div class="player">Moe</div>

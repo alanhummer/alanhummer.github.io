@@ -16,6 +16,10 @@
 //- Hide so cant be seen (tap to see)
 //- Play a card on the table, face up or face down (play-card-up, play-card-down)
 //  
+//Make like cards in your hand...tap to see/hide, drag to play face up or down, check/pass to other player, fold
+//- "table" where you setuff plaid - like TV or common screen, ipad - so a "table" veiw who is not a player
+//    - Optionally with no table view, show cards in hand
+//- Dealer has controls, others dont...pass the dealer, they get controls
 
 var cardappButtonReady = false;
 var socket = null;
@@ -41,13 +45,17 @@ const urlParams = new URLSearchParams(window.location.search);
 myName = urlParams.get('name');
 if (!myName) {
     myName = "Nobody";
+    document.getElementById('cardbutton').innerHTML = document.getElementById('cardbutton').innerHTML.replace("_WELCOMEMESSAGE_", "Hello, Stranger");
+    document.getElementById('cardbutton').innerHTML = document.getElementById('cardbutton').innerHTML.replace("_WELCOMEINSTRUCTIONS_", "Nothing to see here...");
 }
+else {
+    document.getElementById('cardbutton').innerHTML = document.getElementById('cardbutton').innerHTML.replace("_WELCOMEMESSAGE_", "Hello " + myName + ". Would you like to play a game?");
+    document.getElementById('cardbutton').innerHTML = document.getElementById('cardbutton').innerHTML.replace("_WELCOMEINSTRUCTIONS_", "Touch the Deck to Play");
 
-document.getElementById('cardbutton').innerHTML = document.getElementById('cardbutton').innerHTML.replace("_NAME_", myName);
-
-document.getElementById('cardgamestart').addEventListener('click', async () => {
-    runTheCardGame();
-});
+    document.getElementById('cardgamestart').addEventListener('click', async () => {
+        runTheCardGame();
+    });
+}
 
 document.getElementById('status').innerHTML = "v2025.04.19.04";
 
@@ -65,81 +73,75 @@ function runTheCardGame() {
     //When it connects successfully, off we go
     socket.addEventListener('open', (event) => {
         console.log('Connected to server');
-        //document.getElementById('cardapp-log').innerHTML = document.getElementById('cardapp-log').innerHTML + "<li>Connected to server" + "</li>";
-        // document.getElementById('cardapp-log').innerHTML = document.getElementById('cardapp-log').innerHTML + "<li>**************</li>";
-        //var sendMessage = 'Hello Server!';
-        //socket.send(sendMessage);
-        //document.getElementById('cardapp-log').innerHTML = document.getElementById('cardapp-log').innerHTML + "<li>Client --> Server: " + sendMessage + "</li>";
-
 
         //Recieve message from server handler
         socket.addEventListener('message', (event) => {
             console.log('Message from server:', event.data);
             var leftPosition = 0;
-            var cardData = "";
-            document.getElementById('play-message').innerHTML = "Playing Cards...";
 
-            if (event.data.startsWith("CARD:") || event.data.startsWith("TABLE CARD:")) {
-                if (event.data.startsWith("TABLE CARD:")) {
-                    tableCardCount = tableCardCount + 1;
-                    leftPosition = tableCardCount * 60;
-                    cardData = event.data.replace("TABLE CARD:", "");
-                    myTableCards.push(cardData);
-                }
-                else {
+            const parts = event.data.split(":");
+            const eventCommand = parts[0].trim();
+            var eventData = "";
+            if (parts.length > 1) {
+                eventData = parts[1].trim();
+            }
+  
+            //Start list of possible messages and handlers
+            switch (eventCommand) {
+                case "CARD":
+                    document.getElementById('play-message').innerHTML = "Hare are your cards..";
                     cardCount = cardCount + 1;
                     leftPosition = cardCount * 60;
-                    cardData = event.data.replace("CARD:", "");
-                    myPlayerCards.push(cardData);
-                }
-                
-                var cardNumber = cardData.charAt(0);
-                if (cardNumber == "1") {
-                    cardNumber = "A";
-                }
-                var cardSuit = cardData.charAt(1);
-                var cardColor = "black";
+                    var cardNumber = "";
+                    var cardSuit = "";
+                    var cardColor = "";
+                    getCard(eventData, cardNumber, cardSuit, cardColor);
+                    myPlayerCards.push(eventData);
 
-                console.log("CARD DATA IS: " + cardData  + " NUM: " + cardNumber + " SUIT: " + cardSuit);
-                switch (cardSuit) {
-                    case "S":
-                        cardSuit = "spades";
-                        cardColor = "black";
-                        break;
-                    case "H":
-                        cardSuit = "hearts";
-                        cardColor = "red";
-                        break;
-                    case "C":
-                        cardSuit = "clubs";
-                        cardColor = "black";
-                        break;
-                    case "D":
-                        cardSuit = "diamonds";
-                        cardColor = "red";
-                        break;
-                    default:
-                        cardSuit = "spades";
-                        break;
-                }
-
-                var cardClass = "card-" + cardColor + " " + cardSuit;
-                var myCard = "<span data-rank='" + cardNumber + "' class='" + cardClass + "' style='position:absolute;top:" + 0 + "px;left:" + leftPosition + "px;'></span>";
-                var myCardBack = "<span class='card' style='position:absolute;top:" + 0 + "px;left:" + leftPosition + "px;'><img src='" + cardCover + "' class='card-cover'></span>";
-                if (event.data.startsWith("TABLE CARD:")) {
-                    document.getElementById('table-cards').innerHTML = document.getElementById('table-cards').innerHTML + myCard;
-                    document.getElementById('table-cards-back').innerHTML = document.getElementById('table-cards-back').innerHTML + myCardBack;
-                 }
-                else {
-                    document.getElementById('player-cards').innerHTML = document.getElementById('player-cards').innerHTML + myCard;
+                    var cardClass = "card-" + cardColor + " " + cardSuit;
+                    var myCard = "<span data-rank='" + cardNumber + "' class='" + cardClass + "' style='position:absolute;top:" + 0 + "px;left:" + leftPosition + "px;'></span>";
+                    var myCardBack = "<span class='card' style='position:absolute;top:" + 0 + "px;left:" + leftPosition + "px;'><img src='" + cardCover + "' class='card-cover'></span>";
+    
+                    document.getElementById('player-cards-front').innerHTML = document.getElementById('player-cards-front').innerHTML + myCard;
                     document.getElementById('player-cards-back').innerHTML = document.getElementById('player-cards-back').innerHTML + myCardBack;
-                 }
+
+                    break;
+                case "TABLE CARD":
+                    document.getElementById('play-message').innerHTML = "Table played a card...";
+                    tableCardCount = tableCardCount + 1;
+                    leftPosition = tableCardCount * 60;
+                    var cardNumber = "";
+                    var cardSuit = "";
+                    var cardColor = "";
+                    getCard(eventData, cardNumber, cardSuit, cardColor);
+                    myTableCards.push(eventData);
+
+                    var cardClass = "card-" + cardColor + " " + cardSuit;
+                    var myCard = "<span data-rank='" + cardNumber + "' class='" + cardClass + "' style='position:absolute;top:" + 0 + "px;left:" + leftPosition + "px;'></span>";
+                    var myCardBack = "<span class='card' style='position:absolute;top:" + 0 + "px;left:" + leftPosition + "px;'><img src='" + cardCover + "' class='card-cover'></span>";
+    
+                    document.getElementById('table-cards-front').innerHTML = document.getElementById('table-cards-front').innerHTML + myCard;
+                    document.getElementById('table-cards-back').innerHTML = document.getElementById('table-cards-back').innerHTML + myCardBack;
+
+                    break;
                 
+                case "Dealer is now:":
+                    if (eventData == myName) {
+                        //I am the dealers, show controls
+                        document.getElementById('controls').style.display = "block";
+                        document.getElementById('play-message').innerHTML = "You are the dealer!";
+                    }
+                    else {
+                        //I am not the dealers, show controls
+                        document.getElementById('controls').style.display = "none";
+                        document.getElementById('play-message').innerHTML = eventData + " is the dealer"; 
+                    }
+
+                default:
+                    document.getElementById('play-message').innerHTML = "Playing Cards:" + eventCommand + " Data:" + eventData;
+                    break;
             }
-            else {
-                document.getElementById('play-message').innerHTML =  event.data;
-                document.getElementById('cardapp-log').innerHTML = "<li>" + event.data + "</li>";
-            }
+                  
         });
 
         //Send message to the server
@@ -197,13 +199,13 @@ function runTheCardGame() {
             });
 
             //And for showing/hiding cards
-            document.getElementById('player-cards').addEventListener('click', async () => {
+            document.getElementById('player-cards-front').addEventListener('click', async () => {
                 toggleShowCards("player-cards");    
             });
             document.getElementById('player-cards-back').addEventListener('click', async () => {
                 toggleShowCards("player-cards");    
             });
-            document.getElementById('table-cards').addEventListener('click', async () => {
+            document.getElementById('table-cards-front').addEventListener('click', async () => {
                 toggleShowCards("table-cards");    
             });
             document.getElementById('table-cards-back').addEventListener('click', async () => {
@@ -251,24 +253,24 @@ function sendCardCommand(inputCommand) {
 function toggleShowCards(inputCardType) {
 
     if (inputCardType == "table-cards") {
-        var tableCards = document.getElementById('table-cards');
+        var tableCardsFront = document.getElementById('table-cards=front');
         var tableCardsBack = document.getElementById('table-cards-back');
-        if (tableCards.style.display === "none") {
-            tableCards.style.display = "block";
+        if (tableCardsFront.style.display === "none") {
+            tableCardsFront.style.display = "block";
             tableCardsBack.style.display = "none";
         } else {
-            tableCards.style.display = "none";
+            tableCardsFront.style.display = "none";
             tableCardsBack.style.display = "block";
         }
     }
     else {
-        var playerCards = document.getElementById('player-cards');
+        var playerCardsFront = document.getElementById('player-cards-front');
         var playerCardsBack = document.getElementById('player-cards-back');
-        if (playerCards.style.display === "none") {
-            playerCards.style.display = "block";
+        if (playerCardsFront.style.display === "none") {
+            playerCardsFront.style.display = "block";
             playerCardsBack.style.display = "none";
         } else {
-            playerCards.style.display = "none";
+            playerCardsFront.style.display = "none";
             playerCardsBack.style.display = "block";
         }
     }
@@ -278,3 +280,36 @@ function toggleShowCards(inputCardType) {
 function isEven(n) {
     return n % 2 == 0;
  }
+
+function getCard(inputCardData, cardNumber, cardSuit, cardColor) {
+
+    cardNumber = inputCardData.charAt(0);
+    if (cardNumber == "1") {
+        cardNumber = "A";
+    }
+    cardSuit = inputCardData.charAt(1);
+    cardColor = "black";
+
+    console.log("CARD DATA IS: " + inputCardData  + " NUM: " + cardNumber + " SUIT: " + cardSuit);
+    switch (cardSuit) {
+        case "S":
+            cardSuit = "spades";
+            cardColor = "black";
+            break;
+        case "H":
+            cardSuit = "hearts";
+            cardColor = "red";
+            break;
+        case "C":
+            cardSuit = "clubs";
+            cardColor = "black";
+            break;
+        case "D":
+            cardSuit = "diamonds";
+            cardColor = "red";
+            break;
+        default:
+            cardSuit = "spades";
+            break;
+    }
+}
