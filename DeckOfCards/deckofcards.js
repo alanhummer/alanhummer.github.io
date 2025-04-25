@@ -53,6 +53,7 @@ else {
     document.getElementById('cardbutton').innerHTML = document.getElementById('cardbutton').innerHTML.replace("_WELCOMEINSTRUCTIONS_", "Touch the Deck to Play");
 
     document.getElementById('cardgamestart').addEventListener('click', async () => {
+        document.getElementById('playerName').innerHTML = document.getElementById('playerName').innerHTML.replace("_NAME_", myName);
         runTheCardGame();
     });
 }
@@ -87,37 +88,33 @@ function runTheCardGame() {
             }
   
             //Start list of possible messages and handlers
-            switch (eventCommand) {
-                case "CARD":
+            switch (true) {
+                case (eventCommand == "CARD"):
                     document.getElementById('play-message').innerHTML = "Hare are your cards..";
                     cardCount = cardCount + 1;
                     leftPosition = cardCount * 60;
-                    var cardNumber = "";
-                    var cardSuit = "";
-                    var cardColor = "";
-                    getCard(eventData, cardNumber, cardSuit, cardColor);
-                    myPlayerCards.push(eventData);
+                    var cardData = {rawData: eventData, cardNumber: "", cardSuit: "", cardColor: ""};
+                    getCardData(cardData);
+                     myPlayerCards.push(eventData);
 
-                    var cardClass = "card-" + cardColor + " " + cardSuit;
-                    var myCard = "<span data-rank='" + cardNumber + "' class='" + cardClass + "' style='position:absolute;top:" + 0 + "px;left:" + leftPosition + "px;'></span>";
+                    var cardClass = "card-" + cardData.cardColor + " " + cardData.cardSuit;
+                    var myCard = "<span data-rank='" + cardData.cardNumber + "' class='" + cardClass + "' style='position:absolute;top:" + 0 + "px;left:" + leftPosition + "px;'></span>";
                     var myCardBack = "<span class='card' style='position:absolute;top:" + 0 + "px;left:" + leftPosition + "px;'><img src='" + cardCover + "' class='card-cover'></span>";
     
                     document.getElementById('player-cards-front').innerHTML = document.getElementById('player-cards-front').innerHTML + myCard;
                     document.getElementById('player-cards-back').innerHTML = document.getElementById('player-cards-back').innerHTML + myCardBack;
 
                     break;
-                case "TABLE CARD":
+                case (eventCommand == "TABLE CARD"):
                     document.getElementById('play-message').innerHTML = "Table played a card...";
                     tableCardCount = tableCardCount + 1;
                     leftPosition = tableCardCount * 60;
-                    var cardNumber = "";
-                    var cardSuit = "";
-                    var cardColor = "";
-                    getCard(eventData, cardNumber, cardSuit, cardColor);
+                    var cardData = {rawData: eventData, cardNumber: "", cardSuit: "", cardColor: ""};
+                    getCardData(cardData);
                     myTableCards.push(eventData);
 
-                    var cardClass = "card-" + cardColor + " " + cardSuit;
-                    var myCard = "<span data-rank='" + cardNumber + "' class='" + cardClass + "' style='position:absolute;top:" + 0 + "px;left:" + leftPosition + "px;'></span>";
+                    var cardClass = "card-" + cardData.cardColor + " " + cardData.cardSuit;
+                    var myCard = "<span data-rank='" + cardData.cardNumber + "' class='" + cardClass + "' style='position:absolute;top:" + 0 + "px;left:" + leftPosition + "px;'></span>";
                     var myCardBack = "<span class='card' style='position:absolute;top:" + 0 + "px;left:" + leftPosition + "px;'><img src='" + cardCover + "' class='card-cover'></span>";
     
                     document.getElementById('table-cards-front').innerHTML = document.getElementById('table-cards-front').innerHTML + myCard;
@@ -125,20 +122,24 @@ function runTheCardGame() {
 
                     break;
                 
-                case "Dealer is now:":
-                    if (eventData == myName) {
-                        //I am the dealers, show controls
+                case eventCommand.includes("Dealer is "):
+                    if (eventCommand.includes("Dealer is " + myName)) {
                         document.getElementById('controls').style.display = "block";
-                        document.getElementById('play-message').innerHTML = "You are the dealer!";
                     }
                     else {
-                        //I am not the dealers, show controls
                         document.getElementById('controls').style.display = "none";
-                        document.getElementById('play-message').innerHTML = eventData + " is the dealer"; 
                     }
+                    document.getElementById('play-message').innerHTML = eventCommand;
 
                 default:
-                    document.getElementById('play-message').innerHTML = "Playing Cards:" + eventCommand + " Data:" + eventData;
+
+                    if (eventData.length > 0) {
+                        document.getElementById('play-message').innerHTML = eventCommand + " Data:" + eventData;
+                    }
+                    else {
+                        document.getElementById('play-message').innerHTML = eventCommand;
+                    }
+                    
                     break;
             }
                   
@@ -253,9 +254,9 @@ function sendCardCommand(inputCommand) {
 function toggleShowCards(inputCardType) {
 
     if (inputCardType == "table-cards") {
-        var tableCardsFront = document.getElementById('table-cards=front');
+        var tableCardsFront = document.getElementById('table-cards-front');
         var tableCardsBack = document.getElementById('table-cards-back');
-        if (tableCardsFront.style.display === "none") {
+        if (tableCardsFront.style.display == "none") {
             tableCardsFront.style.display = "block";
             tableCardsBack.style.display = "none";
         } else {
@@ -266,7 +267,7 @@ function toggleShowCards(inputCardType) {
     else {
         var playerCardsFront = document.getElementById('player-cards-front');
         var playerCardsBack = document.getElementById('player-cards-back');
-        if (playerCardsFront.style.display === "none") {
+        if (playerCardsFront.style.display == "none") {
             playerCardsFront.style.display = "block";
             playerCardsBack.style.display = "none";
         } else {
@@ -281,35 +282,35 @@ function isEven(n) {
     return n % 2 == 0;
  }
 
-function getCard(inputCardData, cardNumber, cardSuit, cardColor) {
+function getCardData(inputCardData) {
 
-    cardNumber = inputCardData.charAt(0);
-    if (cardNumber == "1") {
-        cardNumber = "A";
+    inputCardData.cardNumber = inputCardData.rawData.charAt(0);
+    if (inputCardData.cardNumber == "1") {
+        inputCardData.cardNumber = "A";
     }
-    cardSuit = inputCardData.charAt(1);
-    cardColor = "black";
+    inputCardData.cardSuit = inputCardData.rawData.charAt(1);
+    inputCardData.cardColor = "black";
 
-    console.log("CARD DATA IS: " + inputCardData  + " NUM: " + cardNumber + " SUIT: " + cardSuit);
-    switch (cardSuit) {
+    console.log("CARD DATA IS: " + inputCardData.rawData  + " NUM: " + inputCardData.cardNumber + " SUIT: " + inputCardData.cardSuit);
+    switch (inputCardData.cardSuit) {
         case "S":
-            cardSuit = "spades";
-            cardColor = "black";
+            inputCardData.cardSuit = "spades";
+            inputCardData.cardColor = "black";
             break;
         case "H":
-            cardSuit = "hearts";
-            cardColor = "red";
+            inputCardData.cardSuit = "hearts";
+            inputCardData.cardColor = "red";
             break;
         case "C":
-            cardSuit = "clubs";
-            cardColor = "black";
+            inputCardData.cardSuit = "clubs";
+            inputCardData.cardColor = "black";
             break;
         case "D":
-            cardSuit = "diamonds";
-            cardColor = "red";
+            inputCardData.cardSuit = "diamonds";
+            inputCardData.cardColor = "red";
             break;
         default:
-            cardSuit = "spades";
+            inputCardData.cardSuit = "spades";
             break;
     }
 }
