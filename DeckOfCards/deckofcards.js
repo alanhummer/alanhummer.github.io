@@ -129,6 +129,35 @@ function runTheCardGame() {
                     else {
                         document.getElementById('controls').style.display = "none";
                     }
+                    if (eventCommand.includes("Game Started")) {
+
+                        //Clear out and reset players
+                        document.getElementById('players').innerHTML = "";
+                        var workString = eventCommand.replace("Players are ", "|").replace(" ACTION ON PLAYER", "|");
+                        var myTempArray = workString.split("|");
+                        var myTempPlayers = myTempArray[1];
+                        var myTempPlayerArray = myTempPlayers.split(",")
+    
+                        for (let index = 0; index < myTempPlayerArray.length;index++) {
+                            console.log("PLAYER IS:" + myTempPlayerArray[index].trim());
+                            document.getElementById('players').innerHTML = document.getElementById('players').innerHTML + "<div class='player'>" + myTempPlayerArray[index].trim() + "</div>";
+                        }    
+  
+                        //Game Started, Shuffled, All set. Dealer is Orson Players are Monger, Wap, Orson ACTION ON PLAYER[0]] = Monger
+
+                        //Clear out and reseet player cards
+                        cardCount = 0;
+                        myPlayerCards = [];
+                        document.getElementById('player-cards-front').innerHTML = "";
+                        document.getElementById('player-cards-back').innerHTML = "";
+    
+                        //Clear out and reset table cards
+                        tableCardCount = 0;
+                        myTableCards = [];
+                        document.getElementById('table-cards-front').innerHTML = "";
+                        document.getElementById('table-cards-back').innerHTML = "";
+    
+                    }
                     document.getElementById('play-message').innerHTML = eventCommand;
 
                 default:
@@ -218,8 +247,10 @@ function runTheCardGame() {
         //When socket is closed handler
         socket.addEventListener('close', (event) => {
             console.log('Disconnected from server');
+            document.getElementById('play-message').innerHTML = "Disconnected from server. Trying to reconnect...";
             //document.getElementById('cardapp-log').innerHTML = document.getElementById('cardapp-log').innerHTML + "<li>**************</li>";
             document.getElementById('cardapp-log').innerHTML = "<li>Disconnected from server" + "</li>";
+            socket = new WebSocket('wss://i-saw-your-cards.deno.dev?name=' + myName);
         });
 
         //Error in socket handler
