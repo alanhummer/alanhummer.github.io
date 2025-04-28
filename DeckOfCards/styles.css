@@ -169,13 +169,14 @@ body {
   margin: auto;     /* Centers vertically */
 }
 
-.player2 {
-  border:1px solid #ccc;
-  border-radius: 20px;
-  background: #fff;
-  color:#444;
+.dealer {
   width: 90px;
-  height: 125px;
+  height: 100px; /* Adjust height as needed */
+  background-color: red; /* Optional: Set a background color */
+  border: 1px solid red; /* Add a border */
+  padding: 10px; /* Add padding around the text */
+  text-align: center; /* Center the text horizontally */
+  vertical-align: middle; /* Center the text vertically (may require additional setup) */
   margin: 10px;
   float: left;
 }
@@ -190,6 +191,5 @@ body {
   vertical-align: middle; /* Center the text vertically (may require additional setup) */
   margin: 10px;
   float: left;
-
 }
 

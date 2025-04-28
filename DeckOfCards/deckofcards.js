@@ -28,8 +28,7 @@ var cardCount = 0;
 var tableCardCount = 0;
 var myPlayerCards = [];
 var myTableCards = [];
-var handCount = 0;
-var cardCover = "card-cover-blue.png";
+var cardCover = "BOGUS";
 
 if ('serviceWorker' in navigator) {
     window.addEventListener('load' , () => {
@@ -58,7 +57,7 @@ else {
     });
 }
 
-document.getElementById('status').innerHTML = "v2025.04.19.04";
+document.getElementById('status').innerHTML = "v2025.04.27.01";
 
 //***************************
 //This handle all of the card game app presentation and logic
@@ -78,110 +77,111 @@ function runTheCardGame() {
         //Recieve message from server handler
         socket.addEventListener('message', (event) => {
             console.log('Message from server:', event.data);
-            var leftPosition = 0;
 
-            const parts = event.data.split(":");
-            const eventCommand = parts[0].trim();
-            var eventData = "";
-            if (parts.length > 1) {
-                eventData = parts[1].trim();
+            //Server message are json objects of message, version, card, player types
+            //Could be array of objects also
+
+            let messageObjects = JSON.parse(event.data);
+            if (Array.isArray(messageObjects)) {
+                //All good, we have an array of objects
             }
+            else {
+                //Rebuild as 1 entry array for simplicity of handling - always arrays
+                let messageObject = JSON.parse(event.data);
+                messageObjects = [];
+                messageObjects.push(messageObject);
+            }
+
+            //OK, we have array of messages to process
+            let playerCount = 0;
+            for (const messageObject of messageObjects) {
+                switch (messageObject.type) {
+                    case "message":
+                        document.getElementById('play-message').innerHTML = messageObject.message;
+                        break;
+                    case "version":
+                        document.getElementById('play-message').innerHTML = "Version info: " + messageObject.appVersion + " " + messageObject.appRegion;
+                        break;
+                    case "card":
+                        //A to do here, if card is up, show it up...if down show it down
+                        var cardClass = "card-" + messageObject.color + " " + messageObject.suit;
+                        var myCard = "<span data-rank='" + messageObject.rank + "' class='" + cardClass + "' style='position:absolute;top:" + 0 + "px;left:_LEFTPOSITION_px;'></span>";
+                        var myCardBack = "<span class='card' style='position:absolute;top:" + 0 + "px;left:_LEFTPOSITION_px;'><img src='" + messageObject.cover + "' class='card-cover'></span>";
+
+                        if (messageObject.table) {
+                            tableCardCount = tableCardCount + 1;
+                            const leftPosition = tableCardCount * 60;
+                            document.getElementById('play-message').innerHTML = "Table card played...";
+                            myTableCards.push(messageObject); 
+                            myCard = myCard.replace("_LEFTPOSITION_", leftPosition);
+                            myCardBack = myCardBack.replace("_LEFTPOSITION_", leftPosition);
+                            document.getElementById('table-cards-front').innerHTML = document.getElementById('table-cards-front').innerHTML + myCard;
+                            document.getElementById('table-cards-back').innerHTML = document.getElementById('table-cards-back').innerHTML + myCardBack;
+        
+                        }
+                        else {
+                            cardCount = cardCount + 1;
+                            const leftPosition = cardCount * 60;
+                            document.getElementById('play-message').innerHTML = "Got a card...";
+                            myPlayerCards.push(messageObject); 
+                            myCard = myCard.replace("_LEFTPOSITION_", leftPosition);
+                            myCardBack = myCardBack.replace("_LEFTPOSITION_", leftPosition);
+                            document.getElementById('player-cards-front').innerHTML = document.getElementById('player-cards-front').innerHTML + myCard;
+                            document.getElementById('player-cards-back').innerHTML = document.getElementById('player-cards-back').innerHTML + myCardBack;
+                        }
+                        break;
+                    case "player":
+                        //Our player set
+                        playerCount = playerCount + 1;
+
+                        let actionIndicator = "";
+                        if (messageObject.blnActionOn) {
+                            actionIndicator = "***";
+                        }
+ 
+                        let playerType = "player";
+                        if (messageObject.blnDealer) {
+                            playerType = "dealer";
+                        }
   
-            //Start list of possible messages and handlers
-            switch (true) {
-                case (eventCommand == "CARD"):
-                    document.getElementById('play-message').innerHTML = "Hare are your cards..";
-                    cardCount = cardCount + 1;
-                    leftPosition = cardCount * 60;
-                    var cardData = {rawData: eventData, cardNumber: "", cardSuit: "", cardColor: ""};
-                    getCardData(cardData);
-                     myPlayerCards.push(eventData);
-
-                    var cardClass = "card-" + cardData.cardColor + " " + cardData.cardSuit;
-                    var myCard = "<span data-rank='" + cardData.cardNumber + "' class='" + cardClass + "' style='position:absolute;top:" + 0 + "px;left:" + leftPosition + "px;'></span>";
-                    var myCardBack = "<span class='card' style='position:absolute;top:" + 0 + "px;left:" + leftPosition + "px;'><img src='" + cardCover + "' class='card-cover'></span>";
-    
-                    document.getElementById('player-cards-front').innerHTML = document.getElementById('player-cards-front').innerHTML + myCard;
-                    document.getElementById('player-cards-back').innerHTML = document.getElementById('player-cards-back').innerHTML + myCardBack;
-
-                    break;
-                case (eventCommand == "TABLE CARD"):
-                    document.getElementById('play-message').innerHTML = "Table played a card...";
-                    tableCardCount = tableCardCount + 1;
-                    leftPosition = tableCardCount * 60;
-                    var cardData = {rawData: eventData, cardNumber: "", cardSuit: "", cardColor: ""};
-                    getCardData(cardData);
-                    myTableCards.push(eventData);
-
-                    var cardClass = "card-" + cardData.cardColor + " " + cardData.cardSuit;
-                    var myCard = "<span data-rank='" + cardData.cardNumber + "' class='" + cardClass + "' style='position:absolute;top:" + 0 + "px;left:" + leftPosition + "px;'></span>";
-                    var myCardBack = "<span class='card' style='position:absolute;top:" + 0 + "px;left:" + leftPosition + "px;'><img src='" + cardCover + "' class='card-cover'></span>";
-    
-                    document.getElementById('table-cards-front').innerHTML = document.getElementById('table-cards-front').innerHTML + myCard;
-                    document.getElementById('table-cards-back').innerHTML = document.getElementById('table-cards-back').innerHTML + myCardBack;
-
-                    break;
-                
-                case eventCommand.includes("Dealer is "):
-                    if (eventCommand.includes("Dealer is " + myName)) {
-                        document.getElementById('controls').style.display = "block";
-                    }
-                    else {
-                        document.getElementById('controls').style.display = "none";
-                    }
-                    if (eventCommand.includes("Game Started")) {
-
-                        //Clear out and reset players
-                        document.getElementById('players').innerHTML = "";
-                        var workString = eventCommand.replace("Players are ", "|").replace(" ACTION ON PLAYER", "|");
-                        var myTempArray = workString.split("|");
-                        var myTempPlayers = myTempArray[1];
-                        var myTempPlayerArray = myTempPlayers.split(",")
-    
-                        for (let index = 0; index < myTempPlayerArray.length;index++) {
-                            console.log("PLAYER IS:" + myTempPlayerArray[index].trim());
-                            document.getElementById('players').innerHTML = document.getElementById('players').innerHTML + "<div class='player'>" + myTempPlayerArray[index].trim() + "</div>";
-                        }    
-  
-                        //Game Started, Shuffled, All set. Dealer is Orson Players are Monger, Wap, Orson ACTION ON PLAYER[0]] = Monger
+                        let playerDisplay = "<div class='" + playerType + "'>" + messageObject.name + "<br>" + messageObject.cardCount + "<br>" + actionIndicator + "</div>";
+                         
+                        if (playerCount == 1) {
+                            //Wipe clean and start fresh
+                            document.getElementById('players').innerHTML = playerDisplay
+                        }
+                        else {
+                            document.getElementById('players').innerHTML = document.getElementById('players').innerHTML + playerDisplay;
+                        }
+                        break;
+                    case "new-game":
 
                         //Clear out and reseet player cards
                         cardCount = 0;
                         myPlayerCards = [];
                         document.getElementById('player-cards-front').innerHTML = "";
                         document.getElementById('player-cards-back').innerHTML = "";
-    
+
                         //Clear out and reset table cards
                         tableCardCount = 0;
                         myTableCards = [];
                         document.getElementById('table-cards-front').innerHTML = "";
                         document.getElementById('table-cards-back').innerHTML = "";
-    
-                    }
-                    document.getElementById('play-message').innerHTML = eventCommand;
 
-                default:
-
-                    if (eventData.length > 0) {
-                        document.getElementById('play-message').innerHTML = eventCommand + " Data:" + eventData;
-                    }
-                    else {
-                        document.getElementById('play-message').innerHTML = eventCommand;
-                    }
-                    
-                    break;
+                        break;    
+                    default:
+                        document.getElementById('play-message').innerHTML = JSON.stringify(messageObject);
+                        break;
+                }
             }
-                  
         });
 
         //Send message to the server
         if (!cardappButtonReady) {
             cardappButtonReady = true;
-            document.getElementById('cardapp-shuffle').addEventListener('click', async () => {
-                sendCardCommand("shuffle");
-                myPlayerCards = [];
-                myTableCards = [];
-            });
+            //document.getElementById('cardapp-shuffle').addEventListener('click', async () => {
+            //    sendCardCommand("shuffle");
+            //});
             document.getElementById('cardapp-players').addEventListener('click', async () => {
                 sendCardCommand("players");
             });
@@ -189,14 +189,10 @@ function runTheCardGame() {
                 sendCardCommand("start-game");
                 myPlayerCards = [];
                 myTableCards = [];
-                handCount = handCount + 1;
-                if (isEven(handCount)) {
-                    cardCover = "card-cover-blue.png";
-                }
-                else {
-                    cardCover = "card-cover-red.png";        
-                }
-            });           
+            });     
+            document.getElementById('cardapp-nextDealer').addEventListener('click', async () => {
+                sendCardCommand("next-deal");
+            });  
             document.getElementById('cardapp-dealAllUp').addEventListener('click', async () => {
                 sendCardCommand("deal-all-up");
             });
@@ -309,39 +305,3 @@ function toggleShowCards(inputCardType) {
 
 }
 
-function isEven(n) {
-    return n % 2 == 0;
- }
-
-function getCardData(inputCardData) {
-
-    inputCardData.cardNumber = inputCardData.rawData.charAt(0);
-    if (inputCardData.cardNumber == "1") {
-        inputCardData.cardNumber = "A";
-    }
-    inputCardData.cardSuit = inputCardData.rawData.charAt(1);
-    inputCardData.cardColor = "black";
-
-    console.log("CARD DATA IS: " + inputCardData.rawData  + " NUM: " + inputCardData.cardNumber + " SUIT: " + inputCardData.cardSuit);
-    switch (inputCardData.cardSuit) {
-        case "S":
-            inputCardData.cardSuit = "spades";
-            inputCardData.cardColor = "black";
-            break;
-        case "H":
-            inputCardData.cardSuit = "hearts";
-            inputCardData.cardColor = "red";
-            break;
-        case "C":
-            inputCardData.cardSuit = "clubs";
-            inputCardData.cardColor = "black";
-            break;
-        case "D":
-            inputCardData.cardSuit = "diamonds";
-            inputCardData.cardColor = "red";
-            break;
-        default:
-            inputCardData.cardSuit = "spades";
-            break;
-    }
-}
