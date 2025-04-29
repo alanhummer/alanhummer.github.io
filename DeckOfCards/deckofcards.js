@@ -24,6 +24,7 @@
 var cardappButtonReady = false;
 var socket = null;
 var myName = "";
+var dontSave = "";
 var cardCount = 0;
 var tableCardCount = 0;
 var myPlayerCards = [];
@@ -42,12 +43,26 @@ if ('serviceWorker' in navigator) {
 
 const urlParams = new URLSearchParams(window.location.search);
 myName = urlParams.get('name');
+dontSave = urlParams.get('dontSave');
+if (!myName) {
+    //No name, see if we have it stored
+    myName = getStorage("userName");
+}
 if (!myName) {
     myName = "Nobody";
     document.getElementById('cardbutton').innerHTML = document.getElementById('cardbutton').innerHTML.replace("_WELCOMEMESSAGE_", "Hello, Stranger");
     document.getElementById('cardbutton').innerHTML = document.getElementById('cardbutton').innerHTML.replace("_WELCOMEINSTRUCTIONS_", "Nothing to see here...");
 }
 else {
+
+    //Store name fo 
+    if (dontSave) {
+        //Dont save
+    }
+    else {
+        setStorage("userName", myName);
+    }
+
     document.getElementById('cardbutton').innerHTML = document.getElementById('cardbutton').innerHTML.replace("_WELCOMEMESSAGE_", "Hello " + myName + ". Would you like to play a game?");
     document.getElementById('cardbutton').innerHTML = document.getElementById('cardbutton').innerHTML.replace("_WELCOMEINSTRUCTIONS_", "Touch the Deck to Play");
 
@@ -136,15 +151,21 @@ function runTheCardGame() {
 
                         let actionIndicator = "";
                         if (messageObject.blnActionOn) {
-                            actionIndicator = "***";
+                            actionIndicator = "**Action**";
                         }
  
+                        let dealerIndicator = "";
                         let playerType = "player";
                         if (messageObject.blnDealer) {
+                            document.getElementById('controls').style.display = "none";
+                            if (messageObject.name == myName) {
+                                document.getElementById('controls').style.display = "block";
+                            }
+                            dealerIndicator = "**Dealer**"
                             playerType = "dealer";
                         }
   
-                        let playerDisplay = "<div class='" + playerType + "'>" + messageObject.name + "<br>" + messageObject.cardCount + "<br>" + actionIndicator + "</div>";
+                        let playerDisplay = "<div class='" + playerType + "'>" + messageObject.name + "<br>" + messageObject.cardCount + "<br>" + actionIndicator + "<br>" + dealerIndicator + "</div>";
                          
                         if (playerCount == 1) {
                             //Wipe clean and start fresh
@@ -305,3 +326,21 @@ function toggleShowCards(inputCardType) {
 
 }
 
+
+// Helper function to save to local storage
+function setStorage(inputKey, inputValue) {
+    localStorage.setItem(inputKey, inputValue);
+  }
+  
+  // Helper function to get from loca storage
+  function getStorage(inputKey) {
+    var outputValue = localStorage.getItem(inputKey);
+    return outputValue;
+  }
+  
+  // Helper function to delete from loca storage
+  function deleteStorage(inputKey) {
+    localStorage.removeItem(inputKey);
+    return;
+  }
+  
