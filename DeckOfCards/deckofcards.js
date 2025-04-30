@@ -72,7 +72,7 @@ else {
     });
 }
 
-document.getElementById('status').innerHTML = "v2025.04.27.01";
+document.getElementById('status').innerHTML = "v2025.04.29.1";
 
 //***************************
 //This handle all of the card game app presentation and logic
