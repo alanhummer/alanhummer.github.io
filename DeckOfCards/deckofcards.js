@@ -148,24 +148,24 @@ function runTheCardGame() {
                     case "player":
                         //Our player set
                         playerCount = playerCount + 1;
+                        let playerType = "player";
 
                         let actionIndicator = "";
                         if (messageObject.blnActionOn) {
                             actionIndicator = "**Action**";
+                            playerType = "actionPlayer";
                         }
  
                         let dealerIndicator = "";
-                        let playerType = "player";
                         if (messageObject.blnDealer) {
                             document.getElementById('controls').style.display = "none";
                             if (messageObject.name == myName) {
                                 document.getElementById('controls').style.display = "block";
                             }
-                            dealerIndicator = "**Dealer**"
-                            playerType = "dealer";
+                            dealerIndicator = "**Dealer**";
                         }
   
-                        let playerDisplay = "<div class='" + playerType + "'>" + messageObject.name + "<br>" + messageObject.cardCount + "<br>" + actionIndicator + "<br>" + dealerIndicator + "</div>";
+                        let playerDisplay = "<div class='" + playerType + "'>" + messageObject.name + "<br>" + messageObject.cardCount + " Cards<br>" + actionIndicator + "<br>" + dealerIndicator + "</div>";
                          
                         if (playerCount == 1) {
                             //Wipe clean and start fresh
