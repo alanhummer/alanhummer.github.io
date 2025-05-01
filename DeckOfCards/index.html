@@ -10,8 +10,8 @@
   <link rel="stylesheet" href="styles.css">
   <script src="deckofcards.js"  type="module"></script>
  </head>
-<body style="background-color:black;height:100%">
-  <!-- And the card app-->
+<body style="background-color:black;height:100vh">
+  <!-- And the card app welcome-->
   <div id="cardbutton" style="height:80%;display:flex;justify-content:center;align-items:center;" class="large-text-display">
     <div style="justify-content:center;align-items:center;text-align:center;height:80%"> 
      _WELCOMEMESSAGE_<br>
@@ -20,50 +20,69 @@
     </div>
   </div>
 
+  <!-- And the card app iteself-->
   <div id="cardapp" style="display:none;height:100%" class="small-text-display">
-
-    <!-- Message-->
-    <div id="playerName" style="justify-content:left;align-items:center;display:inline-block" class="small-text-display">You are _NAME_.</div><div id="play-message" style="justify-content:center;align-items:center;display:inline-block" class="small-text-display">We are all set. When players ready, play begins and cards will show here.</div>
-
-    <!--Table Cards-->
-    <div id="table-cards" style="display:relative;height:125px;">
-      <div id="table-cards-front" style="position:relative;height:125px;display:block;"></div>
-      <div id="table-cards-back" style="position:relative;height:125px;display:none;"></div>
-    </div>
-    
-    <!-- Player Cards-->
-    <div id="player-cards" style="display:relative;height:125px;">
-      <div id="player-cards-front" style="position:relative;height:125px;display:none;"></div>
-      <div id="player-cards-back" style="position:relative;height:125px;display:block;"></div>
-    </div>
-
-    <!--Players-->
-    <div id="players" style="display:inline-block;height:125px;">
-    </div>
-    
-    <!--Controls-->
-    <div id="controls" style="display:none;height:125px;">
-      <img src="players.png" id="cardapp-players" style="display:none;" alt="Get Player List" class="cardButtonImage" text-align="right">
-      <img src="startGame.png" id="cardapp-startGame" alt="Start Game" class="cardButtonImage" text-align="right">
-      <img src="nextDealer.png" id="cardapp-nextDealer" style="display:none;" alt="Next Dealer" class="cardButtonImage" text-align="right">
-      <img src="dealAllUp.png" id="cardapp-dealAllUp" style="display:none;" alt="Deal All Players 1 up" class="cardButtonImage" text-align="right">
-      <img src="dealAllDown.png" id="cardapp-dealAllDown" alt="Deal All Players 1 Down" class="cardButtonImage" text-align="right">
-      <img src="dealOneUp.png" id="cardapp-dealOneUp" style="display:none;" alt="Deal One Up" class="cardButtonImage" text-align="right">
-      <img src="dealOneDown.png" id="cardapp-dealOneDown" style="display:none;" alt="Deal One Down" class="cardButtonImage" text-align="right">
-      <img src="burnCard.png" id="cardapp-burnCard" style="display:none;" alt="Burn a Card" class="cardButtonImage" text-align="right">
-      <img src="actionPlayer.png" id="cardapp-actionPlayer" style="display:none;" alt="Action Player" class="cardButtonImage" text-align="right">
-      <img src="tablePlayUp.png" id="cardapp-tablePlayUp" alt="Table Play Up" class="cardButtonImage" text-align="right">
-      <img src="tablePlayDown.png" id="cardapp-tablePlayDown" style="display:none;" alt="Table Play Down" class="cardButtonImage" text-align="right">
-      <img src="nextPlayer.png" id="cardapp-nextPlayer" alt="Next Player" class="cardButtonImage" text-align="right">
-      <img src="flushLog.png" id="cardapp-flushLog" style="display:none;" alt="Flush Log" class="cardButtonImage" text-align="right">
-    </div>
-
-    <!-- Log and Status -->
-    <div class="status">
-      <div id="cardapp-log"></div>
-      <div id="status">v2025.04.29.?</div>
-    </div>
-
+  <table width="100%" height="100%" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+      <td width="100%" height="5%" align="center" valign="top">
+        <!-- Message-->
+        <div id="playerName" style="justify-content:left;align-items:center;display:inline-block;" class="small-text-display">You are _NAME_.</div><div id="play-message" style="justify-content:center;align-items:center;display:inline-block" class="small-text-display">We are all set. When players ready, play begins and cards will show here.</div>
+      </td>
+    </tr>
+    <tr>
+      <td width="100%" height="25%" align="center" valign="top">
+        <!--Table Cards-->
+        <div id="table-cards" style="display:relative;">
+          <div id="table-cards-front" style="position:relative;height:125px;display:block;"></div>
+          <div id="table-cards-back" style="position:relative;height:125px;display:none;"></div>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td width="100%" height="25%" align="center" valign="top">
+        <!-- Player Cards-->
+        <div id="player-cards" style="display:relative;">
+          <div id="player-cards-front" style="position:relative;height:125px;display:none;"></div>
+          <div id="player-cards-back" style="position:relative;height:125px;display:block;"></div>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td width="100%" height="25%" align="center" valign="top">
+        <!--Players-->
+        <div id="players" style="display:inline-block;"></div>
+      </td>
+    </tr>
+    <tr>
+      <td width="100%" height="15%" align="center" valign="top">
+        <!--Controls-->
+        <div id="controls" style="display:none;">
+          <img src="players.png" id="cardapp-players" style="display:none;" alt="Get Player List" class="cardButtonImage" text-align="right">
+          <img src="startGame.png" id="cardapp-startGame" alt="Start Game" class="cardButtonImage" text-align="right">
+          <img src="nextDealer.png" id="cardapp-nextDealer" style="display:none;" alt="Next Dealer" class="cardButtonImage" text-align="right">
+          <img src="dealAllUp.png" id="cardapp-dealAllUp" style="display:none;" alt="Deal All Players 1 up" class="cardButtonImage" text-align="right">
+          <img src="dealAllDown.png" id="cardapp-dealAllDown" alt="Deal All Players 1 Down" class="cardButtonImage" text-align="right">
+          <img src="dealOneUp.png" id="cardapp-dealOneUp" style="display:none;" alt="Deal One Up" class="cardButtonImage" text-align="right">
+          <img src="dealOneDown.png" id="cardapp-dealOneDown" style="display:none;" alt="Deal One Down" class="cardButtonImage" text-align="right">
+          <img src="burnCard.png" id="cardapp-burnCard" style="display:none;" alt="Burn a Card" class="cardButtonImage" text-align="right">
+          <img src="actionPlayer.png" id="cardapp-actionPlayer" style="display:none;" alt="Action Player" class="cardButtonImage" text-align="right">
+          <img src="tablePlayUp.png" id="cardapp-tablePlayUp" alt="Table Play Up" class="cardButtonImage" text-align="right">
+          <img src="tablePlayDown.png" id="cardapp-tablePlayDown" style="display:none;" alt="Table Play Down" class="cardButtonImage" text-align="right">
+          <img src="nextPlayer.png" id="cardapp-nextPlayer" alt="Next Player" class="cardButtonImage" text-align="right">
+          <img src="flushLog.png" id="cardapp-flushLog" style="display:none;" alt="Flush Log" class="cardButtonImage" text-align="right">
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td width="100%" height="5%" align="center" valign="top">
+        <!-- Log and Status -->
+        <div class="status">
+          <div id="cardapp-log"></div>
+          <div id="status">v2025.04.29.?</div>
+        </div>
+      </td>
+    </tr>
+  </table>
   </div>
 
 </body>

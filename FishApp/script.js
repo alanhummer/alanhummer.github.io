@@ -42,14 +42,6 @@ var consoleOutput;
 var oldLog;
 
 const urlParams = new URLSearchParams(window.location.search);
-const cardGame = urlParams.get('cardgame');
-
-if (cardGame) {
-
-  //run the card game
-  runTheCardGame();
-
-}
 
 const myParam = urlParams.get('debug');
 if (myParam == "true") {
