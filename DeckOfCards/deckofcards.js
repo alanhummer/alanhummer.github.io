@@ -20,6 +20,8 @@
 //- "table" where you setuff plaid - like TV or common screen, ipad - so a "table" veiw who is not a player
 //    - Optionally with no table view, show cards in hand
 //- Dealer has controls, others dont...pass the dealer, they get controls
+// TO DO: HOW KNOW GAME STARTED> OR GAME ENDED? PASS OT EACH PLAYER
+//ADD HANDLERS FOR HOLD EM CARD _ Start, show 3 opsion, done with river, shop next dealer btton
 
 var cardappButtonReady = false;
 var socket = null;
@@ -30,6 +32,7 @@ var tableCardCount = 0;
 var myPlayerCards = [];
 var myTableCards = [];
 var cardCover = "BOGUS";
+var handStatus = "READY_TO_START"; //READY_TO_DEAL, READY_FOR_FLOP, READY_FOR_RIVER, READY_FOR_TURN, READY_NEXT_DEALER
 
 if ('serviceWorker' in navigator) {
     window.addEventListener('load' , () => {
@@ -72,12 +75,12 @@ else {
     });
 }
 
-document.getElementById('status').innerHTML = "v2025.04.30.1";
+document.getElementById('status').innerHTML = "v2025.05.02.1";
 
 //***************************
 //This handle all of the card game app presentation and logic
 //***************************
-function runTheCardGame() {
+async function runTheCardGame() {
 
     document.getElementById('cardbutton').style.display = "none";
     document.getElementById('cardapp').style.display = "block";
@@ -175,22 +178,71 @@ function runTheCardGame() {
                             document.getElementById('players').innerHTML = document.getElementById('players').innerHTML + playerDisplay;
                         }
                         break;
-                    case "new-game":
+                    case "game":
 
-                        //Clear out and reseet player cards
-                        cardCount = 0;
-                        myPlayerCards = [];
-                        document.getElementById('player-cards-front').innerHTML = "";
-                        document.getElementById('player-cards-back').innerHTML = "";
+                        //Reset everything
+                        document.getElementById('cardapp-startGame').style.display = "none";
+                        document.getElementById('cardapp-dealAllDown2').style.display = "none";
+                        document.getElementById('cardapp-tablePlayUp3').style.display = "none";
+                        document.getElementById('cardapp-tablePlayUp1').style.display = "none";
+                        document.getElementById('cardapp-tablePlayUp1Final').style.display = "none";
+                        document.getElementById('cardapp-nextDealer').style.display = "none";
 
-                        //Clear out and reset table cards
-                        tableCardCount = 0;
-                        myTableCards = [];
-                        document.getElementById('table-cards-front').innerHTML = "";
-                        document.getElementById('table-cards-back').innerHTML = "";
+                        document.getElementById('cardapp-startGame').disabled = true;
+                        document.getElementById('cardapp-dealAllDown2').disabled = true;
+                        document.getElementById('cardapp-tablePlayUp3').disabled = true;
+                        document.getElementById('cardapp-tablePlayUp1').disabled = true;
+                        document.getElementById('cardapp-tablePlayUp1Final').disabled = true;
+                        document.getElementById('cardapp-nextDealer').disabled = true;
 
-                        break;    
-                    default:
+                        switch (messageObject.status) {
+                            case "READY_TO_START":
+                            case "READY_TO_DEAL":
+
+                                //Clear out and reseet player cards
+                                cardCount = 0;
+                                myPlayerCards = [];
+                                document.getElementById('player-cards-front').innerHTML = "";
+                                document.getElementById('player-cards-back').innerHTML = "";
+
+                                //Clear out and reset table cards
+                                tableCardCount = 0;
+                                myTableCards = [];
+                                document.getElementById('table-cards-front').innerHTML = "";
+                                document.getElementById('table-cards-back').innerHTML = "";
+
+                                //Show appropriate button
+                                if (messageObject.status == "READY_TO_DEAL") {
+                                    document.getElementById('cardapp-dealAllDown2').style.display = "inline-block";
+                                }
+                                else {
+                                    document.getElementById('cardapp-startGame').style.display = "inline-block";
+                                }     
+                                document.getElementById('play-message').innerHTML = "Here we go!";                           
+                                break;
+                            case "READY_NEXT_DEALER":
+                                document.getElementById('cardapp-nextDealer').style.display = "inline-block";
+                                document.getElementById('play-message').innerHTML = "Hand is over. Passing the deal...";
+                                break;
+                            case "READY_FOR_FLOP":
+                                document.getElementById('cardapp-tablePlayUp3').style.display = "inline-block";
+                                document.getElementById('play-message').innerHTML = "Place your bets...";
+                                break;
+                            case "READY_FOR_RIVER":
+                                document.getElementById('cardapp-tablePlayUp1').style.display = "inline-block";
+                                document.getElementById('play-message').innerHTML = "Nice flop!";
+                                break;
+                            case "READY_FOR_TURN":
+                                document.getElementById('cardapp-tablePlayUp1Final').style.display = "inline-block";
+                                document.getElementById('play-message').innerHTML = "Still anybody's game!";
+                                break;
+                           default: 
+                                break;
+
+                        }
+                        break;
+                        
+                  default:
                         document.getElementById('play-message').innerHTML = JSON.stringify(messageObject);
                         break;
                 }
@@ -207,17 +259,30 @@ function runTheCardGame() {
                 sendCardCommand("players");
             });
             document.getElementById('cardapp-startGame').addEventListener('click', async () => {
+                document.getElementById('cardapp-startGame').disabled = true;
                 sendCardCommand("start-game");
                 myPlayerCards = [];
                 myTableCards = [];
             });     
             document.getElementById('cardapp-nextDealer').addEventListener('click', async () => {
+                document.getElementById('cardapp-nextDealer').disabled = true;
                 sendCardCommand("next-deal");
             });  
             document.getElementById('cardapp-dealAllUp').addEventListener('click', async () => {
                 sendCardCommand("deal-all-up");
             });
             document.getElementById('cardapp-dealAllDown').addEventListener('click', async () => {
+                sendCardCommand("deal-all-down");
+            });
+            document.getElementById('cardapp-dealAllDown2').addEventListener('click', async () => {
+                document.getElementById('cardapp-dealAllDown2').disabled = true;
+                //And Game status
+                sendCardCommand("game:READY_FOR_FLOP");
+                //Send 2 cards
+                sendCardCommand("deal-all-down");
+                //Brief pause
+                await sleep(250); // Pause for 2 seconds
+                 //Send Another
                 sendCardCommand("deal-all-down");
             });
             document.getElementById('cardapp-dealOneUp').addEventListener('click', async () => {
@@ -237,6 +302,31 @@ function runTheCardGame() {
             });
             document.getElementById('cardapp-tablePlayDown').addEventListener('click', async () => {
                 sendCardCommand("table-play-down");
+            });
+            document.getElementById('cardapp-tablePlayUp3').addEventListener('click', async () => {
+                document.getElementById('cardapp-tablePlayUp3').disabled = true;
+                 //And Game status
+                 sendCardCommand("game:READY_FOR_RIVER");
+                //3 cards for the flop
+                sendCardCommand("table-play-up");
+                await sleep(250); // Pause for 2 seconds
+                sendCardCommand("table-play-up");
+                await sleep(250); // Pause for 2 seconds
+                sendCardCommand("table-play-up");
+            });
+            document.getElementById('cardapp-tablePlayUp1').addEventListener('click', async () => {
+                document.getElementById('cardapp-tablePlayUp1').disabled = true;
+                //And Game status
+                sendCardCommand("game:READY_FOR_TURN");
+                //1 cards for the river
+                sendCardCommand("table-play-up");
+            });
+            document.getElementById('cardapp-tablePlayUp1Final').addEventListener('click', async () => {
+                document.getElementById('cardapp-tablePlayUp1Final').disabled = true;
+                //And Game status
+                sendCardCommand("game:READY_NEXT_DEALER");
+                //1 cards for the turn
+                sendCardCommand("table-play-up");
             });
             document.getElementById('cardapp-actionPlayer').addEventListener('click', async () => {
                 sendCardCommand("action-player");
@@ -267,7 +357,8 @@ function runTheCardGame() {
             document.getElementById('play-message').innerHTML = "Disconnected from server. Trying to reconnect...";
             //document.getElementById('cardapp-log').innerHTML = document.getElementById('cardapp-log').innerHTML + "<li>**************</li>";
             document.getElementById('cardapp-log').innerHTML = "<li>Disconnected from server" + "</li>";
-            socket = new WebSocket('wss://i-saw-your-cards.deno.dev?name=' + myName);
+            runTheCardGame();
+            //socket = new WebSocket('wss://i-saw-your-cards.deno.dev?name=' + myName);
         });
 
         //Error in socket handler
@@ -344,3 +435,7 @@ function setStorage(inputKey, inputValue) {
     return;
   }
   
+  //Good ol' sleep
+  function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
