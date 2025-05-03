@@ -146,6 +146,10 @@ async function runTheCardGame() {
                             myCardBack = myCardBack.replace("_LEFTPOSITION_", leftPosition);
                             document.getElementById('player-cards-front').innerHTML = document.getElementById('player-cards-front').innerHTML + myCard;
                             document.getElementById('player-cards-back').innerHTML = document.getElementById('player-cards-back').innerHTML + myCardBack;
+                            if (!messageObject.faceUp) {
+                                document.getElementById('player-cards-front').style.display = "none";
+                                document.getElementById('player-cards-back').style.display = "block";
+                            }
                         }
                         break;
                     case "player":
