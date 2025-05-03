@@ -127,8 +127,8 @@ async function runTheCardGame() {
                         var myCardBack = "<span class='card' style='position:absolute;top:" + 0 + "px;left:_LEFTPOSITION_px;'><img src='" + messageObject.cover + "' class='card-cover'></span>";
 
                         if (messageObject.table) {
-                            tableCardCount = tableCardCount + 1;
                             const leftPosition = tableCardCount * 60;
+                            tableCardCount = tableCardCount + 1;
                             document.getElementById('play-message').innerHTML = "Table card played...";
                             myTableCards.push(messageObject); 
                             myCard = myCard.replace("_LEFTPOSITION_", leftPosition);
