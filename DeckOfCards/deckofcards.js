@@ -45,11 +45,12 @@ if ('serviceWorker' in navigator) {
 }
 
 const urlParams = new URLSearchParams(window.location.search);
-myName = urlParams.get('name');
+
+myName = getStorage("userName");
 dontSave = urlParams.get('dontSave');
 if (!myName) {
     //No name, see if we have it stored
-    myName = getStorage("userName");
+    myName = urlParams.get('name');
 }
 if (!myName) {
     myName = "Nobody";
