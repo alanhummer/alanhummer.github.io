@@ -71,7 +71,7 @@ else {
     document.getElementById('cardbutton').innerHTML = document.getElementById('cardbutton').innerHTML.replace("_WELCOMEINSTRUCTIONS_", "Touch the Deck to Play");
 
     document.getElementById('cardgamestart').addEventListener('click', async () => {
-        document.getElementById('playerName').innerHTML = document.getElementById('playerName').innerHTML.replace("_NAME_", myName);
+        //document.getElementById('playerName').innerHTML = document.getElementById('playerName').innerHTML.replace("_NAME_", myName);
         runTheCardGame();
     });
 }
@@ -116,7 +116,7 @@ async function runTheCardGame() {
             for (const messageObject of messageObjects) {
                 switch (messageObject.type) {
                     case "message":
-                        document.getElementById('play-message').innerHTML = messageObject.message;
+                        document.getElementById('play-message').innerHTML = "You are " + myName + ". " + messageObject.message;
                         break;
                     case "version":
                         document.getElementById('play-message').innerHTML = "Version info: " + messageObject.appVersion + " " + messageObject.appRegion;
@@ -130,7 +130,7 @@ async function runTheCardGame() {
                         if (messageObject.table) {
                             const leftPosition = tableCardCount * 60;
                             tableCardCount = tableCardCount + 1;
-                            document.getElementById('play-message').innerHTML = "Table card played...";
+                            document.getElementById('play-message').innerHTML = "You are " + myName + ". " + "Table card played...";
                             myTableCards.push(messageObject); 
                             myCard = myCard.replace("_LEFTPOSITION_", leftPosition);
                             myCardBack = myCardBack.replace("_LEFTPOSITION_", leftPosition);
@@ -141,7 +141,7 @@ async function runTheCardGame() {
                         else {
                             cardCount = cardCount + 1;
                             const leftPosition = cardCount * 60;
-                            document.getElementById('play-message').innerHTML = "Got a card...";
+                            document.getElementById('play-message').innerHTML = "You are " + myName + ". " + "Got a card...";
                             myPlayerCards.push(messageObject); 
                             myCard = myCard.replace("_LEFTPOSITION_", leftPosition);
                             myCardBack = myCardBack.replace("_LEFTPOSITION_", leftPosition);
@@ -223,7 +223,7 @@ async function runTheCardGame() {
                                 else {
                                     document.getElementById('cardapp-startGame').style.display = "inline-block";
                                 }     
-                                document.getElementById('play-message').innerHTML = "Here we go!";                           
+                                document.getElementById('play-message').innerHTML = "You are " + myName + ". " + "Here we go!";                           
                                 break;
                             case "READY_NEXT_DEALER":
                                 document.getElementById('cardapp-nextDealer').style.display = "inline-block";
@@ -231,15 +231,15 @@ async function runTheCardGame() {
                                 break;
                             case "READY_FOR_FLOP":
                                 document.getElementById('cardapp-tablePlayUp3').style.display = "inline-block";
-                                document.getElementById('play-message').innerHTML = "Place your bets...";
+                                document.getElementById('play-message').innerHTML = "You are " + myName + ". " + "Place your bets...";
                                 break;
                             case "READY_FOR_RIVER":
                                 document.getElementById('cardapp-tablePlayUp1').style.display = "inline-block";
-                                document.getElementById('play-message').innerHTML = "Nice flop!";
+                                document.getElementById('play-message').innerHTML = "You are " + myName + ". " + "Nice flop!";
                                 break;
                             case "READY_FOR_TURN":
                                 document.getElementById('cardapp-tablePlayUp1Final').style.display = "inline-block";
-                                document.getElementById('play-message').innerHTML = "Still anybody's game!";
+                                document.getElementById('play-message').innerHTML = "You are " + myName + ". " + "Still anybody's game!";
                                 break;
                            default: 
                                 break;
