@@ -23,18 +23,28 @@ body {
   height:125px;
 }
 
+.cardTable-cover{
+  height:60px;
+}
+
 .card-cover-big{
   height:250px;
 }
   
 .card::before{content:attr(data-rank)}
-.card-red::before{content:attr(data-rank);color:red;font-size:40px;}
-.card-black::before{content:attr(data-rank);color:black;font-size:40px;}
-.spades::after{content:"\2660";color:black;font-size:50px;}
-.hearts::after{content:"\2665";color:red;font-size:50px;}
-.diamonds::after{content:"\2666";color:red;font-size:50px;}
-.clubs::after{content:"\2663";color:black;font-size:50px;}
-
+.card-red::before{content:attr(data-rank);color:red;font-size:50px;}
+.card-black::before{content:attr(data-rank);color:black;font-size:50px;}
+.cardTable::before{content:attr(data-rank)}
+.cardTable-red::before{content:attr(data-rank);color:red;font-size:25px;}
+.cardTable-black::before{content:attr(data-rank);color:black;font-size:25px;}
+.spades::after{content:"\2660";color:black;font-size:60px;}
+.hearts::after{content:"\2665";color:red;font-size:60px;}
+.diamonds::after{content:"\2666";color:red;font-size:60px;}
+.clubs::after{content:"\2663";color:black;font-size:60px;}
+.tablespades::after{content:"\2660";color:black;font-size:30px;}
+.tablehearts::after{content:"\2665";color:red;font-size:30px;}
+.tablediamonds::after{content:"\2666";color:red;font-size:30px;}
+.tableclubs::after{content:"\2663";color:black;font-size:30px;}
 
 .card-red{
   border:1px solid #ccc;
@@ -56,6 +66,28 @@ body {
   margin: 10px;
   display: inline-block;
 }
+
+.cardTable-red{
+  border:1px solid #ccc;
+  border-radius: 2px;
+  background: #fff;
+  color:#444;
+  width: 43px;
+  height: 60px;
+  margin: 1px;
+  display: inline-block;
+}
+.cardTable-black{
+  border:1px solid #ccc;
+  border-radius: 2px;
+  background: #fff;
+  color:#444;
+  width: 43px;
+  height: 60px;
+  margin: 1px;
+  display: inline-block;
+}
+
 .top, .bottom{
   font-size:24px;
   padding: 10px;
@@ -85,6 +117,16 @@ body {
     width: 90px;
     height: 125px;
     margin: 10px;
+    display: inline-block;
+}
+.cardTable{
+    border:1px solid #ccc;
+    border-radius: 2px;
+    background: #fff;
+    color:#444;
+    width: 43px;
+    height: 60px;
+    margin: 1px;
     display: inline-block;
 }
 .top, .bottom{

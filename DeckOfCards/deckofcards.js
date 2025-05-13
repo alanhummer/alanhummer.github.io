@@ -22,6 +22,8 @@
 //- Dealer has controls, others dont...pass the dealer, they get controls
 // TO DO: HOW KNOW GAME STARTED> OR GAME ENDED? PASS OT EACH PLAYER
 //ADD HANDLERS FOR HOLD EM CARD _ Start, show 3 opsion, done with river, shop next dealer btton
+//
+//get rank to show on otable cards - debug in chrome
 
 var cardappButtonReady = false;
 var socket = null;
@@ -122,13 +124,14 @@ async function runTheCardGame() {
                         document.getElementById('play-message').innerHTML = "Version info: " + messageObject.appVersion + " " + messageObject.appRegion;
                         break;
                     case "card":
-                        //A to do here, if card is up, show it up...if down show it down
-                        var cardClass = "card-" + messageObject.color + " " + messageObject.suit;
-                        var myCard = "<span data-rank='" + messageObject.rank + "' class='" + cardClass + "' style='position:absolute;top:" + 0 + "px;left:_LEFTPOSITION_px;'></span>";
-                        var myCardBack = "<span class='card' style='position:absolute;top:" + 0 + "px;left:_LEFTPOSITION_px;'><img src='" + messageObject.cover + "' class='card-cover'></span>";
+                         if (messageObject.table) {
 
-                        if (messageObject.table) {
-                            const leftPosition = tableCardCount * 60;
+                            //A to do here, if card is up, show it up...if down show it down
+                            var cardClass = "cardTable-" + messageObject.color + " table" + messageObject.suit;
+                            var myCard = "<span data-rank='" + messageObject.rank + "' class='" + cardClass + "' style='position:absolute;top:" + 0 + "px;left:_LEFTPOSITION_px;'></span>";
+                            var myCardBack = "<span class='cardTable' style='position:absolute;top:" + 0 + "px;left:_LEFTPOSITION_px;'><img src='" + messageObject.cover + "' class='cardTable-cover'></span>";
+
+                            const leftPosition = tableCardCount * 50;
                             tableCardCount = tableCardCount + 1;
                             document.getElementById('play-message').innerHTML = "You are " + myName + ". " + "Table card played...";
                             myTableCards.push(messageObject); 
@@ -139,8 +142,14 @@ async function runTheCardGame() {
         
                         }
                         else {
+
+                            //A to do here, if card is up, show it up...if down show it down
+                            var cardClass = "card-" + messageObject.color + " " + messageObject.suit;
+                            var myCard = "<span data-rank='" + messageObject.rank + "' class='" + cardClass + "' style='position:absolute;top:" + 0 + "px;left:_LEFTPOSITION_px;'></span>";
+                            var myCardBack = "<span class='card' style='position:absolute;top:" + 0 + "px;left:_LEFTPOSITION_px;'><img src='" + messageObject.cover + "' class='card-cover'></span>";
+                            
+                            const leftPosition = cardCount * 90;         
                             cardCount = cardCount + 1;
-                            const leftPosition = cardCount * 60;
                             document.getElementById('play-message').innerHTML = "You are " + myName + ". " + "Got a card...";
                             myPlayerCards.push(messageObject); 
                             myCard = myCard.replace("_LEFTPOSITION_", leftPosition);
@@ -172,12 +181,32 @@ async function runTheCardGame() {
                             }
                             dealerIndicator = "**Dealer**";
                         }
-  
-                        let playerDisplay = "<div class='" + playerType + "'>" + messageObject.name + "<br>" + messageObject.cardCount + " Cards<br>" + actionIndicator + "<br>" + dealerIndicator + "</div>";
-                         
+                        
+                        let playerCards = "";
+                        let playerCardsBack = "";
+                        let lCardCount = 0;
+                        for (const cardObject of  messageObject.cards) {
+                            var cardClass = "cardTable-" + cardObject.color + " table" + cardObject.suit;
+                            var myCard = "<span data-rank='" + cardObject.rank + "' class='" + cardClass + "' style='position:absolute;top:" + 0 + "px;left:_LEFTPOSITION_px;'></span>";
+                            var myCardBack = "<span class='cardTable' style='position:absolute;top:" + 0 + "px;left:_LEFTPOSITION_px;'><img src='" + cardObject.cover + "' class='cardTable-cover'></span>";
+                            var lLeftPosition = lCardCount * 43;
+                            myCard = myCard.replace("_LEFTPOSITION_", lLeftPosition);
+                            myCardBack = myCardBack.replace("_LEFTPOSITION_", lLeftPosition);
+                            playerCards = playerCards + myCard;
+                            playerCardsBack = playerCardsBack + myCardBack;
+                            lCardCount = lCardCount + 1;
+                            console.log("PLAYER CARD ", cardObject);
+                        };
+                       
+                        let playerDisplay = "<div id='players-cards-" + messageObject.name + "' style='display:relative;'>" +
+                            "<div id='players-cards-front-" + messageObject.name + "' style='position:relative;height:60px;left:0;display:none;'>" + playerCards + "</div>" +
+                            "<div id='players-cards-back-" + messageObject.name + "' style='position:relative;height:60px;left:0;display:block;'>" + playerCardsBack + "</div>" +
+                            "</div>";                     
+                        playerDisplay = playerDisplay + "<div class='" + playerType + "'>" + messageObject.name + "<br>" + messageObject.cardCount + " Cards<br>" + actionIndicator + "<br>" + dealerIndicator + "</div>";
+
                         if (playerCount == 1) {
                             //Wipe clean and start fresh
-                            document.getElementById('players').innerHTML = playerDisplay
+                            document.getElementById('players').innerHTML = playerDisplay;
                         }
                         else {
                             document.getElementById('players').innerHTML = document.getElementById('players').innerHTML + playerDisplay;
@@ -191,6 +220,7 @@ async function runTheCardGame() {
                         document.getElementById('cardapp-tablePlayUp3').style.display = "none";
                         document.getElementById('cardapp-tablePlayUp1').style.display = "none";
                         document.getElementById('cardapp-tablePlayUp1Final').style.display = "none";
+                        document.getElementById('cardapp-showCards').style.display = "none";
                         document.getElementById('cardapp-nextDealer').style.display = "none";
 
                         document.getElementById('cardapp-startGame').disabled = true;
@@ -198,6 +228,7 @@ async function runTheCardGame() {
                         document.getElementById('cardapp-tablePlayUp3').disabled = true;
                         document.getElementById('cardapp-tablePlayUp1').disabled = true;
                         document.getElementById('cardapp-tablePlayUp1Final').disabled = true;
+                        document.getElementById('cardapp-showCards').disabled = true;
                         document.getElementById('cardapp-nextDealer').disabled = true;
 
                         switch (messageObject.status) {
@@ -228,6 +259,16 @@ async function runTheCardGame() {
                             case "READY_NEXT_DEALER":
                                 document.getElementById('cardapp-nextDealer').style.display = "inline-block";
                                 document.getElementById('play-message').innerHTML = "Hand is over. Passing the deal...";
+ 
+                                //And Show all the cards
+                                const element = document.getElementById('players');
+                                const divs = element.querySelectorAll('div');
+                                for (const div of divs) {
+                                    if (div.id.includes("players-cards-back")) {
+                                        div.innerHTML =  document.getElementById("players-cards-front" + div.id.replace("players-cards-back", "")).innerHTML;
+                                    }
+                                }
+
                                 break;
                             case "READY_FOR_FLOP":
                                 document.getElementById('cardapp-tablePlayUp3').style.display = "inline-block";
@@ -240,6 +281,10 @@ async function runTheCardGame() {
                             case "READY_FOR_TURN":
                                 document.getElementById('cardapp-tablePlayUp1Final').style.display = "inline-block";
                                 document.getElementById('play-message').innerHTML = "You are " + myName + ". " + "Still anybody's game!";
+                                break;
+                            case "READY_TO_SHOW":
+                                document.getElementById('cardapp-showCards').style.display = "inline-block";
+                                document.getElementById('play-message').innerHTML = "You are " + myName + ". " + "Last call....!";
                                 break;
                            default: 
                                 break;
@@ -329,9 +374,15 @@ async function runTheCardGame() {
             document.getElementById('cardapp-tablePlayUp1Final').addEventListener('click', async () => {
                 document.getElementById('cardapp-tablePlayUp1Final').disabled = true;
                 //And Game status
-                sendCardCommand("game:READY_NEXT_DEALER");
+                sendCardCommand("game:READY_TO_SHOW");
                 //1 cards for the turn
                 sendCardCommand("table-play-up");
+            });
+            document.getElementById('cardapp-showCards').addEventListener('click', async () => {
+                document.getElementById('cardapp-showCards').disabled = true;
+                //And Game status everyone show
+                sendCardCommand("game:READY_NEXT_DEALER");
+
             });
             document.getElementById('cardapp-actionPlayer').addEventListener('click', async () => {
                 sendCardCommand("action-player");
