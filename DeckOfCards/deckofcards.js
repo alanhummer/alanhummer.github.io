@@ -49,7 +49,10 @@ if ('serviceWorker' in navigator) {
 const urlParams = new URLSearchParams(window.location.search);
 
 myName = getStorage("userName");
-dontSave = urlParams.get('dontSave');
+dontSave = urlParams.get('dontsave');
+if (dontSave == "true") {
+    myName = urlParams.get('name');
+}
 if (!myName) {
     //No name, see if we have it stored
     myName = urlParams.get('name');
@@ -128,10 +131,11 @@ async function runTheCardGame() {
 
                             //A to do here, if card is up, show it up...if down show it down
                             var cardClass = "cardTable-" + messageObject.color + " table" + messageObject.suit;
-                            var myCard = "<span data-rank='" + messageObject.rank + "' class='" + cardClass + "' style='position:absolute;top:" + 0 + "px;left:_LEFTPOSITION_px;'></span>";
-                            var myCardBack = "<span class='cardTable' style='position:absolute;top:" + 0 + "px;left:_LEFTPOSITION_px;'><img src='" + messageObject.cover + "' class='cardTable-cover'></span>";
+                            var myCard = "<div data-rank='" + messageObject.rank + "' class='" + cardClass + "' style='position:absolute;top:" + 0 + "px;left:_LEFTPOSITION_px;'></div>";
+                            var myCardBack = "<div class='cardTable' style='position:absolute;top:" + 0 + "px;left:_LEFTPOSITION_px;'><img src='" + messageObject.cover + "' class='cardTable-cover'></div>";
 
-                            const leftPosition = tableCardCount * 50;
+                            const leftPosition = (window.innerWidth / 2) - 150 + (tableCardCount * 50);
+
                             tableCardCount = tableCardCount + 1;
                             document.getElementById('play-message').innerHTML = "You are " + myName + ". " + "Table card played...";
                             myTableCards.push(messageObject); 
@@ -145,10 +149,11 @@ async function runTheCardGame() {
 
                             //A to do here, if card is up, show it up...if down show it down
                             var cardClass = "card-" + messageObject.color + " " + messageObject.suit;
-                            var myCard = "<span data-rank='" + messageObject.rank + "' class='" + cardClass + "' style='position:absolute;top:" + 0 + "px;left:_LEFTPOSITION_px;'></span>";
-                            var myCardBack = "<span class='card' style='position:absolute;top:" + 0 + "px;left:_LEFTPOSITION_px;'><img src='" + messageObject.cover + "' class='card-cover'></span>";
+                            var myCard = "<div data-rank='" + messageObject.rank + "' class='" + cardClass + "' style='position:absolute;top:" + 0 + "px;left:_LEFTPOSITION_px;'></div>";
+                            var myCardBack = "<div class='card' style='position:absolute;top:" + 0 + "px;left:_LEFTPOSITION_px;'><img src='" + messageObject.cover + "' class='card-cover'></div>";
                             
-                            const leftPosition = cardCount * 90;         
+                            const leftPosition = (window.innerWidth / 2) - 120 + (cardCount * 90);
+
                             cardCount = cardCount + 1;
                             document.getElementById('play-message').innerHTML = "You are " + myName + ". " + "Got a card...";
                             myPlayerCards.push(messageObject); 
@@ -189,7 +194,7 @@ async function runTheCardGame() {
                             var cardClass = "cardTable-" + cardObject.color + " table" + cardObject.suit;
                             var myCard = "<span data-rank='" + cardObject.rank + "' class='" + cardClass + "' style='position:absolute;top:" + 0 + "px;left:_LEFTPOSITION_px;'></span>";
                             var myCardBack = "<span class='cardTable' style='position:absolute;top:" + 0 + "px;left:_LEFTPOSITION_px;'><img src='" + cardObject.cover + "' class='cardTable-cover'></span>";
-                            var lLeftPosition = lCardCount * 43;
+                            var lLeftPosition = (lCardCount * 50) + 5;
                             myCard = myCard.replace("_LEFTPOSITION_", lLeftPosition);
                             myCardBack = myCardBack.replace("_LEFTPOSITION_", lLeftPosition);
                             playerCards = playerCards + myCard;
@@ -198,18 +203,22 @@ async function runTheCardGame() {
                             console.log("PLAYER CARD ", cardObject);
                         };
                        
-                        let playerDisplay = "<div id='players-cards-" + messageObject.name + "' style='display:relative;'>" +
-                            "<div id='players-cards-front-" + messageObject.name + "' style='position:relative;height:60px;left:0;display:none;'>" + playerCards + "</div>" +
-                            "<div id='players-cards-back-" + messageObject.name + "' style='position:relative;height:60px;left:0;display:block;'>" + playerCardsBack + "</div>" +
-                            "</div>";                     
-                        playerDisplay = playerDisplay + "<div class='" + playerType + "'>" + messageObject.name + "<br>" + messageObject.cardCount + " Cards<br>" + actionIndicator + "<br>" + dealerIndicator + "</div>";
+                        //let playerDisplay = "<div id='players-cards-" + messageObject.name + "' style='display:relative;'>" +
+                        let playerDisplay = "<td width='100px' align='center'>" +
+                            "<div id='players-cards-front-" + messageObject.name + "' style='position:relative;height:60px;display:none;'>" + playerCards + "</div>" +
+                            "<div id='players-cards-back-" + messageObject.name + "' style='position:relative;height:60px;display:relative;'>" + playerCardsBack + "</div>" +
+                            "<div class='" + playerType + "'>" + messageObject.name + "<br>" + messageObject.cardCount + " Cards<br>" + actionIndicator + "<br>" + dealerIndicator + "</div>" + 
+                            "</td>";
 
+                        let startPlayerDisplay = "<table cellpadding='0' cellspacing='0' border='0'><tbody><tr>";
+                        let endPlayerDisplay = "</tr></tbody></table>";
                         if (playerCount == 1) {
                             //Wipe clean and start fresh
-                            document.getElementById('players').innerHTML = playerDisplay;
+                            document.getElementById('players').innerHTML = startPlayerDisplay + playerDisplay + endPlayerDisplay;
                         }
                         else {
-                            document.getElementById('players').innerHTML = document.getElementById('players').innerHTML + playerDisplay;
+                            document.getElementById('players').innerHTML = document.getElementById('players').innerHTML.replace(endPlayerDisplay, playerDisplay + endPlayerDisplay);
+                            console.log("INNER HTML IS: " + document.getElementById('players').innerHTML );
                         }
                         break;
                     case "game":
