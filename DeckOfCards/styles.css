@@ -236,15 +236,15 @@ body {
 }
 
 .player {
-  width: 120px;
-  height: 100px; /* Adjust height as needed */
+  width: 107px;
+  height: 110px; /* Adjust height as needed */
   background-color: black; /* Optional: Set a background color */
   border: 1px solid red; /* Add a border */
-  padding: 10px; /* Add padding around the text */
+  padding: 0px; /* Add padding around the text */
   text-align: center; /* Center the text horizontally */
   vertical-align: middle; /* Center the text vertically (may require additional setup) */
-  margin: 10px;
-  float: left;
+  margin: 0px;
+  float: center;
 }
 
 .actionPlayer {

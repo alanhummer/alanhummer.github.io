@@ -224,7 +224,7 @@ async function runTheCardGame() {
                                 "<div id='players-cards-back-" + messageObject.name + "' style='position:relative;height:60px;display:relative;background-color:" + bgColor + ";'>" + playerCardsBack + "</div>" +
                             "</div><br>" +
                             "<table cellpadding='0' cellspacing='0' border='0' width='100%' style='background-color:" + bgColor + ";'><tr><td width='50%' align='left' style='background-color:" + bgColor + ";'>" + dealerIndicator + "</td><td></td><td width='50%' align='right' style='background-color:" + bgColor + ";'>" + actionIndicator + "</td></tr></table>" +
-                            "</td>";
+                            "</td><td width='2%'></td>";
 
                         // + messageObject.name + "<br>" + youIndicator + "<br>" + actionIndicator + "<br>" + dealerIndicator 
 
@@ -235,11 +235,11 @@ async function runTheCardGame() {
                             document.getElementById('players').innerHTML = startPlayerDisplay + playerDisplay + endPlayerDisplay;
                         }
                         else if (playerCount == 4) {
-                            document.getElementById('players').innerHTML = document.getElementById('players').innerHTML.replace(endPlayerDisplay, "</tr><tr>" + playerDisplay + endPlayerDisplay);
+                            document.getElementById('players').innerHTML = replaceLast(document.getElementById('players').innerHTML, endPlayerDisplay, "</tr><tr>" + playerDisplay + endPlayerDisplay);
                             console.log("INNER HTML IS: " + document.getElementById('players').innerHTML );
                         }
                         else {
-                            document.getElementById('players').innerHTML = document.getElementById('players').innerHTML.replace(endPlayerDisplay, playerDisplay + endPlayerDisplay);
+                            document.getElementById('players').innerHTML = replaceLast(document.getElementById('players').innerHTML, endPlayerDisplay, playerDisplay + endPlayerDisplay);
                             console.log("INNER HTML IS: " + document.getElementById('players').innerHTML );
                         }
                         break;
@@ -526,3 +526,10 @@ function setStorage(inputKey, inputValue) {
   function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
+
+  //Last sring replacement
+  function replaceLast(inputString, whatToReplace, whatToReplaceWith) {
+    var pcs = inputString.split(whatToReplace);
+    var lastPc = pcs.pop();
+    return pcs.join(whatToReplace) + whatToReplaceWith + lastPc;
+};
