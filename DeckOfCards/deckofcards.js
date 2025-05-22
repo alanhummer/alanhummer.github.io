@@ -176,11 +176,12 @@ async function runTheCardGame() {
                         //Our player set
                         playerCount = playerCount + 1;
                         let playerType = "player";
+                        let bgColor = "black";
 
                         let actionIndicator = "";
                         if (messageObject.blnActionOn) {
-                            actionIndicator = "**Action**";
-                            playerType = "actionPlayer";
+                            actionIndicator = "ACT";
+                            //playerType = "actionPlayer";
                         }
  
                         let dealerIndicator = "";
@@ -189,13 +190,15 @@ async function runTheCardGame() {
                             if (messageObject.name == myName) {
                                 document.getElementById('controls').style.display = "block";
                             }
-                            dealerIndicator = "**Dealer**";
-                            playerType = "dealer";
+                            dealerIndicator = "DLR";
+                            //playerType = "dealer";
                         }
                         
                         let youIndicator = "";
                         if (messageObject.name == myName) {
                            youIndicator = "**YOU**";
+                           playerType = "youPlayer";
+                           bgColor = "blue";
                         }
 
                         let playerCards = "";
@@ -215,11 +218,15 @@ async function runTheCardGame() {
                         };
                        
                         //let playerDisplay = "<div id='players-cards-" + messageObject.name + "' style='display:relative;'>" +
-                        let playerDisplay = "<td width='100px' align='center'>" +
-                            "<div id='players-cards-front-" + messageObject.name + "' style='position:relative;height:60px;display:none;'>" + playerCards + "</div>" +
-                            "<div id='players-cards-back-" + messageObject.name + "' style='position:relative;height:60px;display:relative;'>" + playerCardsBack + "</div>" +
-                            "<div class='" + playerType + "'>" + messageObject.name + "<br>" + youIndicator + "<br>" + actionIndicator + "<br>" + dealerIndicator + "</div>" + 
+                        let playerDisplay = "<td width='120px' align='center' class='" + playerType + "'>" +
+                            "<div style='background-color:" + bgColor + ";'>" + messageObject.name + "<br><br>" +
+                                "<div id='players-cards-front-" + messageObject.name + "' style='position:relative;height:60px;display:none;background-color:" + bgColor + ";'>" + playerCards + "</div>" +
+                                "<div id='players-cards-back-" + messageObject.name + "' style='position:relative;height:60px;display:relative;background-color:" + bgColor + ";'>" + playerCardsBack + "</div>" +
+                            "</div><br>" +
+                            "<table cellpadding='0' cellspacing='0' border='0' width='100%' style='background-color:" + bgColor + ";'><tr><td width='50%' align='left' style='background-color:" + bgColor + ";'>" + dealerIndicator + "</td><td></td><td width='50%' align='right' style='background-color:" + bgColor + ";'>" + actionIndicator + "</td></tr></table>" +
                             "</td>";
+
+                        // + messageObject.name + "<br>" + youIndicator + "<br>" + actionIndicator + "<br>" + dealerIndicator 
 
                         let startPlayerDisplay = "<table cellpadding='0' cellspacing='0' border='0'><tbody><tr>";
                         let endPlayerDisplay = "</tr></tbody></table>";
