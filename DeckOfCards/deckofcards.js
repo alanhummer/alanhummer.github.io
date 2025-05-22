@@ -24,6 +24,11 @@
 //ADD HANDLERS FOR HOLD EM CARD _ Start, show 3 opsion, done with river, shop next dealer btton
 //
 //get rank to show on otable cards - debug in chrome
+//
+//X Dealer BG= Blue
+//X You = Marker?
+//NO Double size of cards
+//X 3 players per row, 2 rows
 
 var cardappButtonReady = false;
 var socket = null;
@@ -187,6 +192,11 @@ async function runTheCardGame() {
                             dealerIndicator = "**Dealer**";
                         }
                         
+                        let youIndicator = "";
+                        if (messageObject.name == myName) {
+                           youIndicator = "**YOU**";
+                        }
+
                         let playerCards = "";
                         let playerCardsBack = "";
                         let lCardCount = 0;
@@ -207,7 +217,7 @@ async function runTheCardGame() {
                         let playerDisplay = "<td width='100px' align='center'>" +
                             "<div id='players-cards-front-" + messageObject.name + "' style='position:relative;height:60px;display:none;'>" + playerCards + "</div>" +
                             "<div id='players-cards-back-" + messageObject.name + "' style='position:relative;height:60px;display:relative;'>" + playerCardsBack + "</div>" +
-                            "<div class='" + playerType + "'>" + messageObject.name + "<br>" + messageObject.cardCount + " Cards<br>" + actionIndicator + "<br>" + dealerIndicator + "</div>" + 
+                            "<div class='" + playerType + "'>" + messageObject.name + "<br>" + messageObject.cardCount + " Cards<br>" + youIndicator + "<br>" + actionIndicator + "<br>" + dealerIndicator + "</div>" + 
                             "</td>";
 
                         let startPlayerDisplay = "<table cellpadding='0' cellspacing='0' border='0'><tbody><tr>";
@@ -215,6 +225,10 @@ async function runTheCardGame() {
                         if (playerCount == 1) {
                             //Wipe clean and start fresh
                             document.getElementById('players').innerHTML = startPlayerDisplay + playerDisplay + endPlayerDisplay;
+                        }
+                        else if (playerCount == 4) {
+                            document.getElementById('players').innerHTML = document.getElementById('players').innerHTML.replace(endPlayerDisplay, "</tr><tr>" + playerDisplay + endPlayerDisplay);
+                            console.log("INNER HTML IS: " + document.getElementById('players').innerHTML );
                         }
                         else {
                             document.getElementById('players').innerHTML = document.getElementById('players').innerHTML.replace(endPlayerDisplay, playerDisplay + endPlayerDisplay);
