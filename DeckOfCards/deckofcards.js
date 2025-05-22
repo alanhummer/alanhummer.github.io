@@ -86,7 +86,7 @@ else {
     });
 }
 
-document.getElementById('version').innerHTML = "v2025.05.19.1";
+document.getElementById('version').innerHTML = "v2025.05.21.1";
 
 //***************************
 //This handle all of the card game app presentation and logic
@@ -190,6 +190,7 @@ async function runTheCardGame() {
                                 document.getElementById('controls').style.display = "block";
                             }
                             dealerIndicator = "**Dealer**";
+                            playerType = "dealer";
                         }
                         
                         let youIndicator = "";
@@ -217,7 +218,7 @@ async function runTheCardGame() {
                         let playerDisplay = "<td width='100px' align='center'>" +
                             "<div id='players-cards-front-" + messageObject.name + "' style='position:relative;height:60px;display:none;'>" + playerCards + "</div>" +
                             "<div id='players-cards-back-" + messageObject.name + "' style='position:relative;height:60px;display:relative;'>" + playerCardsBack + "</div>" +
-                            "<div class='" + playerType + "'>" + messageObject.name + "<br>" + messageObject.cardCount + " Cards<br>" + youIndicator + "<br>" + actionIndicator + "<br>" + dealerIndicator + "</div>" + 
+                            "<div class='" + playerType + "'>" + messageObject.name + "<br>" + youIndicator + "<br>" + actionIndicator + "<br>" + dealerIndicator + "</div>" + 
                             "</td>";
 
                         let startPlayerDisplay = "<table cellpadding='0' cellspacing='0' border='0'><tbody><tr>";
