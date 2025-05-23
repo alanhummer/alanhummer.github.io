@@ -448,17 +448,20 @@ async function runTheCardGame() {
             //socket = new WebSocket('wss://i-saw-your-cards.deno.dev?name=' + myName);
         });
 
-        //Error in socket handler
-        socket.addEventListener('error', (event) => {
-            console.error('WebSocket error:', event);
+    });
 
-            //Close it, we are done
-            socket.close();
-            console.log('Closed the socket');
+    //Error in socket handler
+    socket.addEventListener('error', (event) => {
+        console.error('WebSocket error:', event);
 
-            document.getElementById('cardapp-log').innerHTML = "<li>Closed from Error: " + event.data + "</li>";
+        //Close it, we are done
+        socket.close();
+        console.log('Closed the socket');
 
-        });
+        document.getElementById('play-message').innerHTML = "Disconnected from server. Trying to reconnect...";
+        document.getElementById('cardapp-log').innerHTML = "<li>Closed from Error: " + event.data + "</li>";
+        runTheCardGame();
+
     });
 
 }
