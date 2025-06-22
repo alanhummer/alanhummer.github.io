@@ -30,6 +30,9 @@
 //NO Double size of cards
 //X 3 players per row, 2 rows
 
+//TO DO: on disconnect, retry disconnect will fire and reload the page, try to connect to game
+//SO: when re-connected, get that game status and information for the player reloaded...so they start where they left off
+
 var cardappButtonReady = false;
 var socket = null;
 var myName = "";
@@ -38,6 +41,7 @@ var cardCount = 0;
 var tableCardCount = 0;
 var myPlayerCards = [];
 var myTableCards = [];
+var betAmount = 0;
 var cardCover = "BOGUS";
 var handStatus = "READY_TO_START"; //READY_TO_DEAL, READY_FOR_FLOP, READY_FOR_RIVER, READY_FOR_TURN, READY_NEXT_DEALER
 
@@ -80,10 +84,15 @@ else {
     document.getElementById('cardbutton').innerHTML = document.getElementById('cardbutton').innerHTML.replace("_WELCOMEMESSAGE_", "Hello " + myName + ". Would you like to play a game?");
     document.getElementById('cardbutton').innerHTML = document.getElementById('cardbutton').innerHTML.replace("_WELCOMEINSTRUCTIONS_", "Touch the Deck to Play");
 
-    document.getElementById('cardgamestart').addEventListener('click', async () => {
-        //document.getElementById('playerName').innerHTML = document.getElementById('playerName').innerHTML.replace("_NAME_", myName);
+    if (urlParams.get('retryDisconnnect')) {
         runTheCardGame();
-    });
+    }
+    else {
+        document.getElementById('cardgamestart').addEventListener('click', async () => {
+            //document.getElementById('playerName').innerHTML = document.getElementById('playerName').innerHTML.replace("_NAME_", myName);
+            runTheCardGame();
+        });
+    }
 }
 
 document.getElementById('version').innerHTML = "v2025.05.21.2";
@@ -96,8 +105,11 @@ async function runTheCardGame() {
     document.getElementById('cardbutton').style.display = "none";
     document.getElementById('cardapp').style.display = "block";
 
-    //start web socket, add listeners for the events we want
+     //start web socket, add listeners for the events we want
     socket = new WebSocket('wss://i-saw-your-cards.deno.dev?name=' + myName);
+
+    //Initilize Buttons rererw
+    initializeButtons();
 
     //When it connects successfully, off we go
     socket.addEventListener('open', (event) => {
@@ -132,6 +144,7 @@ async function runTheCardGame() {
                         document.getElementById('play-message').innerHTML = "Version info: " + messageObject.appVersion + " " + messageObject.appRegion;
                         break;
                     case "card":
+                        manageButtons(0);
                          if (messageObject.table) {
 
                             //A to do here, if card is up, show it up...if down show it down
@@ -154,8 +167,8 @@ async function runTheCardGame() {
 
                             //A to do here, if card is up, show it up...if down show it down
                             var cardClass = "card-" + messageObject.color + " " + messageObject.suit;
-                            var myCard = "<div data-rank='" + messageObject.rank + "' class='" + cardClass + "' style='position:absolute;top:" + 0 + "px;left:_LEFTPOSITION_px;'></div>";
-                            var myCardBack = "<div class='card' style='position:absolute;top:" + 0 + "px;left:_LEFTPOSITION_px;'><img src='" + messageObject.cover + "' class='card-cover'></div>";
+                            var myCard = "<div data-rank='" + messageObject.rank + "' class='" + cardClass + "'></div>";
+                            var myCardBack = "<div class='card'><img src='" + messageObject.cover + "' class='card-cover'></div>";
                             
                             const leftPosition = (window.innerWidth / 2) - 120 + (cardCount * 90);
 
@@ -265,6 +278,9 @@ async function runTheCardGame() {
                         switch (messageObject.status) {
                             case "READY_TO_START":
                             case "READY_TO_DEAL":
+
+                                //Reset buttons
+                                resetButtons();
 
                                 //Clear out and reseet player cards
                                 cardCount = 0;
@@ -444,7 +460,18 @@ async function runTheCardGame() {
             document.getElementById('play-message').innerHTML = "Disconnected from server. Trying to reconnect...";
             //document.getElementById('cardapp-log').innerHTML = document.getElementById('cardapp-log').innerHTML + "<li>**************</li>";
             document.getElementById('cardapp-log').innerHTML = "<li>Disconnected from server" + "</li>";
-            runTheCardGame();
+            //runTheCardGame();
+            if (urlParams.get('retryDisconnnect')) {
+                window.location.reload();
+            }
+            else {
+                if (window.location.href.includes("?")) {
+                    window.location.href = window.location.href + "&retryDisconnnect=true";
+                }
+                else {
+                    window.location.href = window.location.href + "?retryDisconnnect=true&name=" + myName + "&dontsave=" + dontSave;
+                }
+            }
             //socket = new WebSocket('wss://i-saw-your-cards.deno.dev?name=' + myName);
         });
 
@@ -460,7 +487,18 @@ async function runTheCardGame() {
 
         document.getElementById('play-message').innerHTML = "Disconnected from server. Trying to reconnect...";
         document.getElementById('cardapp-log').innerHTML = "<li>Closed from Error: " + event.data + "</li>";
-        runTheCardGame();
+        //runTheCardGame();
+        if (urlParams.get('retryDisconnnect')) {
+            window.location.reload();
+        }
+        else {
+            if (window.location.href.includes("?")) {
+                window.location.href = window.location.href + "&retryDisconnnect=true";
+            }
+            else {
+                window.location.href = window.location.href + "?retryDisconnnect=true&name=" + myName + "&dontsave=" + dontSave;
+            }
+        }
 
     });
 
@@ -536,3 +574,89 @@ function setStorage(inputKey, inputValue) {
     var lastPc = pcs.pop();
     return pcs.join(whatToReplace) + whatToReplaceWith + lastPc;
 };
+
+//Manage Buttons
+function manageButtons(inputAmount) {
+
+    betAmount = inputAmount;
+
+    switch (inputAmount) {
+        case 0:
+            document.getElementById('btnCheck').disabled = false;
+            document.getElementById('btnCheck').style.opacity = "1";
+            document.getElementById('btnFold').disabled = true;
+            document.getElementById('btnFold').style.opacity = ".5";
+            document.getElementById('btnCall').disabled = true;
+            document.getElementById('btnCall').style.opacity = ".5";
+            document.getElementById('btnRaise').disabled = false;
+            document.getElementById('btnRaise').style.opacity = "1";
+            break;
+        default:
+            document.getElementById('btnCheck').disabled = true;
+            document.getElementById('btnCheck').style.opacity = ".5";
+            document.getElementById('btnFold').disabled = false;
+            document.getElementById('btnFold').style.opacity = "1";
+            document.getElementById('btnCall').disabled = false;
+            document.getElementById('btnCall').style.opacity = "1";
+            document.getElementById('btnRaise').disabled = false;
+            document.getElementById('btnRaise').style.opacity = "1";
+            break;
+    }
+             
+}
+
+//Reset Buttons
+function resetButtons() {
+
+        //Play Buttons
+    document.getElementById("btnCheck").disabled = true;
+    document.getElementById('btnCheck').style.opacity = ".5";
+    document.getElementById("btnFold").disabled = true;
+    document.getElementById('btnFold').style.opacity = ".5";
+    document.getElementById("btnCall").disabled = true;
+    document.getElementById('btnCall').style.opacity = ".5";
+    document.getElementById("btnRaise").disabled = true;
+    document.getElementById('btnRaise').style.opacity = ".5";
+
+}
+
+//Initialize Buttons
+function initializeButtons() {
+
+    resetButtons();
+
+    document.getElementById('btnCheck').addEventListener('click', async () => {
+        if (!document.getElementById('btnCheck').disabled) {
+            alert("Check");
+            betAmount = 0;
+        }
+        document.getElementById('btnCheck').disabled = true;
+        document.getElementById('btnCheck').style.opacity = ".5";
+    });  
+    document.getElementById('btnFold').addEventListener('click', async () => {
+        if (!document.getElementById('btnFold').disabled) {
+            alert("Fold " + betAmount);
+            betAmount = 0;
+        }
+        document.getElementById('btnFold').disabled = true;
+        document.getElementById('btnFold').style.opacity = ".5";
+    });  
+    document.getElementById('btnCall').addEventListener('click', async () => {
+        if (!document.getElementById('btnCall').disabled) {
+            alert("Call " + betAmount);
+            betAmount = 0;
+        }
+        document.getElementById('btnCall').disabled = true;
+        document.getElementById('btnCall').style.opacity = ".5";
+    });  
+    document.getElementById('btnRaise').addEventListener('click', async () => {
+        if (!document.getElementById('btnRaise').disabled) {
+            alert("Raise " + betAmount);
+            betAmount = 0;
+        }
+        document.getElementById('btnRaise').disabled = true;
+        document.getElementById('btnRaise').style.opacity = ".5";
+    });  
+
+
+}

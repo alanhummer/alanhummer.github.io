@@ -368,6 +368,9 @@ document.getElementById('fileInput').addEventListener('change', async function(e
 
   //Load message
   toggleDisplay("loading-message-container", false); 
+  //photo.style.display = 'none';
+  document.getElementById("message-info").innerHTML = "Loading...";
+
 
   const file = event.target.files[0];
   const exifTags = await ExifReader.load(file);
@@ -490,7 +493,7 @@ document.getElementById('fileInput').addEventListener('change', async function(e
     reader.readAsDataURL(file);
   } else {
       photo.style.display = 'none';
-      alert('Please select a valid image file.');
+      document.getElementById("message-info").innerHTML = "Please select a valid image file. This one doesn't work.";
   }
 });
 
