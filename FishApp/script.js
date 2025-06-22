@@ -710,7 +710,7 @@ function toggleDisplay(inputType, blnShowCamera = true, blnButtonsEnabled = fals
           break;
 
         default:
-          document.getElementById("bottom-message-save-detail").innerHTML = "Any size?";
+          document.getElementById("bottom-message-save-detail").innerHTML = "Add a fish!";
           break;
   
       }    
@@ -932,7 +932,7 @@ async function identifyFish(inputImageQuery, tryAttemptNumber) {
 
   if (imageDescription.length > 0) {
     document.getElementById('fish-info').innerHTML = imageDescription;
-    document.getElementById('savePictureBtn').style.display = "block";
+    document.getElementById('savePictureBtn').style.display = "block"; //AJHAJH
     document.getElementById('retryBtn').style.display = "block";
     return;
   }
@@ -1055,7 +1055,7 @@ async function identifyFish(inputImageQuery, tryAttemptNumber) {
     }
 
     document.getElementById('fish-info').innerHTML = imageDescription;
-    document.getElementById('savePictureBtn').style.display = "block";
+    document.getElementById('savePictureBtn').style.display = "block"; //AJHAJH
     document.getElementById('retryBtn').style.display = "block";
     document.body.style.cursor  = 'default';
 
@@ -1133,6 +1133,7 @@ async function identifyImage(inputImageDescription, inputImageType) {
       default:
         topMessage = "I see your fish?";
         fishInfoBtn.src = "information.png";
+        document.getElementById('savePictureBtn').style.display = "none"; //AJHAJH
         document.getElementById('fish-info').className = "text-display";
         break;
 
