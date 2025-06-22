@@ -1131,7 +1131,7 @@ async function identifyImage(inputImageDescription, inputImageType) {
         break;
   
       default:
-        topMessage = "Catch that fish!";
+        topMessage = "I see your fish?";
         fishInfoBtn.src = "information.png";
         document.getElementById('fish-info').className = "text-display";
         break;
