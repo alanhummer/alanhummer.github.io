@@ -81,7 +81,7 @@ const weatherInfoDiv = document.getElementById('weather-info');
 const debugMessage = document.getElementById('debug');
 
 //Set the version in the status
-statusDiv.textContent = "v2025.06.22.04";
+statusDiv.textContent = "v2025.06.22.07"; //AJH - update this with each release
 
 //Buttons
 const captureBtn = document.getElementById('captureBtn'); //Take Picture
@@ -1055,7 +1055,12 @@ async function identifyFish(inputImageQuery, tryAttemptNumber) {
     }
 
     document.getElementById('fish-info').innerHTML = imageDescription;
-    document.getElementById('savePictureBtn').style.display = "block"; //AJHAJH
+    if (imageType.toUpperCase() == "OTHER") { 
+      document.getElementById('savePictureBtn').style.display = "none"; //AJHAJH
+    }
+    else {
+      document.getElementById('savePictureBtn').style.display = "block"; //AJHAJH
+    }
     document.getElementById('retryBtn').style.display = "block";
     document.body.style.cursor  = 'default';
 
