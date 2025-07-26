@@ -710,7 +710,7 @@ function toggleDisplay(inputType, blnShowCamera = true, blnButtonsEnabled = fals
           break;
 
         default:
-          document.getElementById("bottom-message-save-detail").innerHTML = "Add a fish!";
+          document.getElementById("bottom-message-save-detail").innerHTML = "Add a fish!&nbsp;<a href='javascript:addFish();'><img src='generate-fish.png'></a>";
           break;
   
       }    
@@ -733,6 +733,12 @@ function toggleDisplay(inputType, blnShowCamera = true, blnButtonsEnabled = fals
   }
 
   document.getElementById(inputType).style.display = "flex";
+
+}
+
+function addFish() {
+
+  alert("adding a fish");
 
 }
 
