@@ -3,6 +3,9 @@
 //WSS protocol client here has enabled this and setup handlers for activities
 //Activities include: connectiong, sending, receieve, closing and error handling
 //
+//EXTNESIONS
+// - Add LiveServer
+//
 //Things you can do with a deck of cards:
 //- X Shuffle the deck (shuffle)
 //- X Get palyers
@@ -42,6 +45,8 @@ var tableCardCount = 0;
 var myPlayerCards = [];
 var myTableCards = [];
 var betAmount = 0;
+var gPlayerCount = 0;
+var youAction = false;
 var cardCover = "BOGUS";
 var handStatus = "READY_TO_START"; //READY_TO_DEAL, READY_FOR_FLOP, READY_FOR_RIVER, READY_FOR_TURN, READY_NEXT_DEALER
 
@@ -57,29 +62,19 @@ if ('serviceWorker' in navigator) {
 
 const urlParams = new URLSearchParams(window.location.search);
 
-myName = getStorage("userName");
-dontSave = urlParams.get('dontsave');
-if (dontSave == "true") {
-    myName = urlParams.get('name');
-}
+//Get Name of player
+myName = urlParams.get('name');
 if (!myName) {
-    //No name, see if we have it stored
-    myName = urlParams.get('name');
+    myName = prompt("What's your Name?", getStorage("userName"));
 }
+
 if (!myName) {
     myName = "Nobody";
     document.getElementById('cardbutton').innerHTML = document.getElementById('cardbutton').innerHTML.replace("_WELCOMEMESSAGE_", "Hello, Stranger");
     document.getElementById('cardbutton').innerHTML = document.getElementById('cardbutton').innerHTML.replace("_WELCOMEINSTRUCTIONS_", "Nothing to see here...");
 }
 else {
-
-    //Store name fo 
-    if (dontSave) {
-        //Dont save
-    }
-    else {
-        setStorage("userName", myName);
-    }
+    setStorage("userName", myName);
 
     document.getElementById('cardbutton').innerHTML = document.getElementById('cardbutton').innerHTML.replace("_WELCOMEMESSAGE_", "Hello " + myName + ". Would you like to play a game?");
     document.getElementById('cardbutton').innerHTML = document.getElementById('cardbutton').innerHTML.replace("_WELCOMEINSTRUCTIONS_", "Touch the Deck to Play");
@@ -209,9 +204,17 @@ async function runTheCardGame() {
                         
                         let youIndicator = "";
                         if (messageObject.name == myName) {
-                           youIndicator = "**YOU**";
-                           playerType = "youPlayer";
-                           bgColor = "blue";
+                            youIndicator = "**YOU**";
+                            playerType = "youPlayer";
+                            bgColor = "blue";
+                            //If you and action on you, options enabled
+                            if (messageObject.blnActionOn) {
+                                youAction = true;
+                            }
+                            else {
+                                youAction = false;
+                            }
+                            manageButtons(0);
                         }
 
                         let playerCards = "";
@@ -299,6 +302,15 @@ async function runTheCardGame() {
                                     document.getElementById('cardapp-dealAllDown2').style.display = "inline-block";
                                 }
                                 else {
+                                    console.log("PLAYER COUNT: " + gPlayerCount);
+                                    if (gPlayerCount <= 1) {
+                                        document.getElementById('cardapp-startGame').disabled = true;
+                                        document.getElementById('cardapp-startGame').style.opacity = ".5";
+                                    }
+                                    else {
+                                        document.getElementById('cardapp-startGame').disabled = false;
+                                        document.getElementById('cardapp-startGame').style.opacity = "1";
+                                    }
                                     document.getElementById('cardapp-startGame').style.display = "inline-block";
                                 }     
                                 document.getElementById('play-message').innerHTML = "You are " + myName + ". " + "Here we go!";                           
@@ -344,6 +356,7 @@ async function runTheCardGame() {
                         break;
                 }
             }
+            gPlayerCount = playerCount;
         });
 
         //Send message to the server
@@ -356,10 +369,14 @@ async function runTheCardGame() {
                 sendCardCommand("players");
             });
             document.getElementById('cardapp-startGame').addEventListener('click', async () => {
-                document.getElementById('cardapp-startGame').disabled = true;
-                sendCardCommand("start-game");
-                myPlayerCards = [];
-                myTableCards = [];
+                if (document.getElementById('cardapp-startGame').disabled) {
+                    //Nope, not ready
+                }
+                else {
+                    sendCardCommand("start-game");
+                    myPlayerCards = [];
+                    myTableCards = [];
+                }
             });     
             document.getElementById('cardapp-nextDealer').addEventListener('click', async () => {
                 document.getElementById('cardapp-nextDealer').disabled = true;
@@ -504,7 +521,7 @@ async function runTheCardGame() {
 
 }
 
-//Sendin stuff off toe the mother ship
+//Sendin stuff off to the mother ship
 function sendCardCommand(inputCommand) {
 
     if (socket.readyState === WebSocket.CLOSED) {
@@ -580,28 +597,41 @@ function manageButtons(inputAmount) {
 
     betAmount = inputAmount;
 
-    switch (inputAmount) {
-        case 0:
-            document.getElementById('btnCheck').disabled = false;
-            document.getElementById('btnCheck').style.opacity = "1";
-            document.getElementById('btnFold').disabled = true;
-            document.getElementById('btnFold').style.opacity = ".5";
-            document.getElementById('btnCall').disabled = true;
-            document.getElementById('btnCall').style.opacity = ".5";
-            document.getElementById('btnRaise').disabled = false;
-            document.getElementById('btnRaise').style.opacity = "1";
-            break;
-        default:
-            document.getElementById('btnCheck').disabled = true;
-            document.getElementById('btnCheck').style.opacity = ".5";
-            document.getElementById('btnFold').disabled = false;
-            document.getElementById('btnFold').style.opacity = "1";
-            document.getElementById('btnCall').disabled = false;
-            document.getElementById('btnCall').style.opacity = "1";
-            document.getElementById('btnRaise').disabled = false;
-            document.getElementById('btnRaise').style.opacity = "1";
-            break;
+    if (!youAction) {
+        document.getElementById('btnCheck').disabled = true;
+        document.getElementById('btnCheck').style.opacity = ".5";
+        document.getElementById('btnFold').disabled = true;
+        document.getElementById('btnFold').style.opacity = ".5";
+        document.getElementById('btnCall').disabled = true;
+        document.getElementById('btnCall').style.opacity = ".5";
+        document.getElementById('btnRaise').disabled = true;
+        document.getElementById('btnRaise').style.opacity = ".5";
     }
+    else {
+        switch (inputAmount) {
+            case 0:
+                document.getElementById('btnCheck').disabled = false;
+                document.getElementById('btnCheck').style.opacity = "1";
+                document.getElementById('btnFold').disabled = true;
+                document.getElementById('btnFold').style.opacity = ".5";
+                document.getElementById('btnCall').disabled = true;
+                document.getElementById('btnCall').style.opacity = ".5";
+                document.getElementById('btnRaise').disabled = false;
+                document.getElementById('btnRaise').style.opacity = "1";
+                break;
+            default:
+                document.getElementById('btnCheck').disabled = true;
+                document.getElementById('btnCheck').style.opacity = ".5";
+                document.getElementById('btnFold').disabled = false;
+                document.getElementById('btnFold').style.opacity = "1";
+                document.getElementById('btnCall').disabled = false;
+                document.getElementById('btnCall').style.opacity = "1";
+                document.getElementById('btnRaise').disabled = false;
+                document.getElementById('btnRaise').style.opacity = "1";
+                break;
+        }
+    }
+
              
 }
 
