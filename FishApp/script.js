@@ -20,7 +20,7 @@
 //gpt-4o-mini
 //gpt-4.5-preview Good
 
-//
+//To run this from Codespace, you will need "Live Server" from Ritwick Dey -- "Go Live"
 
 
 
@@ -710,7 +710,7 @@ function toggleDisplay(inputType, blnShowCamera = true, blnButtonsEnabled = fals
           break;
 
         default:
-          document.getElementById("bottom-message-save-detail").innerHTML = "Add a fish!&nbsp;<a href='javascript:addFish();'><img src='generate-fish.png'></a>";
+          //document.getElementById("bottom-message-save-detail").innerHTML = "Add a fish!&nbsp;<a href='javascript:addFish();'><img src='generate-fish.png'></a>";
           break;
   
       }    
