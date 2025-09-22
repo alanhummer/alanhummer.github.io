@@ -799,11 +799,15 @@ async function getWeatherData(latitude, longitude, dateTimeStamp) {
 
     weatherInfoDiv.innerText = "Getting weather data...";
 
+    var fetchURL = apiOpenWeatherURL + `?guid=${keyUserGUID}&lat=${latitude}&lon=${longitude}&dt=${toTimestamp(locationTime)}`;
+
     // 1. Get the forecast office and grid location based on latitude and longitude
-    const pointResponse = await fetch(apiOpenWeatherURL + `?guid=${keyUserGUID}&lat=${latitude}&lon=${longitude}&dt=${toTimestamp(locationTime)}`);
+    const pointResponse = await fetch(fetchURL);
     if (!pointResponse.ok) throw new Error(`Point fetch failed: ${pointResponse.statusText}`);
     
     const weatherInfo = await pointResponse.json();
+
+    //console.log("GETTING WEATHER: " + fetchURL + " GOT:", weatherInfo);
 
     // Build weather output - wind direction 180 = from South
     var weatherData;
@@ -866,9 +870,14 @@ async function getLocationInfo() {
   var addressLines = "";
   var locationInfoText = "";
 
-  const locationResponse = await fetch(apiGeoLocationURL + `?guid=${keyUserGUID}&lat=${latitude}&lon=${longitude}&type=${imageType}`);
+  var fetchURL = apiGeoLocationURL + `?guid=${keyUserGUID}&lat=${latitude}&lon=${longitude}&type=${imageType}`;
+
+  const locationResponse = await fetch(fetchURL);
   if (!locationResponse.ok) throw new Error(`Location fetch failed: ${locationResponse.statusText}`);
   const locationinfo = await locationResponse.json();
+  
+  //console.log("GETTING LOCATION: " + fetchURL + " GOT:", locationResponse.locationInfo);
+
   if (locationinfo.locationInfo.includes(" - ")) {
     //We have a place name to parse
     var arrayAddressLinePieces = locationinfo.locationInfo.split(' - ');
@@ -986,16 +995,19 @@ async function identifyFish(inputImageQuery, tryAttemptNumber) {
       sendAddress = "unknown";
     }
 
-    const response = await fetch(apiAIURL + `?guid=${keyUserGUID}&lat=${latitude}&lon=${longitude}&address=${sendAddress}&query=${inputImageQuery}`, {
+    var fetchURL = apiAIURL + `?guid=${keyUserGUID}&lat=${latitude}&lon=${longitude}&address=${sendAddress}&query=${inputImageQuery}`;
+
+    const response = await fetch(fetchURL, {
         method: 'POST',
         body: imageData
     });
 
     if (!response.ok) throw new Error("Failed to get response from OpenAI");
-
-       
+      
     // Display the result
     imageDescription = await response.text();
+
+    //console.log("GETTING " + inputImageQuery + ": " + fetchURL + " GOT:" + imageDescription);
 
     imageDescription = imageDescription.replace("**", "<b>")
     imageDescription = imageDescription.replace("**", ":</b> ")
@@ -1099,8 +1111,10 @@ async function identifyImage(inputImageDescription, inputImageType) {
     }
     else {
 
+      var fetchURL = apiAIURL + `?guid=${keyUserGUID}&lat=${latitude}&lon=${longitude}&query=${imageQuery}`;
+
       // Call AI to figure out fish and size
-      const response = await fetch(apiAIURL + `?guid=${keyUserGUID}&lat=${latitude}&lon=${longitude}&query=${imageQuery}`, {
+      const response = await fetch(fetchURL, {
           method: 'POST',
           body: imageData
       });
@@ -1109,6 +1123,8 @@ async function identifyImage(inputImageDescription, inputImageType) {
 
       // Process the result
       imageType = await response.text();
+
+      //console.log("GETTING: " + fetchURL + " GOT:" + imageType);
     
     }
     switch (imageType.toUpperCase()) {
