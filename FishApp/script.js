@@ -1,3 +1,8 @@
+//New API KEY created (Gemini Console --> Google Cloud Console)
+//Added key to Dino
+//Updated Prompt to handle creation of picture and change Model to bananaa image create
+//Test and works...next up: Get image pulled and sent to client
+//
 //I Saw Your Fish! PWA App - just take a picture and we gather:
 // - Location
 // - Date / Time Taken
