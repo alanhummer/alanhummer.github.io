@@ -86,7 +86,7 @@ const weatherInfoDiv = document.getElementById('weather-info');
 const debugMessage = document.getElementById('debug');
 
 //Set the version in the status
-statusDiv.textContent = "v2025.09.21.01"; //AJH - update this with each release
+statusDiv.textContent = "v2025.09.26.01"; //AJH - update this with each release
 
 //Buttons
 const captureBtn = document.getElementById('captureBtn'); //Take Picture
@@ -325,6 +325,10 @@ mapBtn.addEventListener('click', async () => {
 
       case "AUTOMOBILE":
         mapMessage = "Where it happened'";
+        break;
+
+      case "PERSON":
+        mapMessage = "Did it get away?";
         break;
 
       default:
@@ -714,6 +718,11 @@ function toggleDisplay(inputType, blnShowCamera = true, blnButtonsEnabled = fals
           document.getElementById("bottom-message-save-detail").innerHTML = "Not so bad...";
           break;
 
+        case "PERSON":
+          document.getElementById("bottom-message-save-detail").innerHTML = "There it is...";
+          break;
+
+
         default:
           //document.getElementById("bottom-message-save-detail").innerHTML = "Add a fish!&nbsp;<a href='javascript:addFish();'><img src='generate-fish.png'></a>";
           break;
@@ -945,7 +954,7 @@ async function identifyFish(inputImageQuery, tryAttemptNumber) {
   //If we loaded title/subject from image, use it
   if (imageTitle.length > 10 && imageSubject.length > 3) {
     imageDescription = imageTitle;
-    if (imageSubject == "FISH" || imageSubject == "FOOD" || imageSubject == "DEER" || imageSubject == "AUTOMOBILE" || imageSubject == "OTHER") {
+    if (imageSubject == "FISH" || imageSubject == "FOOD" || imageSubject == "DEER" || imageSubject == "AUTOMOBILE" || imageSubject == "PERSON" || imageSubject == "OTHER") {
       imageType = imageSubject;
     }
   }
@@ -976,6 +985,10 @@ async function identifyFish(inputImageQuery, tryAttemptNumber) {
     case "DEER":
       fishInfoBtn.src = "deer-information.png";
       inputImageQuery = inputImageQuery + "_DEER";
+      break;
+    case "PERSON":
+      fishInfoBtn.src = "generate-fish.png";
+      inputImageQuery = inputImageQuery + "_PERSON";
       break;
     case "AUTOMOBILE":
       fishInfoBtn.src = "automobile-information.png";
@@ -1010,7 +1023,16 @@ async function identifyFish(inputImageQuery, tryAttemptNumber) {
     if (!response.ok) throw new Error("Failed to get response from OpenAI");
       
     // Display the result
-    imageDescription = await response.text();
+    var imageBlob = await response.blob();
+
+    if (imageBlob.type == "text/plain") {
+      imageDescription = await imageBlob.text();
+    }
+    else {
+      //We have an image, show it
+      imageDescription = "The one that got away..."
+      document.getElementById('fish-info-photo').src = URL.createObjectURL(imageBlob);
+    }
 
     //console.log("GETTING " + inputImageQuery + ": " + fetchURL + " GOT:" + imageDescription);
 
@@ -1162,6 +1184,12 @@ async function identifyImage(inputImageDescription, inputImageType) {
         }
         break;
   
+      case "PERSON":
+        topMessage = "It got away?";
+        fishInfoBtn.src = "generate-fish.png";
+        document.getElementById('fish-info').className = "text-display";
+        break;
+
       default:
         topMessage = "I see your fish?";
         fishInfoBtn.src = "information.png";
