@@ -86,7 +86,7 @@ const weatherInfoDiv = document.getElementById('weather-info');
 const debugMessage = document.getElementById('debug');
 
 //Set the version in the status
-statusDiv.textContent = "v2025.09.29.01"; //AJH - update this with each release
+statusDiv.textContent = "v2025.09.29.02"; //AJH - update this with each release
 
 //Buttons
 const captureBtn = document.getElementById('captureBtn'); //Take Picture
@@ -746,7 +746,7 @@ function toggleDisplay(inputType, blnShowCamera = true, blnButtonsEnabled = fals
 
         case "PERSON":
           document.getElementById("top-message").innerHTML = "This is for...";
-          document.getElementById("bottom-message-save-detail").innerHTML = "(wait for it)";
+          document.getElementById("bottom-message-save-detail").innerHTML = topMessage;
           break;
 
 
@@ -1027,6 +1027,8 @@ async function identifyFish(inputImageQuery, tryAttemptNumber) {
     case "PERSON":
       fishInfoBtn.src = "generate-fish.png";
       inputImageQuery = inputImageQuery + "_PERSON";
+      topMessage = "(wait for it)";
+      document.getElementById("bottom-message-save-detail").innerHTML = topMessage;
       break;
     case "AUTOMOBILE":
       fishInfoBtn.src = "automobile-information.png";
@@ -1072,7 +1074,8 @@ async function identifyFish(inputImageQuery, tryAttemptNumber) {
       imageDescription = ""
       document.getElementById('fish-info-photo').src = URL.createObjectURL(imageBlob);
       document.getElementById('full-image').src = URL.createObjectURL(imageBlob);
-      document.getElementById("bottom-message-save-detail").innerHTML = "...the one that got away!";
+      topMessage = "...the one that got away!";
+      document.getElementById("bottom-message-save-detail").innerHTML = topMessage;
     }
 
     //console.log("GETTING " + inputImageQuery + ": " + fetchURL + " GOT:" + imageDescription);
