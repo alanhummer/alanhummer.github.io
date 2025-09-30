@@ -86,7 +86,7 @@ const weatherInfoDiv = document.getElementById('weather-info');
 const debugMessage = document.getElementById('debug');
 
 //Set the version in the status
-statusDiv.textContent = "v2025.09.26.03"; //AJH - update this with each release
+statusDiv.textContent = "v2025.09.29.01"; //AJH - update this with each release
 
 //Buttons
 const captureBtn = document.getElementById('captureBtn'); //Take Picture
@@ -95,6 +95,8 @@ const tryAgainBtn = document.getElementById('tryAgainBtn'); //Back to the camera
 const weatherBtn = document.getElementById('weatherBtn'); //Show Weather info
 const mapBtn = document.getElementById('mapBtn'); //Show Map info
 const fishInfoBtn = document.getElementById('fishInfoBtn'); //Show Fish info
+const fullImage = document.getElementById('full-image'); //Big picture
+const generatedImage = document.getElementById('fish-info-photo'); //The picture we generated or processedful
 const loadPictureBtn = document.getElementById('loadPictureBtn'); //Load existing picture
 const savePictureBtn = document.getElementById('savePictureBtn'); //Save picture w/meta data
 const retryBtn = document.getElementById('retryBtn'); //Retry image / fish info
@@ -134,6 +136,7 @@ var blnGotPictureLocation = false;
 var blnGotPictureLocationTime = false;
 var blnImageLoaded = false;
 var imageOrientation = "portrait";
+var blnIndentifyFishTried = false;
 
 const context = canvas.getContext('2d');
 
@@ -233,6 +236,7 @@ tryAgainBtn.addEventListener('click', () => {
     return;
   }  
 
+  blnIndentifyFishTried = false;
   toggleDisplay("capture-image-container", !blnGotPicture, blnGotPicture); //2nd parm is boolean, show camera
 
 });
@@ -361,8 +365,27 @@ fishInfoBtn.addEventListener('click', () => {
   identifyFish(imageQuery, 1); // We'll want to pass in the picture here and may do mult tries, to try parameter included
   document.getElementById('fish-info-photo').src = imageData;
   document.getElementById('fish-info-photo').style.display = "block";
+
+  //And the full image
+  document.getElementById('full-image').src = imageData;
   
 });
+
+// Fish Info Image
+generatedImage.addEventListener('click', () => {
+
+  toggleDisplay("full-image-container");
+ 
+});
+
+// Fish Info Image
+fullImage.addEventListener('click', () => {
+
+  toggleDisplay("fish-info-container");
+
+ 
+});
+
 
 // Load Picture
 loadPictureBtn.addEventListener('click', () => {
@@ -493,7 +516,7 @@ document.getElementById('fileInput').addEventListener('change', async function(e
           photo.style.maxHeight = '50vh';
           //photo.style.width = 'auto'; // Maintain aspect ratio    
         } 
-        
+
         //And get Image Type, if we need to
         identifyImage(imageTitle, imageSubject);
       };
@@ -532,6 +555,7 @@ retryBtn.addEventListener('click', () => {
   imageTitle = "";
   imageSubject = "";
   toggleDisplay("fish-info-container");
+  blnIndentifyFishTried = false;
   identifyFish(imageQuery, 1);
   
 });
@@ -591,6 +615,8 @@ function toggleDisplay(inputType, blnShowCamera = true, blnButtonsEnabled = fals
   document.getElementById("weather-info-container").style.display = "none";
   document.getElementById("map-info-container").style.display = "none";
   document.getElementById("fish-info-container").style.display = "none";
+  document.getElementById("full-image-container").style.display = "none";
+  document.getElementById("fishapp").style.display = "block";
 
   //Main control buttons and big capture button containers
   document.getElementById("button-display").style.display = "none";
@@ -719,7 +745,8 @@ function toggleDisplay(inputType, blnShowCamera = true, blnButtonsEnabled = fals
           break;
 
         case "PERSON":
-          document.getElementById("bottom-message-save-detail").innerHTML = "The one that got away...";
+          document.getElementById("top-message").innerHTML = "This is for...";
+          document.getElementById("bottom-message-save-detail").innerHTML = "(wait for it)";
           break;
 
 
@@ -730,6 +757,13 @@ function toggleDisplay(inputType, blnShowCamera = true, blnButtonsEnabled = fals
       }    
       break;  
       
+    case "full-image-container":
+      document.getElementById("fishapp").style.display = "none";
+      document.getElementById("full-image-container").style.display = "block";
+      break;
+
+
+
     default:
       break;  
 
@@ -947,6 +981,10 @@ async function identifyFish(inputImageQuery, tryAttemptNumber) {
       return;
   }
 
+  if (blnIndentifyFishTried) {
+    return;
+  }
+
   var inputImageQuerySave = inputImageQuery;
 
   debugMessage.innerHTML = "FISH ID TRY #" + tryAttemptNumber;
@@ -1004,6 +1042,7 @@ async function identifyFish(inputImageQuery, tryAttemptNumber) {
   }  
   
   try {
+
     document.body.style.cursor  = 'wait';
     document.getElementById('fish-info').innerText = "Studying picture...";
   
@@ -1032,6 +1071,8 @@ async function identifyFish(inputImageQuery, tryAttemptNumber) {
       //We have an image, show it
       imageDescription = ""
       document.getElementById('fish-info-photo').src = URL.createObjectURL(imageBlob);
+      document.getElementById('full-image').src = URL.createObjectURL(imageBlob);
+      document.getElementById("bottom-message-save-detail").innerHTML = "...the one that got away!";
     }
 
     //console.log("GETTING " + inputImageQuery + ": " + fetchURL + " GOT:" + imageDescription);
@@ -1109,6 +1150,8 @@ async function identifyFish(inputImageQuery, tryAttemptNumber) {
     document.getElementById('retryBtn').style.display = "block";
     document.body.style.cursor  = 'default';
 
+    blnIndentifyFishTried = true;
+    
   } catch (error) {
       console.error("Error identifying fish:", error);
       document.getElementById('fish-info').innerText = `Error: ${error.message}`;
@@ -1566,7 +1609,7 @@ function setupCamera() {
       navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
         .then(stream => {
           video.srcObject = stream;
-         
+
         })
         .catch(error => {
           console.error("Error accessing the camera", error);
