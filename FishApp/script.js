@@ -86,7 +86,7 @@ const weatherInfoDiv = document.getElementById('weather-info');
 const debugMessage = document.getElementById('debug');
 
 //Set the version in the status
-statusDiv.textContent = "v2025.09.29.02"; //AJH - update this with each release
+statusDiv.textContent = "v2025.09.30.01"; //AJH - update this with each release
 
 //Buttons
 const captureBtn = document.getElementById('captureBtn'); //Take Picture
@@ -1201,7 +1201,7 @@ async function identifyImage(inputImageDescription, inputImageType) {
     
     }
     document.getElementById('fish-info').style.display = "block";
-    document.getElementById('fish-info-photo').style.maxHeight = "150px";
+    //document.getElementById('fish-info-photo').style.maxHeight = "150px";
     switch (imageType.toUpperCase()) {
 
       case "FISH":

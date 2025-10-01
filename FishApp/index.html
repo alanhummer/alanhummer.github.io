@@ -42,7 +42,7 @@
         </div>
         <!-- Display area for fish info -->
         <div class="container" id="fish-info-container" style="display: none;">
-          <img id="fish-info-photo" alt="Captured Image" style="max-height: 150px; width: auto; float:center">
+          <img id="fish-info-photo" alt="Captured Image" style="width: auto; float:center">
           <img src="save-picture.png" id="savePictureBtn" alt="Save Picture..." class="buttonImage" style="float:right; position: fixed; top: 0; right: 0; display:none;">
           <img src="refresh.png" id="retryBtn" alt="Try Again..." class="buttonImage" style="float:left; position: fixed; top: 0; left: 0; display:none;">
           <div id="fish-info" class="text-display"></div>
@@ -93,7 +93,8 @@
   </div>
   <!-- Full Image Container -->
   <div class="container" id="full-image-container" style="display: none;">
-    <img id="full-image" alt="Captured Image" style="height: auto; max-width: 100%; float:center; display:block;">
+    <img id="full-image" alt="Captured Image" style="all:unset; display: block; width: 100%;">
+    <img id="overlay-close" style="width:60px; position:absolute; top:0px; right:0px; pointer-events:none;" src="close-button.svg"></div> 
   </div>
   <!-- And our scripts -->
   <script src="script.js?ver=v2025.04.19.01" type="module"></script>
