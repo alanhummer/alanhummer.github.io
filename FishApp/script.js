@@ -86,7 +86,7 @@ const weatherInfoDiv = document.getElementById('weather-info');
 const debugMessage = document.getElementById('debug');
 
 //Set the version in the status
-statusDiv.textContent = "v2025.09.30.01"; //AJH - update this with each release
+statusDiv.textContent = "v2025.11.08.01"; //AJH - update this with each release
 
 //Buttons
 const captureBtn = document.getElementById('captureBtn'); //Take Picture
