@@ -335,6 +335,10 @@ mapBtn.addEventListener('click', async () => {
         mapMessage = "Did it get away?";
         break;
 
+      case "FOREST":
+        mapMessage = "Check the trail cam?";
+        break;
+
       default:
         mapMessage = "Where ya at";
         break;
@@ -749,6 +753,10 @@ function toggleDisplay(inputType, blnShowCamera = true, blnButtonsEnabled = fals
           document.getElementById("bottom-message-save-detail").innerHTML = topMessage;
           break;
 
+        case "FOREST":
+          document.getElementById("top-message").innerHTML = "Checking the trail cam...";
+          document.getElementById("bottom-message-save-detail").innerHTML = topMessage;
+          break;
 
         default:
           //document.getElementById("bottom-message-save-detail").innerHTML = "Add a fish!&nbsp;<a href='javascript:addFish();'><img src='generate-fish.png'></a>";
@@ -992,7 +1000,7 @@ async function identifyFish(inputImageQuery, tryAttemptNumber) {
   //If we loaded title/subject from image, use it
   if (imageTitle.length > 10 && imageSubject.length > 3) {
     imageDescription = imageTitle;
-    if (imageSubject == "FISH" || imageSubject == "FOOD" || imageSubject == "DEER" || imageSubject == "AUTOMOBILE" || imageSubject == "PERSON" || imageSubject == "OTHER") {
+    if (imageSubject == "FISH" || imageSubject == "FOOD" || imageSubject == "DEER" || imageSubject == "AUTOMOBILE" || imageSubject == "PERSON" || imageSubject == "FOREST" || imageSubject == "OTHER") {
       imageType = imageSubject;
     }
   }
@@ -1027,6 +1035,12 @@ async function identifyFish(inputImageQuery, tryAttemptNumber) {
     case "PERSON":
       fishInfoBtn.src = "generate-fish.png";
       inputImageQuery = inputImageQuery + "_PERSON";
+      topMessage = "(wait for it)";
+      document.getElementById("bottom-message-save-detail").innerHTML = topMessage;
+      break;
+    case "FOREST":
+      fishInfoBtn.src = "trail-cam.png";
+      inputImageQuery = inputImageQuery + "_TRAIL_CAM";
       topMessage = "(wait for it)";
       document.getElementById("bottom-message-save-detail").innerHTML = topMessage;
       break;
@@ -1235,6 +1249,14 @@ async function identifyImage(inputImageDescription, inputImageType) {
       case "PERSON":
         topMessage = "It got away?";
         fishInfoBtn.src = "generate-fish.png";
+        document.getElementById('fish-info').className = "text-display";
+        document.getElementById('fish-info').style.display = "none";
+        document.getElementById('fish-info-photo').style.maxHeight = canvas.height;
+        break;
+  
+      case "FOREST":
+        topMessage = "Trail Cam?";
+        fishInfoBtn.src = "trail-cam.png";
         document.getElementById('fish-info').className = "text-display";
         document.getElementById('fish-info').style.display = "none";
         document.getElementById('fish-info-photo').style.maxHeight = canvas.height;
