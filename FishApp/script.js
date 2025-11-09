@@ -1088,7 +1088,12 @@ async function identifyFish(inputImageQuery, tryAttemptNumber) {
       imageDescription = ""
       document.getElementById('fish-info-photo').src = URL.createObjectURL(imageBlob);
       document.getElementById('full-image').src = URL.createObjectURL(imageBlob);
-      topMessage = "...the one that got away!";
+      if (inputImageQuery == "IMAGE_QUERY_TRAIL_CAM") {
+        topMessage = "...look what showed up!";
+      }
+      else {
+        topMessage = "...the one that got away!";
+      }
       document.getElementById("bottom-message-save-detail").innerHTML = topMessage;
     }
 
