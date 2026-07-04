@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice-to-Text Dictation Portal</title>
+    <!-- Tailwind CSS for sleek modern styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Pulse animation for active voice recording */
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.5; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+        .mic-active-ring {
+            animation: pulse-ring 1.5s cubic-bezier(0.24, 0, 0.38, 1) infinite;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-tr from-slate-900 via-indigo-950 to-slate-900 min-h-screen flex items-center justify-center p-4 text-slate-100 font-sans">
+
+    <!-- Main Card Container -->
+    <div class="w-full max-w-lg bg-slate-800/80 backdrop-blur-md border border-slate-700/50 rounded-2xl p-6 shadow-2xl relative overflow-hidden">
+        
+        <!-- Premium Accent Light Top Glow -->
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-4/5 h-[2px] bg-gradient-to-r from-transparent via-indigo-500 to-transparent"></div>
+
+        <!-- Header -->
+        <div class="text-center mb-6">
+            <h1 class="text-2xl font-bold tracking-tight bg-gradient-to-r from-indigo-200 via-slate-100 to-indigo-200 bg-clip-text text-transparent">
+                Voice Dictation Portal
+            </h1>
+            <p class="text-slate-400 text-sm mt-1">Type your text manually or click the microphone to speak.</p>
+        </div>
+
+        <!-- Browser Compatibility Warning (hidden by default, shown via JS if unsupported) -->
+        <div id="unsupportedWarning" class="hidden mb-4 p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl text-amber-300 text-xs flex items-start gap-2">
+            <svg class="w-4 h-4 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+            </svg>
+            <div>
+                <span class="font-semibold">Speech Recognition Unsupported:</span> This browser doesn't fully support the Web Speech API. We recommend Chrome, Edge, or Safari for voice input features.
+            </div>
+        </div>
+
+        <!-- Input Form -->
+        <form id="dictationForm" class="space-y-4">
+            
+            <!-- Textarea Wrapper -->
+            <div class="relative">
+                <label for="textInput" class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Your Message</label>
+                
+                <!-- Main Multi-line Input Box -->
+                <textarea 
+                    id="textInput" 
+                    rows="6" 
+                    placeholder="Enter your message here or click the mic to begin speaking..." 
+                    class="w-full bg-slate-900/90 border border-slate-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 rounded-xl p-4 pr-14 text-slate-200 placeholder-slate-500 focus:outline-none transition-all resize-none text-base"
+                ></textarea>
+
+                <!-- Floating Voice Control Overlay -->
+                <div class="absolute bottom-4 right-4 flex items-center gap-2">
+                    
+                    <!-- Voice Active Glow Indicator -->
+                    <div id="pulseRing" class="hidden absolute inset-0 bg-red-500/30 rounded-full mic-active-ring"></div>
+                    
+                    <!-- Microphone Button -->
+                    <button 
+                        type="button" 
+                        id="micBtn" 
+                        title="Click to start/stop voice dictation"
+                        class="relative z-10 p-3 rounded-full bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white transition-all shadow-lg hover:shadow-indigo-500/20 cursor-pointer"
+                    >
+                        <!-- Microphone Icon (Off State) -->
+                        <svg id="micIconOff" class="w-5 h-5 block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/>
+                        </svg>
+
+                        <!-- Recording Icon (Active State) -->
+                        <svg id="micIconOn" class="w-5 h-5 hidden text-red-100" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H10a1 1 0 01-1-1v-4z" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Interactive Real-time Status Area -->
+            <div class="flex items-center justify-between text-xs px-1">
+                <!-- Status Message -->
+                <div id="statusMessage" class="text-slate-400 flex items-center gap-1.5 font-medium">
+                    <span class="w-2 h-2 rounded-full bg-slate-500" id="statusDot"></span>
+                    <span id="statusText">Ready</span>
+                </div>
+                <!-- Action Controls (Clear Text) -->
+                <button type="button" id="clearBtn" class="text-slate-500 hover:text-slate-300 transition-colors font-medium hover:underline focus:outline-none">
+                    Clear Text
+                </button>
+            </div>
+
+            <!-- Submit Button -->
+            <button 
+                type="submit" 
+                class="w-full py-3.5 px-4 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 active:scale-[0.99] rounded-xl font-semibold tracking-wide text-white transition-all shadow-xl shadow-indigo-950/50 hover:shadow-indigo-500/10 border border-indigo-400/20"
+            >
+                Submit Message
+            </button>
+        </form>
+    </div>
+
+    <!-- Custom Pop-up / Modal Box (Replaces alert) -->
+    <div id="customModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm hidden transition-all duration-300 opacity-0">
+        <div class="w-full max-w-md bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-2xl relative transform scale-95 transition-all duration-300" id="modalCard">
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between border-b border-slate-700/60 pb-4 mb-4">
+                <h3 class="font-bold text-lg text-slate-100 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Submission Successful
+                </h3>
+                <button id="closeModalCross" class="text-slate-400 hover:text-slate-200 transition-colors focus:outline-none text-xl p-1">&times;</button>
+            </div>
+            
+            <!-- Modal Body Content -->
+            <div class="space-y-3">
+                <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">The text you submitted:</p>
+                <div class="max-h-60 overflow-y-auto bg-slate-900/80 rounded-xl p-4 border border-slate-700/40 text-slate-200 text-sm whitespace-pre-wrap break-words" id="modalOutputText">
+                    <!-- Text will be dynamically rendered here -->
+                </div>
+            </div>
+
+            <!-- Modal Action Buttons -->
+            <div class="flex gap-3 mt-6">
+                <button 
+                    id="copyBtn" 
+                    class="flex-1 py-2.5 px-4 bg-slate-700 hover:bg-slate-600 text-slate-200 font-medium rounded-xl transition-all flex items-center justify-center gap-2 border border-slate-600/50"
+                >
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                    </svg>
+                    Copy Text
+                </button>
+                <button 
+                    id="closeModalBtn" 
+                    class="flex-1 py-2.5 px-4 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-xl transition-all border border-indigo-400/20"
+                >
+                    Dismiss
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Core Javascript Functionality -->
+    <script>
+        // DOM Elements
+        const form = document.getElementById('dictationForm');
+        const textInput = document.getElementById('textInput');
+        const micBtn = document.getElementById('micBtn');
+        const micIconOn = document.getElementById('micIconOn');
+        const micIconOff = document.getElementById('micIconOff');
+        const pulseRing = document.getElementById('pulseRing');
+        const statusDot = document.getElementById('statusDot');
+        const statusText = document.getElementById('statusText');
+        const clearBtn = document.getElementById('clearBtn');
+        const unsupportedWarning = document.getElementById('unsupportedWarning');
+        
+        // Modal DOM Elements
+        const customModal = document.getElementById('customModal');
+        const modalCard = document.getElementById('modalCard');
+        const modalOutputText = document.getElementById('modalOutputText');
+        const closeModalCross = document.getElementById('closeModalCross');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const copyBtn = document.getElementById('copyBtn');
+
+        // Web Speech API Initialization
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        let recognition = null;
+        let isListening = false;
+        let originalText = ''; // Track existing text before dictation starts to append cleanly
+
+        if (SpeechRecognition) {
+            recognition = new SpeechRecognition();
+            recognition.continuous = true; // Continues listening until toggled off
+            recognition.interimResults = true; // Allows text to construct as the user speaks
+            recognition.lang = 'en-US'; // Default locale for English transcription
+
+            // Speech Recognition Lifecycle Events
+            recognition.onstart = () => {
+                isListening = true;
+                updateMicState(true);
+                updateStatus('listening', 'Listening to voice...');
+                originalText = textInput.value; // Store text so we can append fresh speech
+            };
+
+            recognition.onend = () => {
+                isListening = false;
+                updateMicState(false);
+                updateStatus('ready', 'Ready');
+            };
+
+            recognition.onresult = (event) => {
+                let interimTranscript = '';
+                let finalTranscript = '';
+
+                for (let i = event.resultIndex; i < event.results.length; ++i) {
+                    if (event.results[i].isFinal) {
+                        finalTranscript += event.results[i][0].transcript;
+                    } else {
+                        interimTranscript += event.results[i][0].transcript;
+                    }
+                }
+
+                // Append newly captured speech to any preexisting manual text entry
+                const joinSpacing = originalText.length > 0 && !originalText.endsWith(' ') ? ' ' : '';
+                textInput.value = originalText + joinSpacing + finalTranscript + interimTranscript;
+                
+                // Auto scroll textarea as input size expands
+                textInput.scrollTop = textInput.scrollHeight;
+            };
+
+            recognition.onerror = (event) => {
+                console.error("Speech Recognition Error:", event.error);
+                isListening = false;
+                updateMicState(false);
+                
+                if (event.error === 'not-allowed') {
+                    updateStatus('error', 'Microphone permission blocked.');
+                } else if (event.error === 'no-speech') {
+                    updateStatus('error', 'No speech detected.');
+                } else {
+                    updateStatus('error', `Error: ${event.error}`);
+                }
+            };
+        } else {
+            // Display visual warning when browser does not support SpeechRecognition
+            unsupportedWarning.classList.remove('hidden');
+            micBtn.classList.add('opacity-40', 'cursor-not-allowed');
+            micBtn.disabled = true;
+            micBtn.title = 'Speech Recognition is not supported by your current browser.';
+        }
+
+        // Toggle Microphone State
+        micBtn.addEventListener('click', () => {
+            if (!recognition) return;
+
+            if (isListening) {
+                recognition.stop();
+            } else {
+                try {
+                    recognition.start();
+                } catch (err) {
+                    console.error("Failed to start speech recognition:", err);
+                    updateStatus('error', 'Failed to start microphone.');
+                }
+            }
+        });
+
+        // Form Submit Handler (Triggers Modal Popup)
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const payload = textInput.value.trim();
+            
+            // Stop voice parsing on form submission
+            if (isListening && recognition) {
+                recognition.stop();
+            }
+
+            if (!payload) {
+                updateStatus('error', 'Please enter some text before submitting.');
+                return;
+            }
+
+            // Populate Modal Content
+            modalOutputText.textContent = payload;
+            
+            // Open Modal
+            openModal();
+        });
+
+        // Clear Text Button Functionality
+        clearBtn.addEventListener('click', () => {
+            textInput.value = '';
+            originalText = '';
+            updateStatus('ready', 'Text cleared');
+            setTimeout(() => {
+                if (statusText.textContent === 'Text cleared') {
+                    updateStatus('ready', 'Ready');
+                }
+            }, 2000);
+        });
+
+        // UI Helpers
+        function updateMicState(active) {
+            if (active) {
+                micIconOff.classList.add('hidden');
+                micIconOn.classList.remove('hidden');
+                pulseRing.classList.remove('hidden');
+                micBtn.classList.remove('bg-indigo-600', 'hover:bg-indigo-500');
+                micBtn.classList.add('bg-red-600', 'hover:bg-red-500');
+            } else {
+                micIconOff.classList.remove('hidden');
+                micIconOn.classList.add('hidden');
+                pulseRing.classList.add('hidden');
+                micBtn.classList.remove('bg-red-600', 'hover:bg-red-500');
+                micBtn.classList.add('bg-indigo-600', 'hover:bg-indigo-500');
+            }
+        }
+
+        function updateStatus(type, message) {
+            statusText.textContent = message;
+            
+            // Clear current colors
+            statusDot.className = "w-2 h-2 rounded-full transition-colors";
+            statusText.className = "text-slate-400 font-medium";
+
+            if (type === 'listening') {
+                statusDot.classList.add('bg-red-500', 'animate-pulse');
+                statusText.classList.add('text-red-400');
+            } else if (type === 'error') {
+                statusDot.classList.add('bg-amber-500');
+                statusText.classList.add('text-amber-400');
+            } else { // 'ready' state
+                statusDot.classList.add('bg-emerald-500');
+                statusText.classList.add('text-emerald-400');
+            }
+        }
+
+        // Modal Interactive Operations
+        function openModal() {
+            customModal.classList.remove('hidden');
+            // Trigger visual transitions
+            setTimeout(() => {
+                customModal.classList.remove('opacity-0');
+                modalCard.classList.remove('scale-95');
+                modalCard.classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeModal() {
+            customModal.classList.add('opacity-0');
+            modalCard.classList.remove('scale-100');
+            modalCard.classList.add('scale-95');
+            // Complete state closure once transition finishes
+            setTimeout(() => {
+                customModal.classList.add('hidden');
+            }, 300);
+        }
+
+        // Event listeners for close triggers
+        closeModalCross.addEventListener('click', closeModal);
+        closeModalBtn.addEventListener('click', closeModal);
+        
+        // Close on clicking the background overlay
+        customModal.addEventListener('click', (e) => {
+            if (e.target === customModal) {
+                closeModal();
+            }
+        });
+
+        // Copy Clipboard Support Function
+        copyBtn.addEventListener('click', () => {
+            const originalBtnText = copyBtn.innerHTML;
+            const textToCopy = modalOutputText.textContent;
+            
+            // Backup selection copy functionality
+            const textareaDummy = document.createElement('textarea');
+            textareaDummy.value = textToCopy;
+            textareaDummy.style.position = 'fixed'; // Keep hidden off-screen
+            document.body.appendChild(textareaDummy);
+            textareaDummy.select();
+            
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    copyBtn.innerHTML = `
+                        <svg class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        Copied!
+                    `;
+                    copyBtn.classList.remove('bg-slate-700', 'hover:bg-slate-600');
+                    copyBtn.classList.add('bg-emerald-950/40', 'border-emerald-500/30', 'text-emerald-300');
+                    
+                    setTimeout(() => {
+                        copyBtn.innerHTML = originalBtnText;
+                        copyBtn.className = "flex-1 py-2.5 px-4 bg-slate-700 hover:bg-slate-600 text-slate-200 font-medium rounded-xl transition-all flex items-center justify-center gap-2 border border-slate-600/50";
+                    }, 2000);
+                }
+            } catch (err) {
+                console.error('Could not copy text to clipboard', err);
+            }
+            
+            document.body.removeChild(textareaDummy);
+        });
+    </script>
+</body>
+</html>
