@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-950 text-slate-100">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>The Entegral Rental Experience</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Google Fonts: Inter & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Outfit', 'sans-serif'],
+          },
+          colors: {
+            integral: {
+              50: '#eefbff',
+              100: '#d5f5ff',
+              400: '#38bdf8',
+              500: '#0ea5e9',
+              600: '#0284c7',
+              700: '#0369a1',
+              900: '#0c4a6e',
+              gold: '#fbbf24',
+              accent: '#6366f1'
+            }
+          },
+          animation: {
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'bounce-gentle': 'bounceGentle 2s infinite',
+            'float': 'float 4s ease-in-out infinite',
+            'glow': 'glow 2s ease-in-out infinite alternate',
+          },
+          keyframes: {
+            bounceGentle: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-6px)' }
+            },
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-8px)' }
+            },
+            glow: {
+              '0%': { boxShadow: '0 0 10px rgba(14, 165, 233, 0.3)' },
+              '100%': { boxShadow: '0 0 25px rgba(14, 165, 233, 0.8), 0 0 10px rgba(99, 102, 241, 0.5)' }
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    html, body {
+      height: 100%;
+      height: 100dvh;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+    body {
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.6);
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(56, 189, 248, 0.4);
+      border-radius: 9999px;
+    }
+    .glass-card {
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .glass-card-interactive {
+      background: rgba(30, 41, 59, 0.7);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(56, 189, 248, 0.15);
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .glass-card-interactive:active {
+      transform: scale(0.97);
+      border-color: rgba(56, 189, 248, 0.5);
+    }
+    /* Confetti Canvas */
+    #confettiCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 100;
+    }
+  </style>
+</head>
+<body class="w-full h-full h-[100dvh] bg-slate-950 text-slate-100 overflow-hidden antialiased font-sans flex flex-col justify-center items-center">
+
+  <!-- Main Mobile Shell Container - Fills Viewport 100% -->
+  <div class="w-full h-full h-[100dvh] max-w-md mx-auto bg-slate-950 shadow-2xl flex flex-col justify-between relative overflow-hidden border-x border-slate-900">
+
+    <!-- Confetti Canvas -->
+    <canvas id="confettiCanvas"></canvas>
+
+    <!-- ==================== STREAMING_CHUNK:Rendering Intro Video Briefing Overlay ==================== -->
+    <div id="videoModal" class="absolute inset-0 z-50 flex flex-col bg-slate-950/95 backdrop-blur-md transition-opacity duration-500 opacity-100">
+      <div class="relative w-full h-full flex flex-col items-center justify-center p-2.5 overflow-hidden">
+        <!-- Simulated Video Container / Canvas -->
+        <div class="relative w-full h-full flex flex-col justify-between bg-black rounded-2xl overflow-hidden border border-slate-800 shadow-2xl">
+          
+          <!-- Video Header Overlay -->
+          <div class="absolute top-0 left-0 right-0 z-20 p-2.5 bg-gradient-to-b from-black/80 via-black/40 to-transparent flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-red-600 text-white animate-pulse">
+                <span class="w-1.5 h-1.5 mr-1 rounded-full bg-white"></span> BRIEFING
+              </span>
+              <span class="text-[10px] text-slate-300 font-mono" id="videoTimer">00:00 / 00:15</span>
+            </div>
+            <button id="skipVideoBtn" class="text-[10px] bg-slate-800/80 hover:bg-slate-700 text-slate-200 px-2.5 py-1 rounded-full border border-slate-600 backdrop-blur-md flex items-center gap-1 transition cursor-pointer">
+              <span>Close</span> <i class="fa-solid fa-xmark text-[10px]"></i>
+            </button>
+          </div>
+
+          <!-- Video Simulation Screen Canvas & Graphics -->
+          <div class="relative w-full h-full bg-slate-900 flex items-center justify-center overflow-hidden">
+            <!-- Canvas fallback video effect -->
+            <canvas id="briefingCanvas" class="absolute inset-0 w-full h-full object-cover"></canvas>
+
+            <!-- Animated Overlay Text Content inside Video -->
+            <div class="relative z-10 p-4 text-center flex flex-col items-center justify-center h-full max-w-xs">
+              <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-integral-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-integral-500/30 mb-2.5 animate-float">
+                <i class="fa-solid fa-shield-halved text-2xl text-white"></i>
+              </div>
+              <h1 class="font-display text-xl font-black text-white tracking-tight leading-tight mb-1">
+                THE ENTEGRAL <br><span class="text-integral-400">RENTAL EXPERIENCE</span>
+              </h1>
+              <div class="h-1 w-10 bg-integral-500 my-1.5 rounded-full"></div>
+              <p id="videoSubtext" class="text-[11px] text-slate-300 leading-relaxed min-h-[3rem] transition-all duration-300">
+                Initializing Emergency Claims Handler Module...
+              </p>
+            </div>
+
+            <!-- Video Play Control Overlay -->
+            <button id="playPauseVideoBtn" class="absolute bottom-3 left-3 z-20 w-9 h-9 rounded-full bg-integral-500/80 text-white backdrop-blur-md flex items-center justify-center shadow-lg hover:scale-105 transition">
+              <i class="fa-solid fa-pause text-xs" id="playIcon"></i>
+            </button>
+            
+            <button id="soundToggleVideoBtn" class="absolute bottom-3 right-3 z-20 w-9 h-9 rounded-full bg-slate-800/80 text-white backdrop-blur-md flex items-center justify-center shadow-lg hover:scale-105 transition">
+              <i class="fa-solid fa-volume-high text-xs" id="soundIcon"></i>
+            </button>
+          </div>
+
+          <!-- Start Game Button Action -->
+          <div id="videoActionBox" class="p-2.5 bg-slate-900/90 border-t border-slate-800 flex flex-col gap-2">
+            <button id="startBriefingBtn" class="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-integral-500 to-indigo-600 text-white font-display font-bold text-xs shadow-lg shadow-integral-500/25 hover:opacity-95 active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer">
+              <span>ACCEPT DISPATCH MISSION</span>
+              <i class="fa-solid fa-circle-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== STREAMING_CHUNK:Building Main Header & HUD ==================== -->
+    <header class="sticky top-0 z-30 bg-slate-950/95 backdrop-blur-md border-b border-slate-800/80 px-2.5 py-1.5 shrink-0">
+      <div class="flex items-center justify-between">
+        <!-- Title & Persona -->
+        <div class="flex items-center space-x-2">
+          <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-integral-500 to-indigo-600 flex items-center justify-center shadow-md shadow-integral-500/20 text-white font-bold text-xs">
+            <i class="fa-solid fa-car-side"></i>
+          </div>
+          <div>
+            <h1 class="font-display font-extrabold text-[11px] tracking-tight text-white uppercase flex items-center gap-1 leading-none">
+              Entegral Rental
+              <span class="text-[8px] bg-integral-500/20 text-integral-400 px-1 py-0.2 rounded font-mono font-medium border border-integral-500/30">PRO</span>
+            </h1>
+            <p class="text-[9px] text-slate-400 flex items-center gap-1 mt-0.5 leading-none">
+              <i class="fa-solid fa-user-shield text-integral-400 text-[8px]"></i>
+              <span id="personaRoleText">Insurance Claims Agent</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- Score Aggregate Counter & Menu -->
+        <div class="flex items-center space-x-1.5">
+          <div class="flex items-center gap-1 bg-slate-900/90 px-2 py-0.5 rounded-lg border border-integral-500/30">
+            <i class="fa-solid fa-trophy text-integral-gold text-[10px]"></i>
+            <span id="aggregateScoreText" class="font-display font-extrabold text-xs text-integral-400">0</span>
+            <span class="text-[10px] text-slate-500 font-bold">/30</span>
+          </div>
+
+          <button id="leaderboardToggleBtn" class="w-7 h-7 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 hover:text-white flex items-center justify-center active:scale-95 transition cursor-pointer">
+            <i class="fa-solid fa-chart-simple text-[10px]"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Progress Bar towards 30 Points -->
+      <div class="w-full bg-slate-900 h-1 rounded-full overflow-hidden border border-slate-800 mt-1">
+        <div id="scoreProgressBar" class="bg-gradient-to-r from-integral-500 via-indigo-500 to-integral-gold h-full w-0 transition-all duration-500"></div>
+      </div>
+    </header>
+
+    <!-- ==================== STREAMING_CHUNK:Constructing Main Viewport Content Body ==================== -->
+    <main class="flex-1 w-full mx-auto p-2 flex flex-col justify-between overflow-hidden gap-1.5 pb-10">
+      
+      <!-- Mission Persona / Scenario Dispatch Card -->
+      <section class="glass-card rounded-xl p-2 relative overflow-hidden shrink-0">
+        <div class="flex items-center justify-between gap-2">
+          <div class="flex items-center gap-2 min-w-0">
+            <div id="customerAvatar" class="w-8 h-8 rounded-lg bg-gradient-to-tr from-indigo-600 to-slate-800 border border-indigo-400/30 flex items-center justify-center text-white font-bold text-xs shadow-md shrink-0">
+              HL
+            </div>
+            <div class="min-w-0">
+              <div class="flex items-center gap-1 flex-wrap">
+                <h2 id="customerName" class="font-display text-xs font-bold text-white truncate">Holly Lawson</h2>
+                <span id="scenarioIndexBadge" class="text-[8px] bg-slate-800 text-integral-400 font-mono font-bold px-1.5 py-0.2 rounded-full border border-slate-700 shrink-0">
+                  Claim 1/3
+                </span>
+              </div>
+              <p class="text-[9px] text-slate-400 truncate">Policyholder Claims Request</p>
+            </div>
+          </div>
+
+          <button id="viewPromptAgainBtn" class="text-[10px] bg-indigo-600/30 hover:bg-indigo-600/50 text-indigo-200 px-2.5 py-1 rounded-lg border border-indigo-500/40 font-bold cursor-pointer transition flex items-center gap-1 shrink-0 shadow-sm active:scale-95">
+            <i class="fa-solid fa-comment-dots text-integral-400 text-[10px]"></i> Prompt
+          </button>
+        </div>
+      </section>
+
+      <!-- ==================== STREAMING_CHUNK:Rendering Interactive Claims Form ==================== -->
+      <section class="flex flex-col gap-1.5 flex-1 justify-around">
+        
+        <!-- Step 1: Select Vehicle -->
+        <div class="glass-card rounded-xl p-1.5">
+          <div class="text-[10px] font-semibold text-slate-200 mb-1 flex items-center justify-between px-0.5">
+            <span>1. Vehicle Category</span>
+            <span id="carSelectedBadge" class="text-[9px] text-slate-400">None</span>
+          </div>
+          
+          <div class="grid grid-cols-4 gap-1" id="vehicleGrid">
+            <!-- Vehicle Cards rendered dynamically via JS -->
+          </div>
+        </div>
+
+        <!-- Step 2: Select Branch Location -->
+        <div class="glass-card rounded-xl p-1.5">
+          <div class="text-[10px] font-semibold text-slate-200 mb-1 flex items-center justify-between px-0.5">
+            <span>2. Pickup Branch</span>
+            <span id="branchSelectedBadge" class="text-[9px] text-slate-400">None</span>
+          </div>
+          
+          <div class="grid grid-cols-4 gap-1" id="branchGrid">
+            <!-- Branch Cards rendered dynamically via JS -->
+          </div>
+        </div>
+
+        <!-- Step 3: Select Date & Add-on -->
+        <div class="glass-card rounded-xl p-1.5 grid grid-cols-2 gap-1.5">
+          <div>
+            <label class="text-[9px] font-semibold text-slate-200 mb-0.5 block px-0.5">3. Start Date</label>
+            <input type="date" id="inputStartDate" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-1.5 py-1 text-[10px] text-white focus:outline-none focus:border-integral-500 font-mono">
+          </div>
+
+          <div>
+            <label class="text-[9px] font-semibold text-slate-200 mb-0.5 block px-0.5">4. Add-on Request</label>
+            <select id="selectAddon" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-1 py-1 text-[10px] text-white focus:outline-none focus:border-integral-500">
+              <option value="None">None</option>
+              <option value="Child Car Seat">Child Car Seat</option>
+              <option value="GPS Navigation">GPS Navigation</option>
+              <option value="Hand Controls">Hand Controls</option>
+              <option value="Additional Driver">Additional Driver</option>
+              <option value="Toll Pass Unlimited">Toll Pass Unlimited</option>
+              <option value="Ski Roof Rack">Ski Roof Rack</option>
+              <option value="Bicycle Rack">Bicycle Rack</option>
+              <option value="Wi-Fi Hotspot">Wi-Fi Hotspot</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Submit Dispatch Button -->
+        <button id="dispatchSubmitBtn" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-integral-500 via-indigo-600 to-integral-600 text-white font-display font-extrabold text-xs tracking-wide shadow-lg border border-integral-400 hover:scale-[1.01] active:scale-95 transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer">
+          <i class="fa-solid fa-car-on text-xs"></i>
+          <span>DISPATCH RENTAL CAR</span>
+        </button>
+      </section>
+    </main>
+
+    <!-- Bottom Quick Controls / Replay Briefing Bar -->
+    <footer class="absolute bottom-0 left-0 right-0 z-20 bg-slate-950/95 border-t border-slate-800/80 px-2.5 py-1.5 backdrop-blur-md">
+      <div class="flex items-center justify-between text-[9px] text-slate-400">
+        <button id="replayBriefingBtn" class="hover:text-integral-400 flex items-center gap-1 py-0.5 px-2 rounded-lg bg-slate-900 border border-slate-800 transition cursor-pointer">
+          <i class="fa-solid fa-film text-integral-400"></i>
+          <span>Replay Video</span>
+        </button>
+
+        <button id="resetGameBtn" class="hover:text-red-400 flex items-center gap-1 py-0.5 px-2 rounded-lg bg-slate-900 border border-slate-800 transition cursor-pointer">
+          <i class="fa-solid fa-rotate-right"></i>
+          <span>Restart Game</span>
+        </button>
+      </div>
+    </footer>
+
+    <!-- ==================== STREAMING_CHUNK:Claim Prompt Dialog Overlay Modal ==================== -->
+    <div id="claimPromptModal" class="absolute inset-0 z-50 flex items-center justify-center p-3 bg-slate-950/85 backdrop-blur-md transition-opacity duration-300 opacity-0 pointer-events-none">
+      <div class="glass-card w-full max-w-xs rounded-2xl p-4 border border-integral-500/40 text-center flex flex-col items-center gap-2.5 transform transition-all scale-95" id="claimPromptCard">
+        
+        <div id="promptAvatar" class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-integral-500 to-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-integral-500/30">
+          H
+        </div>
+
+        <div>
+          <span class="text-[9px] font-mono font-bold text-integral-400 uppercase tracking-wider bg-integral-500/10 px-2.5 py-0.5 rounded-full border border-integral-500/20" id="promptClaimNumber">
+            Claim 1 of 3
+          </span>
+          <h2 class="font-display text-lg font-black text-white mt-0.5" id="promptCustomerName">Holly</h2>
+        </div>
+
+        <div class="w-full bg-slate-900/90 p-3.5 rounded-xl border border-slate-800 text-white text-sm md:text-base leading-relaxed font-semibold text-left shadow-inner" id="promptStoryText">
+          "Hi! I'm Holly! I want an SUV near Airport Terminal for tomorrow! I have a little one and need a car seat!"
+        </div>
+
+        <button id="closeClaimPromptBtn" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-integral-500 to-indigo-600 text-white font-display font-bold text-xs shadow-lg shadow-integral-500/30 hover:opacity-95 active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer">
+          <span>GOT IT! START CONFIG</span>
+          <i class="fa-solid fa-circle-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- ==================== STREAMING_CHUNK:Creating Success Confirmation Modal ==================== -->
+    <div id="successModal" class="absolute inset-0 z-50 flex items-center justify-center p-3 bg-slate-950/80 backdrop-blur-md transition-opacity duration-300 opacity-0 pointer-events-none">
+      <div class="glass-card w-full max-w-xs rounded-2xl p-4 border border-emerald-500/40 text-center flex flex-col items-center gap-2.5 transform transition-all scale-95" id="successModalCard">
+        
+        <div class="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center text-xl animate-bounce-gentle">
+          <i class="fa-solid fa-circle-check"></i>
+        </div>
+
+        <div>
+          <span class="text-[9px] font-mono font-bold text-emerald-400 uppercase tracking-wider bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+            Claim Dispatched!
+          </span>
+          <h2 class="font-display text-lg font-black text-white mt-0.5" id="successCarName">Midsize SUV</h2>
+          <p class="text-[11px] text-slate-300 mt-0.5" id="successQuote">"Thank you! My policyholder is back on the road!"</p>
+        </div>
+
+        <div class="w-full bg-slate-900 p-2.5 rounded-xl border border-slate-800 text-left text-xs space-y-1">
+          <div class="flex justify-between"><span class="text-slate-400">Insured:</span> <span id="modalCustomer" class="font-semibold text-white">Holly</span></div>
+          <div class="flex justify-between"><span class="text-slate-400">Specs Matched:</span> <span id="modalSpecsCount" class="font-semibold text-integral-400">4 / 4 Correct</span></div>
+          <div class="flex justify-between"><span class="text-slate-400">Points Awarded:</span> <span id="modalPointsAwarded" class="font-bold text-integral-gold">+10 PTS</span></div>
+        </div>
+
+        <button id="nextScenarioBtn" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-display font-bold text-xs shadow-lg shadow-emerald-500/20 hover:opacity-95 active:scale-95 transition cursor-pointer">
+          NEXT CLAIM TASK <i class="fa-solid fa-arrow-right ml-1"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- ==================== STREAMING_CHUNK:Creating Smart Assist / Rental Booth Victory Prize Modal ==================== -->
+    <div id="winModal" class="absolute inset-0 z-50 flex items-center justify-center p-3 bg-slate-950/90 backdrop-blur-lg transition-opacity duration-500 opacity-0 pointer-events-none">
+      <div class="glass-card w-full max-w-xs rounded-2xl p-4 border-2 border-integral-gold text-center flex flex-col items-center gap-2.5 transform transition-all scale-90 shadow-2xl shadow-integral-gold/20 max-h-[90%] overflow-y-auto" id="winModalCard">
+        <div class="relative">
+          <div class="w-14 h-14 rounded-full bg-gradient-to-tr from-integral-gold to-amber-500 text-slate-950 flex items-center justify-center text-2xl font-extrabold shadow-xl shadow-integral-gold/40 animate-pulse">
+            <i class="fa-solid fa-trophy"></i>
+          </div>
+          <div class="absolute -bottom-1.5 left-1/2 -translate-x-1/2 bg-slate-900 text-integral-gold text-[8px] font-mono font-bold px-2 py-0.2 rounded-full border border-integral-gold whitespace-nowrap" id="finalScoreBadge">
+            30 / 30 POINTS!
+          </div>
+        </div>
+
+        <div>
+          <h2 class="font-display text-lg font-black text-white tracking-tight">GAME COMPLETED!</h2>
+          <p class="text-[10px] text-slate-300 mt-0.5 font-medium">
+            You finished all 3 claims for the Entegral Rental Experience!
+          </p>
+        </div>
+
+        <!-- Mandatory Instruction Banner -->
+        <div class="w-full bg-gradient-to-r from-integral-600/90 to-indigo-600/90 p-2.5 rounded-xl border border-integral-400 text-white shadow-xl">
+          <i class="fa-solid fa-bullhorn text-xs text-integral-gold mb-0.5"></i>
+          <p class="font-display text-xs font-extrabold leading-tight">
+            Go to the Smart Assist / Rental Booth to collect your prize and show them this screen on your phone!
+          </p>
+        </div>
+
+        <!-- Dynamic Prize Claim Code & Canvas QR Code -->
+        <div class="w-full bg-slate-900 p-2.5 rounded-xl border border-slate-800 flex flex-col items-center gap-1.5">
+          <div class="text-[8px] text-slate-400 font-mono uppercase tracking-wider">Official Winner Verification Voucher</div>
+          
+          <canvas id="qrCanvas" class="w-24 h-24 bg-white p-1 rounded-lg border border-slate-700 shadow-inner"></canvas>
+
+          <div class="bg-slate-950 px-2.5 py-0.5 rounded-lg border border-slate-800 text-integral-gold font-mono font-bold text-xs tracking-wider" id="prizeVoucherCode">
+            ENTEGRAL-BOOTH-8821
+          </div>
+          <span class="text-[8px] text-slate-500">Verified by Entegral Claims Engine • <span id="winTimeText">2026-07-24</span></span>
+        </div>
+
+        <button id="closeWinModalBtn" class="w-full py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs border border-slate-700 transition">
+          Play Again
+        </button>
+      </div>
+    </div>
+
+    <!-- Leaderboard Drawer / Modal -->
+    <div id="leaderboardModal" class="absolute inset-0 z-40 bg-slate-950/80 backdrop-blur-md flex justify-end transition-opacity duration-300 opacity-0 pointer-events-none">
+      <div class="w-full max-w-[250px] bg-slate-900 h-full p-3.5 border-l border-slate-800 flex flex-col justify-between transform transition-transform duration-300 translate-x-full" id="leaderboardDrawer">
+        
+        <div>
+          <div class="flex items-center justify-between pb-2.5 border-b border-slate-800 mb-2.5">
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-ranking-star text-integral-gold text-xs"></i>
+              <h3 class="font-display font-bold text-xs text-white">Live Booth Ranks</h3>
+            </div>
+            <button id="closeLeaderboardBtn" class="text-slate-400 hover:text-white p-1">
+              <i class="fa-solid fa-xmark text-xs"></i>
+            </button>
+          </div>
+
+          <div id="leaderboardList" class="flex flex-col gap-1.5 overflow-y-auto max-h-[60vh] custom-scrollbar">
+            <!-- Leaderboard Items rendered dynamically -->
+          </div>
+        </div>
+
+        <div class="pt-2 border-t border-slate-800 text-center">
+          <p class="text-[8px] text-slate-500">Entegral Multi-User Event Platform</p>
+        </div>
+      </div>
+    </div>
+
+  </div> <!-- End Mobile Shell Container -->
+
+  <!-- ==================== STREAMING_CHUNK:Initializing Application Logic & Firebase ==================== -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, collection, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    const VEHICLES = [
+      { id: 'Compact', name: 'Economy', icon: 'fa-car-side', color: 'text-sky-400' },
+      { id: 'Sedan', name: 'Sedan', icon: 'fa-car', color: 'text-indigo-400' },
+      { id: 'SUV', name: 'SUV', icon: 'fa-truck-pickup', color: 'text-emerald-400' },
+      { id: 'EV', name: 'EV Electric', icon: 'fa-charging-station', color: 'text-teal-400' },
+      { id: 'Minivan', name: 'Minivan', icon: 'fa-van-shuttle', color: 'text-purple-400' },
+      { id: 'Truck', name: 'Pickup', icon: 'fa-truck-monster', color: 'text-amber-400' },
+      { id: 'Luxury', name: 'Luxury', icon: 'fa-gem', color: 'text-rose-400' },
+      { id: 'Compact SUV', name: 'C-SUV', icon: 'fa-car-rear', color: 'text-cyan-400' }
+    ];
+
+    const BRANCHES = [
+      { id: 'Downtown Depot', name: 'Downtown', icon: 'fa-city' },
+      { id: 'Airport Terminal', name: 'Airport', icon: 'fa-plane-departure' },
+      { id: 'Westside Hub', name: 'Westside', icon: 'fa-building-columns' },
+      { id: 'Northside Depot', name: 'Northside', icon: 'fa-map-pin' },
+      { id: 'Metro Transit Center', name: 'Metro Hub', icon: 'fa-train' },
+      { id: 'Convention Hub', name: 'Convention', icon: 'fa-hotel' },
+      { id: 'Eastside Galleria', name: 'Eastside', icon: 'fa-store' },
+      { id: 'South Suburban', name: 'Suburban', icon: 'fa-house' }
+    ];
+
+    const ADDONS_POOL = [
+      "Child Car Seat",
+      "GPS Navigation",
+      "Hand Controls",
+      "Additional Driver",
+      "Toll Pass Unlimited",
+      "Ski Roof Rack",
+      "Bicycle Rack",
+      "Wi-Fi Hotspot"
+    ];
+
+    const CUSTOMER_POOL = [
+      { name: "Holly Lawson", initials: "HL", bg: "from-pink-600 to-slate-800" },
+      { name: "Mike Miller", initials: "MM", bg: "from-indigo-600 to-slate-800" },
+      { name: "Sarah Jenkins", initials: "SJ", bg: "from-emerald-600 to-slate-800" },
+      { name: "Carlos Ramirez", initials: "CR", bg: "from-purple-600 to-slate-800" },
+      { name: "Amanda Vance", initials: "AV", bg: "from-sky-600 to-slate-800" },
+      { name: "David Chen", initials: "DC", bg: "from-amber-600 to-slate-800" },
+      { name: "Rachel Green", initials: "RG", bg: "from-rose-600 to-slate-800" },
+      { name: "Marcus Thorne", initials: "MT", bg: "from-teal-600 to-slate-800" },
+      { name: "Priya Patel", initials: "PP", bg: "from-fuchsia-600 to-slate-800" },
+      { name: "Ethan Brooks", initials: "EB", bg: "from-cyan-600 to-slate-800" },
+      { name: "Olivia Taylor", initials: "OT", bg: "from-violet-600 to-slate-800" },
+      { name: "Jackson Reed", initials: "JR", bg: "from-orange-600 to-slate-800" },
+      { name: "Elena Rostova", initials: "ER", bg: "from-red-600 to-slate-800" },
+      { name: "Brandon Lee", initials: "BL", bg: "from-blue-600 to-slate-800" },
+      { name: "Sophia Martinez", initials: "SM", bg: "from-emerald-700 to-slate-800" },
+      { name: "Tariq Al-Mansoor", initials: "TA", bg: "from-amber-700 to-slate-800" },
+      { name: "Chloe Dupont", initials: "CD", bg: "from-indigo-700 to-slate-800" },
+      { name: "Jordan Smith", initials: "JS", bg: "from-purple-700 to-slate-800" },
+      { name: "Hannah Abbott", initials: "HA", bg: "from-pink-700 to-slate-800" },
+      { name: "Kevin O'Connor", initials: "KO", bg: "from-cyan-700 to-slate-800" }
+    ];
+
+    let SCENARIOS = [];
+    let currentScenarioIndex = 0;
+    let aggregateScore = 0;
+    let selectedVehicle = null;
+    let selectedBranch = null;
+    let soundEnabled = true;
+    let currentUserId = 'User-' + Math.floor(1000 + Math.random() * 9000);
+
+    // Date Helper: Format date string as YYYY-MM-DD
+    function getFormattedDate(offsetDays = 0) {
+      const d = new Date();
+      d.setDate(d.getDate() + offsetDays);
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    function generate3RandomScenarios() {
+      const shuffledCustomers = [...CUSTOMER_POOL].sort(() => 0.5 - Math.random());
+      
+      SCENARIOS = [0, 1, 2].map((idx) => {
+        const cust = shuffledCustomers[idx % shuffledCustomers.length];
+        const carObj = VEHICLES[Math.floor(Math.random() * VEHICLES.length)];
+        const branchObj = BRANCHES[Math.floor(Math.random() * BRANCHES.length)];
+        const addon = ADDONS_POOL[Math.floor(Math.random() * ADDONS_POOL.length)];
+        
+        // Random date offset relative to today (1 to 5 days in the future)
+        const dateOffset = Math.floor(Math.random() * 5) + 1;
+        const dateStr = getFormattedDate(dateOffset);
+
+        let datePhrase = dateOffset === 1 ? `starting tomorrow (${dateStr})` : `starting on ${dateStr}`;
+
+        let addonPhrase = "";
+        if (addon === "Child Car Seat") addonPhrase = "I have a little one with me and require a child car seat!";
+        else if (addon === "GPS Navigation") addonPhrase = "I'm unfamiliar with the area and need GPS navigation.";
+        else if (addon === "Hand Controls") addonPhrase = "I require specialized hand controls installed.";
+        else if (addon === "Additional Driver") addonPhrase = "Please include additional driver coverage on this policy.";
+        else if (addon === "Toll Pass Unlimited") addonPhrase = "Include an unlimited toll pass for my highway commuting!";
+        else if (addon === "Ski Roof Rack") addonPhrase = "Please add a ski roof rack for my gear!";
+        else if (addon === "Bicycle Rack") addonPhrase = "Please attach a bicycle rack for my mountain bike!";
+        else if (addon === "Wi-Fi Hotspot") addonPhrase = "I need an in-car Wi-Fi hotspot pod to stay connected.";
+
+        const story = `"Hi! I'm ${cust.name}! I need a ${carObj.name} near ${branchObj.name} ${datePhrase}! ${addonPhrase}"`;
+
+        return {
+          id: idx + 1,
+          customerName: cust.name,
+          initials: cust.initials,
+          bg: cust.bg,
+          story: story,
+          reqCar: carObj.id,
+          reqBranch: branchObj.id,
+          reqDate: dateStr,
+          reqAddon: addon,
+          quote: `Thank you, ${cust.name}! The rental arrangement is fantastic!`
+        };
+      });
+    }
+
+    // Web Audio Synthesizer for SFX
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playSound(type) {
+      if (!soundEnabled) return;
+      try {
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        if (type === 'click') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.05);
+          gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.05);
+        } else if (type === 'success') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+          osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1);
+          osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2);
+          osc.frequency.setValueAtTime(1046.50, audioCtx.currentTime + 0.3);
+          gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.5);
+        } else if (type === 'win') {
+          [523.25, 659.25, 783.99, 1046.50, 1318.51].forEach((freq, idx) => {
+            const o = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            o.connect(g);
+            g.connect(audioCtx.destination);
+            o.frequency.value = freq;
+            g.gain.setValueAtTime(0.2, audioCtx.currentTime + idx * 0.12);
+            g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + idx * 0.12 + 0.4);
+            o.start(audioCtx.currentTime + idx * 0.12);
+            o.stop(audioCtx.currentTime + idx * 0.12 + 0.4);
+          });
+        }
+      } catch (e) {
+        console.debug('Audio playback note:', e);
+      }
+    }
+
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'entegral-rental-app';
+    let db = null;
+    let auth = null;
+
+    async function initFirebase() {
+      try {
+        if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+          const firebaseConfig = JSON.parse(__firebase_config);
+          const app = initializeApp(firebaseConfig);
+          auth = getAuth(app);
+          db = getFirestore(app);
+
+          if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+            await signInWithCustomToken(auth, __initial_auth_token);
+          } else {
+            await signInAnonymously(auth);
+          }
+
+          if (auth.currentUser) {
+            currentUserId = 'Agent-' + auth.currentUser.uid.substring(0, 4).toUpperCase();
+          }
+
+          listenLeaderboard();
+        }
+      } catch (e) {
+        console.warn('Firebase sync initialized in local fallback mode:', e);
+      }
+    }
+
+    function syncScoreToCloud() {
+      if (!db || !auth || !auth.currentUser) return;
+      try {
+        const userRef = doc(db, 'artifacts', appId, 'public', 'data', 'leaderboard', auth.currentUser.uid);
+        setDoc(userRef, {
+          name: currentUserId,
+          score: aggregateScore,
+          timestamp: Date.now()
+        }, { merge: true });
+      } catch (err) {
+        console.debug('Score sync:', err);
+      }
+    }
+
+    function listenLeaderboard() {
+      if (!db) return;
+      try {
+        const lbCol = collection(db, 'artifacts', appId, 'public', 'data', 'leaderboard');
+        onSnapshot(lbCol, (snapshot) => {
+          const players = [];
+          snapshot.forEach(doc => players.push(doc.data()));
+          players.sort((a, b) => (b.score || 0) - (a.score || 0));
+          renderLeaderboardList(players);
+        }, (err) => console.debug('Leaderboard err:', err));
+      } catch (e) {
+        console.debug('Leaderboard snapshot:', e);
+      }
+    }
+
+    function renderLeaderboardList(players) {
+      const container = document.getElementById('leaderboardList');
+      if (!container) return;
+      
+      if (!players || players.length === 0) {
+        container.innerHTML = `
+          <div class="p-3 text-center text-xs text-slate-500">
+            Be the first on the booth leaderboard!
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = players.slice(0, 10).map((p, idx) => `
+        <div class="flex items-center justify-between p-2 rounded-xl ${p.name === currentUserId ? 'bg-integral-500/20 border border-integral-500/40' : 'bg-slate-950/60 border border-slate-800'} text-[11px]">
+          <div class="flex items-center gap-2">
+            <span class="w-4 h-4 rounded-full flex items-center justify-center font-mono font-bold text-[9px] ${idx === 0 ? 'bg-integral-gold text-slate-950' : idx === 1 ? 'bg-slate-300 text-slate-950' : idx === 2 ? 'bg-amber-700 text-white' : 'bg-slate-800 text-slate-400'}">
+              ${idx + 1}
+            </span>
+            <span class="font-medium text-slate-200 truncate max-w-[100px]">${p.name} ${p.name === currentUserId ? '(You)' : ''}</span>
+          </div>
+          <span class="font-mono font-bold text-integral-400">${p.score || 0} PTS</span>
+        </div>
+      `).join('');
+    }
+
+    let briefingAnimationId = null;
+    let videoTime = 0;
+    let isVideoPlaying = true;
+
+    function renderBriefingCanvas() {
+      const canvas = document.getElementById('briefingCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      canvas.width = canvas.clientWidth || 360;
+      canvas.height = canvas.clientHeight || 480;
+
+      function drawFrame() {
+        if (!isVideoPlaying) return;
+        videoTime += 0.03;
+        if (videoTime > 15) videoTime = 0;
+
+        document.getElementById('videoTimer').innerText = 
+          `00:${Math.floor(videoTime).toString().padStart(2, '0')} / 00:15`;
+
+        const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+        grad.addColorStop(0, '#0284c7');
+        grad.addColorStop(0.5, '#0f172a');
+        grad.addColorStop(1, '#020617');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.strokeStyle = 'rgba(56, 189, 248, 0.15)';
+        ctx.lineWidth = 1;
+        const spacing = 30;
+        for (let x = 0; x < canvas.width; x += spacing) {
+          ctx.beginPath();
+          ctx.moveTo(x, 0);
+          ctx.lineTo(x, canvas.height);
+          ctx.stroke();
+        }
+        for (let y = 0; y < canvas.height; y += spacing) {
+          ctx.beginPath();
+          ctx.moveTo(0, y);
+          ctx.lineTo(canvas.width, y);
+          ctx.stroke();
+        }
+
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const pulseRadius = (videoTime * 40) % (canvas.width / 1.5);
+        ctx.strokeStyle = 'rgba(14, 165, 233, 0.4)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, pulseRadius, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.fillStyle = 'rgba(56, 189, 248, 0.5)';
+        const bars = 24;
+        const barWidth = canvas.width / bars;
+        for (let i = 0; i < bars; i++) {
+          const h = Math.sin(videoTime * 4 + i) * 20 + 25;
+          ctx.fillRect(i * barWidth + 2, canvas.height - h - 60, barWidth - 4, h);
+        }
+
+        const subtext = document.getElementById('videoSubtext');
+        if (subtext) {
+          if (videoTime < 4) {
+            subtext.innerText = "🚨 INCOMING ACCIDENT CLAIM DISPATCH ALERT";
+          } else if (videoTime < 8) {
+            subtext.innerText = "Motorists in accidents need fast, precise replacement vehicles!";
+          } else if (videoTime < 12) {
+            subtext.innerText = "Match vehicle types, pickup branches, dates, and special requests.";
+          } else {
+            subtext.innerText = "Reach 30 Points across 3 claims to claim your grand prize!";
+          }
+        }
+
+        briefingAnimationId = requestAnimationFrame(drawFrame);
+      }
+
+      drawFrame();
+    }
+
+    function renderVehiclesGrid() {
+      const grid = document.getElementById('vehicleGrid');
+      grid.innerHTML = VEHICLES.map(v => `
+        <button data-car-id="${v.id}" class="car-option-btn glass-card-interactive p-1 rounded-lg flex flex-col items-center justify-center text-center gap-0.5 cursor-pointer">
+          <i class="fa-solid ${v.icon} text-sm ${v.color}"></i>
+          <span class="text-[9px] font-semibold text-slate-200 leading-none truncate w-full px-0.5">${v.name}</span>
+        </button>
+      `).join('');
+
+      document.querySelectorAll('.car-option-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          playSound('click');
+          selectedVehicle = btn.getAttribute('data-car-id');
+          document.querySelectorAll('.car-option-btn').forEach(b => {
+            b.classList.remove('border-integral-500', 'bg-integral-500/20', 'ring-2', 'ring-integral-500/50');
+          });
+          btn.classList.add('border-integral-500', 'bg-integral-500/20', 'ring-2', 'ring-integral-500/50');
+          document.getElementById('carSelectedBadge').innerText = selectedVehicle;
+          document.getElementById('carSelectedBadge').className = 'text-[9px] text-integral-400 font-bold';
+        });
+      });
+    }
+
+    function renderBranchesGrid() {
+      const grid = document.getElementById('branchGrid');
+      grid.innerHTML = BRANCHES.map(b => `
+        <button data-branch-id="${b.id}" class="branch-option-btn glass-card-interactive p-1 rounded-lg flex flex-col items-center justify-center text-center gap-0.5 cursor-pointer">
+          <i class="fa-solid ${b.icon} text-integral-400 text-xs"></i>
+          <span class="text-[9px] font-semibold text-slate-200 leading-none truncate w-full px-0.5">${b.name}</span>
+        </button>
+      `).join('');
+
+      document.querySelectorAll('.branch-option-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          playSound('click');
+          selectedBranch = btn.getAttribute('data-branch-id');
+          document.querySelectorAll('.branch-option-btn').forEach(b => {
+            b.classList.remove('border-integral-500', 'bg-integral-500/20', 'ring-2', 'ring-integral-500/50');
+          });
+          btn.classList.add('border-integral-500', 'bg-integral-500/20', 'ring-2', 'ring-integral-500/50');
+          document.getElementById('branchSelectedBadge').innerText = selectedBranch;
+          document.getElementById('branchSelectedBadge').className = 'text-[9px] text-integral-400 font-bold';
+        });
+      });
+    }
+
+    function openClaimPromptModal(sc, index) {
+      document.getElementById('promptAvatar').innerText = sc.initials;
+      document.getElementById('promptCustomerName').innerText = sc.customerName;
+      document.getElementById('promptClaimNumber').innerText = `Claim ${index + 1} of 3`;
+      document.getElementById('promptStoryText').innerText = sc.story;
+
+      const modal = document.getElementById('claimPromptModal');
+      const card = document.getElementById('claimPromptCard');
+      if (modal && card) {
+        modal.classList.remove('opacity-0', 'pointer-events-none');
+        card.classList.remove('scale-95');
+        card.classList.add('scale-100');
+      }
+    }
+
+    function closeClaimPromptModal() {
+      playSound('click');
+      const modal = document.getElementById('claimPromptModal');
+      const card = document.getElementById('claimPromptCard');
+      if (modal && card) {
+        card.classList.remove('scale-100');
+        card.classList.add('scale-95');
+        modal.classList.add('opacity-0', 'pointer-events-none');
+      }
+    }
+
+    function loadScenario(index, autoShowPrompt = true) {
+      if (SCENARIOS.length === 0) generate3RandomScenarios();
+      if (index >= 3) {
+        showWinModal();
+        return;
+      }
+
+      currentScenarioIndex = index;
+      const sc = SCENARIOS[index];
+
+      document.getElementById('scenarioIndexBadge').innerText = `Claim ${index + 1}/3`;
+      document.getElementById('customerAvatar').innerText = sc.initials;
+      document.getElementById('customerName').innerText = sc.customerName;
+
+      // Default the start date picker to tomorrow (today + 1 day)
+      const startDateInput = document.getElementById('inputStartDate');
+      const addonSelect = document.getElementById('selectAddon');
+      if (startDateInput) startDateInput.value = getFormattedDate(1);
+      if (addonSelect) addonSelect.value = "None";
+
+      selectedVehicle = null;
+      selectedBranch = null;
+      document.getElementById('carSelectedBadge').innerText = 'None';
+      document.getElementById('carSelectedBadge').className = 'text-[9px] text-slate-400';
+      document.getElementById('branchSelectedBadge').innerText = 'None';
+      document.getElementById('branchSelectedBadge').className = 'text-[9px] text-slate-400';
+
+      document.querySelectorAll('.car-option-btn, .branch-option-btn').forEach(b => {
+        b.classList.remove('border-integral-500', 'bg-integral-500/20', 'ring-2', 'ring-integral-500/50');
+      });
+
+      // Only automatically show the prompt overlay if requested and video is NOT currently active
+      const videoModal = document.getElementById('videoModal');
+      const isVideoVisible = videoModal && !videoModal.classList.contains('hidden') && !videoModal.classList.contains('opacity-0');
+
+      if (autoShowPrompt && !isVideoVisible) {
+        setTimeout(() => {
+          openClaimPromptModal(sc, index);
+        }, 300);
+      }
+    }
+
+    function triggerConfetti() {
+      const canvas = document.getElementById('confettiCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const particles = [];
+      const colors = ['#38bdf8', '#0ea5e9', '#fbbf24', '#34d399', '#a855f7'];
+
+      for (let i = 0; i < 70; i++) {
+        particles.push({
+          x: canvas.width / 2,
+          y: canvas.height / 2,
+          vx: (Math.random() - 0.5) * 12,
+          vy: (Math.random() - 0.8) * 12,
+          size: Math.random() * 8 + 4,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          rotation: Math.random() * 360,
+          rotationSpeed: (Math.random() - 0.5) * 10
+        });
+      }
+
+      let frame = 0;
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += 0.25;
+          p.rotation += p.rotationSpeed;
+
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate((p.rotation * Math.PI) / 180);
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+          ctx.restore();
+        });
+
+        frame++;
+        if (frame < 90) {
+          requestAnimationFrame(animate);
+        } else {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+      }
+      animate();
+    }
+
+    function handleDispatchSubmit() {
+      const sc = SCENARIOS[currentScenarioIndex];
+      const startDateVal = document.getElementById('inputStartDate').value;
+      const addonVal = document.getElementById('selectAddon').value;
+
+      const vehicleMatch = selectedVehicle === sc.reqCar;
+      const branchMatch = selectedBranch === sc.reqBranch;
+      const dateMatch = startDateVal === sc.reqDate;
+      const addonMatch = addonVal === sc.reqAddon;
+
+      const matchedCount = (vehicleMatch?1:0) + (branchMatch?1:0) + (dateMatch?1:0) + (addonMatch?1:0);
+      const pointsEarned = Math.round((matchedCount / 4) * 10);
+
+      playSound('success');
+      triggerConfetti();
+
+      aggregateScore += pointsEarned;
+      document.getElementById('aggregateScoreText').innerText = aggregateScore;
+      
+      const progressPercent = Math.min(100, (aggregateScore / 30) * 100);
+      document.getElementById('scoreProgressBar').style.width = `${progressPercent}%`;
+
+      syncScoreToCloud();
+
+      // Show Success Modal
+      document.getElementById('successCarName').innerText = selectedVehicle ? selectedVehicle : 'Rental Car';
+      document.getElementById('successQuote').innerText = `"${sc.quote}"`;
+      document.getElementById('modalCustomer').innerText = sc.customerName;
+      document.getElementById('modalSpecsCount').innerText = `${matchedCount} / 4 Correct`;
+      document.getElementById('modalPointsAwarded').innerText = `+${pointsEarned} PTS`;
+
+      const modal = document.getElementById('successModal');
+      modal.classList.remove('opacity-0', 'pointer-events-none');
+      document.getElementById('successModalCard').classList.remove('scale-95');
+      document.getElementById('successModalCard').classList.add('scale-100');
+    }
+
+    function showWinModal() {
+      playSound('win');
+      triggerConfetti();
+
+      renderQRCanvas();
+
+      document.getElementById('finalScoreBadge').innerText = `${aggregateScore} / 30 POINTS!`;
+      document.getElementById('winTimeText').innerText = new Date().toLocaleTimeString();
+      const winModal = document.getElementById('winModal');
+      winModal.classList.remove('opacity-0', 'pointer-events-none');
+      document.getElementById('winModalCard').classList.remove('scale-90');
+      document.getElementById('winModalCard').classList.add('scale-100');
+    }
+
+    function renderQRCanvas() {
+      const canvas = document.getElementById('qrCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      canvas.width = 120;
+      canvas.height = 120;
+
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, 120, 120);
+
+      ctx.fillStyle = '#0f172a';
+      const tileSize = 6;
+      for (let r = 0; r < 20; r++) {
+        for (let c = 0; c < 20; c++) {
+          if (
+            (r < 6 && c < 6) || 
+            (r < 6 && c > 13) || 
+            (r > 13 && c < 6) || 
+            (r + c) % 3 === 0
+          ) {
+            ctx.fillRect(c * tileSize, r * tileSize, tileSize - 1, tileSize - 1);
+          }
+        }
+      }
+    }
+
+    function showToast(msg) {
+      const toast = document.createElement('div');
+      toast.className = "fixed bottom-14 left-1/2 -translate-x-1/2 z-50 bg-slate-900 border border-integral-500/50 text-white text-[11px] px-3 py-2 rounded-full shadow-2xl backdrop-blur-md font-medium transition-all duration-300";
+      toast.innerHTML = `<i class="fa-solid fa-circle-exclamation text-integral-gold mr-1"></i> ${msg}`;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 2500);
+    }
+
+    function closeVideoModal() {
+      playSound('click');
+      sessionStorage.setItem('entegral_video_played', 'true');
+      const videoModal = document.getElementById('videoModal');
+      if (videoModal) {
+        videoModal.classList.add('opacity-0', 'pointer-events-none', 'hidden');
+      }
+      isVideoPlaying = false;
+      if (briefingAnimationId) cancelAnimationFrame(briefingAnimationId);
+
+      // Trigger first claim prompt modal after video is closed
+      if (SCENARIOS.length > 0) {
+        openClaimPromptModal(SCENARIOS[currentScenarioIndex], currentScenarioIndex);
+      }
+    }
+
+    function initApp() {
+      initFirebase();
+      renderVehiclesGrid();
+      renderBranchesGrid();
+      generate3RandomScenarios();
+
+      // Set initial default start date picker value to tomorrow's date
+      const startDateInput = document.getElementById('inputStartDate');
+      if (startDateInput) startDateInput.value = getFormattedDate(1);
+      
+      const videoModal = document.getElementById('videoModal');
+      const videoClosed = sessionStorage.getItem('entegral_video_played');
+
+      if (!videoClosed) {
+        // Play video briefing first; do not open claim prompt yet
+        loadScenario(0, false);
+        if (videoModal) videoModal.classList.remove('hidden', 'opacity-0', 'pointer-events-none');
+        renderBriefingCanvas();
+      } else {
+        if (videoModal) videoModal.classList.add('opacity-0', 'pointer-events-none', 'hidden');
+        loadScenario(0, true);
+      }
+
+      document.getElementById('skipVideoBtn')?.addEventListener('click', closeVideoModal);
+      document.getElementById('startBriefingBtn')?.addEventListener('click', closeVideoModal);
+
+      document.getElementById('closeClaimPromptBtn')?.addEventListener('click', closeClaimPromptModal);
+      document.getElementById('viewPromptAgainBtn')?.addEventListener('click', () => {
+        playSound('click');
+        openClaimPromptModal(SCENARIOS[currentScenarioIndex], currentScenarioIndex);
+      });
+
+      document.getElementById('replayBriefingBtn')?.addEventListener('click', () => {
+        playSound('click');
+        if (videoModal) {
+          videoModal.classList.remove('hidden', 'opacity-0', 'pointer-events-none');
+        }
+        isVideoPlaying = true;
+        renderBriefingCanvas();
+      });
+
+      document.getElementById('playPauseVideoBtn')?.addEventListener('click', () => {
+        isVideoPlaying = !isVideoPlaying;
+        const playIcon = document.getElementById('playIcon');
+        if (playIcon) playIcon.className = isVideoPlaying ? 'fa-solid fa-pause text-xs' : 'fa-solid fa-play text-xs';
+        if (isVideoPlaying) renderBriefingCanvas();
+      });
+
+      document.getElementById('soundToggleVideoBtn')?.addEventListener('click', () => {
+        soundEnabled = !soundEnabled;
+        const soundIcon = document.getElementById('soundIcon');
+        if (soundIcon) soundIcon.className = soundEnabled ? 'fa-solid fa-volume-high text-xs' : 'fa-solid fa-volume-xmark text-xs';
+      });
+
+      document.getElementById('dispatchSubmitBtn')?.addEventListener('click', handleDispatchSubmit);
+
+      document.getElementById('nextScenarioBtn')?.addEventListener('click', () => {
+        playSound('click');
+        const modal = document.getElementById('successModal');
+        if (modal) modal.classList.add('opacity-0', 'pointer-events-none');
+        
+        if (currentScenarioIndex + 1 >= 3) {
+          showWinModal();
+        } else {
+          loadScenario(currentScenarioIndex + 1, true);
+        }
+      });
+
+      document.getElementById('closeWinModalBtn')?.addEventListener('click', () => {
+        playSound('click');
+        const winModal = document.getElementById('winModal');
+        if (winModal) winModal.classList.add('opacity-0', 'pointer-events-none');
+        
+        aggregateScore = 0;
+        document.getElementById('aggregateScoreText').innerText = 0;
+        document.getElementById('scoreProgressBar').style.width = '0%';
+        generate3RandomScenarios();
+        loadScenario(0, true);
+      });
+
+      document.getElementById('leaderboardToggleBtn')?.addEventListener('click', () => {
+        playSound('click');
+        const modal = document.getElementById('leaderboardModal');
+        const drawer = document.getElementById('leaderboardDrawer');
+        if (modal) modal.classList.remove('opacity-0', 'pointer-events-none');
+        if (drawer) drawer.classList.remove('translate-x-full');
+      });
+
+      document.getElementById('closeLeaderboardBtn')?.addEventListener('click', () => {
+        playSound('click');
+        const modal = document.getElementById('leaderboardModal');
+        const drawer = document.getElementById('leaderboardDrawer');
+        if (drawer) drawer.classList.add('translate-x-full');
+        setTimeout(() => {
+          if (modal) modal.classList.add('opacity-0', 'pointer-events-none');
+        }, 300);
+      });
+
+      document.getElementById('resetGameBtn')?.addEventListener('click', () => {
+        playSound('click');
+        aggregateScore = 0;
+        document.getElementById('aggregateScoreText').innerText = 0;
+        document.getElementById('scoreProgressBar').style.width = '0%';
+        generate3RandomScenarios();
+        loadScenario(0, true);
+        showToast("New game started!");
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initApp);
+    } else {
+      initApp();
+    }
+  </script>
+</body>
+</html>
