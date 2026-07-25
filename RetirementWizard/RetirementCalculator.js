@@ -104,14 +104,14 @@ function onDOMContentLoaded() {
 
         //Add our feilds - Setup the time horizon
         gFieldArray.push(new RetirementField("timeBreak", "", "---TIME HORIZON---", "break"));
-        gFieldArray.push(new RetirementField("yearBorn", "1969", "Born Year", "year"));
+        gFieldArray.push(new RetirementField("yearBorn", "2000", "Born Year", "year"));
         gFieldArray.push(new RetirementField("yearMortgageStart", "2025", "Mortgage Start", "year"));
         gFieldArray.push(new RetirementField("yearMortgageEnd", "2040", "Mortgage End", "year"));
-        gFieldArray.push(new RetirementField("yearRetire", "2025", "Retire Year", "year"));
-        gFieldArray.push(new RetirementField("yearIRA", "2031", "IRA Withdraw Year", "year"));
-        gFieldArray.push(new RetirementField("yearSocSec", "2034", "Social Security Year", "year"));
-        gFieldArray.push(new RetirementField("yearMedicare", "2034", "Medicare Year", "year"));
-        gFieldArray.push(new RetirementField("yearDie", "2059", "Die Year", "year"));
+        gFieldArray.push(new RetirementField("yearRetire", "2060", "Retire Year", "year"));
+        gFieldArray.push(new RetirementField("yearIRA", "2065", "IRA Withdraw Year", "year"));
+        gFieldArray.push(new RetirementField("yearSocSec", "2062", "Social Security Year", "year"));
+        gFieldArray.push(new RetirementField("yearMedicare", "2062", "Medicare Year", "year"));
+        gFieldArray.push(new RetirementField("yearDie", "2090", "Die Year", "year"));
         gFieldArray.push(new RetirementField("addTime", "year", "ADD FIELD", "add-field"));
 
         //Interest rates
@@ -127,7 +127,7 @@ function onDOMContentLoaded() {
 
         //Our expenses
         gFieldArray.push(new RetirementField("expenseBreak", "", "---EXPENSES---", "break"));
-        gFieldArray.push(new RetirementField("expenseLiving", "100000", "Living Expense/Yr", "money", "expense", "yearly", "rateInflation", "", "", true, "", "cash"));
+        gFieldArray.push(new RetirementField("expenseLiving", "25000", "Living Expense/Yr", "money", "expense", "yearly", "rateInflation", "", "", true, "", "cash"));
         gFieldArray.push(new RetirementField("expenseMedicalPreMedicare", "0", "Pre-Medicare/Mth", "money", "expense", "monthly", "rateInflation", "yearRetire", "yearMedicare", true, "", "cash"));
         gFieldArray.push(new RetirementField("expenseMortagePayment", "0", "Mortgage/Mth", "money", "expense", "monthly", "rateMortgage", "", "", true, "", "cash"));
         gFieldArray.push(new RetirementField("addExpense", "money", "ADD FIELD", "add-field"));
@@ -155,7 +155,7 @@ function onDOMContentLoaded() {
 
         //Income
         gFieldArray.push(new RetirementField("incomeBreak", "", "---INCOME---", "break"));
-        gFieldArray.push(new RetirementField("incomeSalary", "100000", "Salary/Yr", "money", "income", "yearly", "rateInflation", "yearBorn", "yearRetire", false, "cash", ""));
+        gFieldArray.push(new RetirementField("incomeSalary", "25000", "Salary/Yr", "money", "income", "yearly", "rateInflation", "yearBorn", "yearRetire", false, "cash", ""));
         gFieldArray.push(new RetirementField("incomeSocialSecurity", "0", "Social Security/Mth", "money", "income", "monthly", "rateInflation", "yearSocSec", "yearDie", false, "cash", ""));
         gFieldArray.push(new RetirementField("incomePension", "0", "Pension/Mth", "money", "income", "monthly", "rateInflation", "yearRetire", "yearDie", true, "cash", ""));
         gFieldArray.push(new RetirementField("incomeRental", "0", "Rental Income/Mth", "money", "income", "monthly", "rateInflation", "", "yearDie", true, "cash", ""));
@@ -171,7 +171,7 @@ function onDOMContentLoaded() {
         //Debt
         gFieldArray.push(new RetirementField("debtBreak", "", "--DEBT--", "break"));
         //Debit is principle, start year, end year, rate --> Calculate payment amount
-        gFieldArray.push(new RetirementField("debtMortgage", "200000", "Mortgage", "debt", "", "", "rateMortgage", "yearMortgageStart", "yearMortgageEnd", false));
+        gFieldArray.push(new RetirementField("debtMortgage", "0", "Mortgage", "debt", "", "", "rateMortgage", "yearMortgageStart", "yearMortgageEnd", false));
         gFieldArray.push(new RetirementField("addDebt", "debt", "ADD FIELD", "add-field"));
 
         //Cash/savings
@@ -183,7 +183,7 @@ function onDOMContentLoaded() {
 
         //Regular investments
         gFieldArray.push(new RetirementField("investBreak", "", "-NON RETIREMENT INVESTMENTS-", "break"));
-        gFieldArray.push(new RetirementField("investmentBrokerage", "1000000", "Brokerage", "money", "investment-savings", "yearly", "rateInvestmentAccountReturn"));
+        gFieldArray.push(new RetirementField("investmentBrokerage", "0", "Brokerage", "money", "investment-savings", "yearly", "rateInvestmentAccountReturn"));
         gFieldArray.push(new RetirementField("addInvestment", "money", "ADD FIELD", "add-field"));
 
         //Retirment accounts
