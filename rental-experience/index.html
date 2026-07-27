@@ -1,109 +1,119 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-slate-950 text-slate-100">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>The Entegral Rental Experience</title>
-
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- FontAwesome Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-  <!-- Google Fonts: Inter & Outfit -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
-
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'sans-serif'],
-            display: ['Outfit', 'sans-serif'],
-          },
-          colors: {
-            integral: {
-              50: '#eefbff',
-              100: '#d5f5ff',
-              400: '#38bdf8',
-              500: '#0ea5e9',
-              600: '#0284c7',
-              700: '#0369a1',
-              900: '#0c4a6e',
-              gold: '#fbbf24',
-              accent: '#6366f1'
-            }
-          },
-          animation: {
-            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-            'bounce-gentle': 'bounceGentle 2s infinite',
-            'float': 'float 4s ease-in-out infinite',
-            'glow': 'glow 2s ease-in-out infinite alternate',
-          },
-          keyframes: {
-            bounceGentle: {
-              '0%, 100%': { transform: 'translateY(0)' },
-              '50%': { transform: 'translateY(-6px)' }
-            },
-            float: {
-              '0%, 100%': { transform: 'translateY(0px)' },
-              '50%': { transform: 'translateY(-8px)' }
-            },
-            glow: {
-              '0%': { boxShadow: '0 0 10px rgba(14, 165, 233, 0.3)' },
-              '100%': { boxShadow: '0 0 25px rgba(14, 165, 233, 0.8), 0 0 10px rgba(99, 102, 241, 0.5)' }
-            }
-          }
-        }
-      }
-    }
-  </script>
+  <title>The Al-Hummer Rental Experience</title>
 
   <style>
+    /* CSS Reset & Embedded System Fonts */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg-main: #020617;
+      --bg-card: rgba(15, 23, 42, 0.88);
+      --bg-card-interactive: rgba(30, 41, 59, 0.75);
+      --border-subtle: rgba(255, 255, 255, 0.12);
+      --alhummer-500: #0ea5e9;
+      --alhummer-400: #38bdf8;
+      --alhummer-600: #0284c7;
+      --alhummer-gold: #fbbf24;
+      --indigo-500: #6366f1;
+      --indigo-600: #4f46e5;
+      --emerald-500: #10b981;
+      --emerald-400: #34d399;
+      --slate-100: #f1f5f9;
+      --slate-200: #e2e8f0;
+      --slate-300: #cbd5e1;
+      --slate-400: #94a3b8;
+      --slate-500: #64748b;
+      --slate-700: #334155;
+      --slate-800: #1e293b;
+      --slate-900: #0f172a;
+      --font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
     html, body {
       height: 100%;
       height: 100dvh;
       width: 100%;
-      margin: 0;
-      padding: 0;
+      background-color: var(--bg-main);
+      color: var(--slate-100);
+      font-family: var(--font-family);
       overflow: hidden;
-    }
-    body {
       touch-action: manipulation;
       -webkit-tap-highlight-color: transparent;
       user-select: none;
     }
-    .custom-scrollbar::-webkit-scrollbar {
-      width: 4px;
-      height: 4px;
+
+    body {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
     }
-    .custom-scrollbar::-webkit-scrollbar-track {
-      background: rgba(15, 23, 42, 0.6);
+
+    /* Main Mobile Container Shell */
+    .app-shell {
+      width: 100%;
+      height: 100%;
+      height: 100dvh;
+      max-width: 440px;
+      margin: 0 auto;
+      background-color: var(--bg-main);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.85);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+      border-left: 1px solid var(--slate-900);
+      border-right: 1px solid var(--slate-900);
     }
-    .custom-scrollbar::-webkit-scrollbar-thumb {
-      background: rgba(56, 189, 248, 0.4);
-      border-radius: 9999px;
-    }
+
     .glass-card {
-      background: rgba(15, 23, 42, 0.75);
+      background: var(--bg-card);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border-subtle);
     }
+
     .glass-card-interactive {
-      background: rgba(30, 41, 59, 0.7);
+      background: var(--bg-card-interactive);
       backdrop-filter: blur(10px);
-      border: 1px solid rgba(56, 189, 248, 0.15);
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      transition: all 0.15s ease;
+      cursor: pointer;
     }
+
     .glass-card-interactive:active {
-      transform: scale(0.97);
-      border-color: rgba(56, 189, 248, 0.5);
+      transform: scale(0.96);
+      border-color: rgba(56, 189, 248, 0.7);
     }
-    /* Confetti Canvas */
+
+    @keyframes pulseSlow {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    @keyframes bounceGentle {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+
+    @keyframes floatAnim {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-8px); }
+    }
+
+    .animate-pulse { animation: pulseSlow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+    .animate-bounce { animation: bounceGentle 2s infinite; }
+    .animate-float { animation: floatAnim 4s ease-in-out infinite; }
+
     #confettiCanvas {
       position: fixed;
       top: 0;
@@ -113,179 +123,255 @@
       pointer-events: none;
       z-index: 100;
     }
+
+    .icon-tile-svg {
+      width: 100%;
+      height: 42px;
+      display: block;
+      object-fit: contain;
+    }
+
+    .flex { display: flex; }
+    .flex-col { flex-direction: column; }
+    .flex-row { flex-direction: row; }
+    .items-center { align-items: center; }
+    .justify-between { justify-content: space-between; }
+    .justify-center { justify-content: center; }
+    .grid { display: grid; }
+    .grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .gap-1 { gap: 0.25rem; }
+    .gap-1\.5 { gap: 0.375rem; }
+    .gap-2 { gap: 0.5rem; }
+    .flex-1 { flex: 1 1 0%; }
+    .shrink-0 { flex-shrink: 0; }
+    .relative { position: relative; }
+    .absolute { position: absolute; }
+    .sticky { position: sticky; }
+    .inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
+    .w-full { width: 100%; }
+    .h-full { height: 100%; }
+    .p-2 { padding: 0.5rem; }
+    .p-2\.5 { padding: 0.625rem; }
+    .p-3 { padding: 0.75rem; }
+    .p-3\.5 { padding: 0.875rem; }
+    .p-4 { padding: 1rem; }
+    .px-1\.5 { padding-left: 0.375rem; padding-right: 0.375rem; }
+    .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+    .px-2\.5 { padding-left: 0.625rem; padding-right: 0.625rem; }
+    .py-0\.5 { padding-top: 0.125rem; padding-bottom: 0.125rem; }
+    .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+    .py-1\.5 { padding-top: 0.375rem; padding-bottom: 0.375rem; }
+    .py-2\.5 { padding-top: 0.625rem; padding-bottom: 0.625rem; }
+    .rounded-lg { border-radius: 0.5rem; }
+    .rounded-xl { border-radius: 0.75rem; }
+    .rounded-2xl { border-radius: 1rem; }
+    .rounded-full { border-radius: 9999px; }
+    .text-center { text-align: center; }
+    .text-left { text-align: left; }
+    .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    .text-nano { font-size: 0.75rem; line-height: 1rem; }
+    .text-xs { font-size: 0.875rem; line-height: 1.25rem; }
+    .text-sm { font-size: 1rem; line-height: 1.5rem; }
+    .text-base { font-size: 1.125rem; line-height: 1.75rem; }
+    .text-lg { font-size: 1.25rem; line-height: 1.75rem; }
+    .text-xl { font-size: 1.5rem; line-height: 2rem; }
+    .text-2xl { font-size: 1.875rem; line-height: 2.25rem; }
+    .text-3xl { font-size: 2.25rem; line-height: 2.5rem; }
+    .font-medium { font-weight: 500; }
+    .font-semibold { font-weight: 600; }
+    .font-bold { font-weight: 700; }
+    .font-extrabold { font-weight: 800; }
+    .font-mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+
+    .text-white { color: #ffffff; }
+    .text-slate-200 { color: var(--slate-200); }
+    .text-slate-300 { color: var(--slate-300); }
+    .text-slate-400 { color: var(--slate-400); }
+    .text-slate-500 { color: var(--slate-500); }
+    .text-alhummer-400 { color: var(--alhummer-400); }
+    .text-alhummer-gold { color: var(--alhummer-gold); }
+    .text-emerald-400 { color: var(--emerald-400); }
+
+    .bg-slate-900 { background-color: var(--slate-900); }
+    .bg-slate-950 { background-color: var(--bg-main); }
+    .bg-slate-800 { background-color: var(--slate-800); }
+    .bg-red-600 { background-color: #dc2626; }
+
+    .bg-btn-primary {
+      background: linear-gradient(to right, var(--alhummer-500), var(--indigo-600));
+      color: #ffffff;
+      border: 1px solid rgba(56, 189, 248, 0.5);
+    }
+    .bg-btn-primary:active { transform: scale(0.97); }
+
+    .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.6); }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(56, 189, 248, 0.4); border-radius: 9999px; }
+
+    input[type="date"], select {
+      color-scheme: dark;
+    }
   </style>
 </head>
-<body class="w-full h-full h-[100dvh] bg-slate-950 text-slate-100 overflow-hidden antialiased font-sans flex flex-col justify-center items-center">
+<body>
 
-  <!-- Main Mobile Shell Container - Fills Viewport 100% -->
-  <div class="w-full h-full h-[100dvh] max-w-md mx-auto bg-slate-950 shadow-2xl flex flex-col justify-between relative overflow-hidden border-x border-slate-900">
+  <div class="app-shell">
 
-    <!-- Confetti Canvas -->
+    <!-- Confetti Overlay -->
     <canvas id="confettiCanvas"></canvas>
 
-    <!-- ==================== STREAMING_CHUNK:Rendering Intro Video Briefing Overlay ==================== -->
-    <div id="videoModal" class="absolute inset-0 z-50 flex flex-col bg-slate-950/95 backdrop-blur-md transition-opacity duration-500 opacity-100">
+    <!-- Briefing Video Modal -->
+    <div id="videoModal" class="absolute inset-0 z-50 flex flex-col glass-card" style="transition: opacity 0.4s ease; opacity: 1; pointer-events: auto;">
       <div class="relative w-full h-full flex flex-col items-center justify-center p-2.5 overflow-hidden">
-        <!-- Simulated Video Container / Canvas -->
-        <div class="relative w-full h-full flex flex-col justify-between bg-black rounded-2xl overflow-hidden border border-slate-800 shadow-2xl">
+        <div class="relative w-full h-full flex flex-col justify-between bg-slate-950 rounded-2xl overflow-hidden border border-slate-800 shadow-2xl">
           
           <!-- Video Header Overlay -->
-          <div class="absolute top-0 left-0 right-0 z-20 p-2.5 bg-gradient-to-b from-black/80 via-black/40 to-transparent flex justify-between items-center">
-            <div class="flex items-center space-x-2">
-              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-red-600 text-white animate-pulse">
-                <span class="w-1.5 h-1.5 mr-1 rounded-full bg-white"></span> BRIEFING
+          <div class="absolute top-0 left-0 right-0 z-20 p-2.5 flex justify-between items-center" style="background: linear-gradient(to bottom, rgba(0,0,0,0.85), transparent);">
+            <div class="flex items-center gap-1.5">
+              <span class="px-2 py-0.5 rounded-full text-nano font-bold bg-red-600 text-white animate-pulse flex items-center gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-white" style="display:inline-block;"></span> LIVE BRIEFING
               </span>
-              <span class="text-[10px] text-slate-300 font-mono" id="videoTimer">00:00 / 00:15</span>
+              <span class="text-nano text-slate-300 font-mono" id="videoTimer">00:00 / 00:15</span>
             </div>
-            <button id="skipVideoBtn" class="text-[10px] bg-slate-800/80 hover:bg-slate-700 text-slate-200 px-2.5 py-1 rounded-full border border-slate-600 backdrop-blur-md flex items-center gap-1 transition cursor-pointer">
-              <span>Close</span> <i class="fa-solid fa-xmark text-[10px]"></i>
+            <button id="skipVideoBtn" class="text-nano bg-slate-800 hover:bg-slate-700 text-slate-200 px-2.5 py-1 rounded-full border border-slate-600 flex items-center gap-1 cursor-pointer">
+              <span>Close</span> ✕
             </button>
           </div>
 
-          <!-- Video Simulation Screen Canvas & Graphics -->
-          <div class="relative w-full h-full bg-slate-900 flex items-center justify-center overflow-hidden">
-            <!-- Canvas fallback video effect -->
-            <canvas id="briefingCanvas" class="absolute inset-0 w-full h-full object-cover"></canvas>
+          <!-- Video Canvas Playback Screen -->
+          <div class="relative w-full h-full bg-slate-950 flex items-center justify-center overflow-hidden">
+            <canvas id="briefingCanvas" class="absolute inset-0 w-full h-full z-0"></canvas>
 
-            <!-- Animated Overlay Text Content inside Video -->
-            <div class="relative z-10 p-4 text-center flex flex-col items-center justify-center h-full max-w-xs">
-              <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-integral-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-integral-500/30 mb-2.5 animate-float">
-                <i class="fa-solid fa-shield-halved text-2xl text-white"></i>
-              </div>
-              <h1 class="font-display text-xl font-black text-white tracking-tight leading-tight mb-1">
-                THE ENTEGRAL <br><span class="text-integral-400">RENTAL EXPERIENCE</span>
+            <!-- Minimal Unobtrusive Subtitle Overlay On Top Of Video -->
+            <div class="relative z-10 p-3 text-center flex flex-col items-center justify-start h-full pt-11 pb-2 pointer-events-none">
+              <h1 class="text-sm font-extrabold text-white tracking-tight leading-tight mb-1.5 bg-slate-950/80 px-3.5 py-1 rounded-full border border-slate-700/80 shadow-lg backdrop-blur-md">
+                THE AL-HUMMER <span class="text-alhummer-400">DISPATCH BRIEFING</span>
               </h1>
-              <div class="h-1 w-10 bg-integral-500 my-1.5 rounded-full"></div>
-              <p id="videoSubtext" class="text-[11px] text-slate-300 leading-relaxed min-h-[3rem] transition-all duration-300">
+              <p id="videoSubtext" class="text-lg text-white leading-snug font-bold bg-slate-900/90 px-3.5 py-2.5 rounded-xl border border-slate-700/80 mt-1.5 max-w-[95%] shadow-md backdrop-blur-md">
                 Initializing Emergency Claims Handler Module...
               </p>
             </div>
 
-            <!-- Video Play Control Overlay -->
-            <button id="playPauseVideoBtn" class="absolute bottom-3 left-3 z-20 w-9 h-9 rounded-full bg-integral-500/80 text-white backdrop-blur-md flex items-center justify-center shadow-lg hover:scale-105 transition">
-              <i class="fa-solid fa-pause text-xs" id="playIcon"></i>
+            <!-- Video Controls -->
+            <button id="playPauseVideoBtn" class="absolute bottom-3 left-3 z-20 w-9 h-9 rounded-full bg-slate-800/90 text-white flex items-center justify-center shadow border border-slate-700 cursor-pointer">
+              <span id="playIcon">⏸</span>
             </button>
             
-            <button id="soundToggleVideoBtn" class="absolute bottom-3 right-3 z-20 w-9 h-9 rounded-full bg-slate-800/80 text-white backdrop-blur-md flex items-center justify-center shadow-lg hover:scale-105 transition">
-              <i class="fa-solid fa-volume-high text-xs" id="soundIcon"></i>
+            <button id="soundToggleVideoBtn" class="absolute bottom-3 right-3 z-20 w-9 h-9 rounded-full bg-slate-800/90 text-white flex items-center justify-center shadow border border-slate-700 cursor-pointer">
+              <span id="soundIcon">🔊</span>
             </button>
+
+            <!-- Video Progress Line -->
+            <div class="absolute bottom-0 left-0 right-0 h-1 bg-slate-800 z-20">
+              <div id="videoProgressBar" class="h-full bg-alhummer-400 w-0" style="transition: width 0.1s linear;"></div>
+            </div>
           </div>
 
-          <!-- Start Game Button Action -->
-          <div id="videoActionBox" class="p-2.5 bg-slate-900/90 border-t border-slate-800 flex flex-col gap-2">
-            <button id="startBriefingBtn" class="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-integral-500 to-indigo-600 text-white font-display font-bold text-xs shadow-lg shadow-integral-500/25 hover:opacity-95 active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer">
-              <span>ACCEPT DISPATCH MISSION</span>
-              <i class="fa-solid fa-circle-arrow-right"></i>
+          <!-- Video Dispatch Accept Action -->
+          <div class="p-2.5 bg-slate-900 border-t border-slate-800 flex flex-col gap-2 shrink-0 z-20">
+            <button id="startBriefingBtn" class="w-full py-3 px-3 rounded-xl bg-btn-primary font-extrabold text-xs tracking-wider shadow cursor-pointer flex items-center justify-center gap-2">
+              <span>ACCEPT DISPATCH MISSION</span> ➔
             </button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ==================== STREAMING_CHUNK:Building Main Header & HUD ==================== -->
-    <header class="sticky top-0 z-30 bg-slate-950/95 backdrop-blur-md border-b border-slate-800/80 px-2.5 py-1.5 shrink-0">
+    <!-- Application Top Header -->
+    <header class="sticky top-0 z-30 bg-slate-950 border-b border-slate-800 px-3 py-2 shrink-0" style="background-color: rgba(2, 6, 23, 0.95);">
       <div class="flex items-center justify-between">
-        <!-- Title & Persona -->
-        <div class="flex items-center space-x-2">
-          <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-integral-500 to-indigo-600 flex items-center justify-center shadow-md shadow-integral-500/20 text-white font-bold text-xs">
-            <i class="fa-solid fa-car-side"></i>
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-alhummer-500 flex items-center justify-center text-white font-bold text-sm" style="background: linear-gradient(to bottom right, var(--alhummer-500), var(--indigo-600));">
+            🚗
           </div>
           <div>
-            <h1 class="font-display font-extrabold text-[11px] tracking-tight text-white uppercase flex items-center gap-1 leading-none">
-              Entegral Rental
-              <span class="text-[8px] bg-integral-500/20 text-integral-400 px-1 py-0.2 rounded font-mono font-medium border border-integral-500/30">PRO</span>
+            <h1 class="font-extrabold text-xs tracking-tight text-white uppercase flex items-center gap-1.5 leading-none">
+              Al-Hummer Rental
+              <span class="text-nano font-mono px-1.5 py-0.5 rounded" style="background: rgba(14, 165, 233, 0.2); color: var(--alhummer-400); border: 1px solid rgba(14, 165, 233, 0.3);">PRO</span>
             </h1>
-            <p class="text-[9px] text-slate-400 flex items-center gap-1 mt-0.5 leading-none">
-              <i class="fa-solid fa-user-shield text-integral-400 text-[8px]"></i>
-              <span id="personaRoleText">Insurance Claims Agent</span>
+            <p class="text-nano text-slate-400 flex items-center gap-1 mt-1 leading-none">
+              🛡️ <span id="personaRoleText">Insurance Claims Agent</span>
             </p>
           </div>
         </div>
 
-        <!-- Score Aggregate Counter & Menu -->
-        <div class="flex items-center space-x-1.5">
-          <div class="flex items-center gap-1 bg-slate-900/90 px-2 py-0.5 rounded-lg border border-integral-500/30">
-            <i class="fa-solid fa-trophy text-integral-gold text-[10px]"></i>
-            <span id="aggregateScoreText" class="font-display font-extrabold text-xs text-integral-400">0</span>
-            <span class="text-[10px] text-slate-500 font-bold">/30</span>
+        <div class="flex items-center gap-2">
+          <div class="flex items-center gap-1 bg-slate-900 px-2.5 py-1 rounded-lg border border-slate-800">
+            🏆 <span id="aggregateScoreText" class="font-extrabold text-sm text-alhummer-400">0</span>
+            <span class="text-nano text-slate-500 font-bold">/30</span>
           </div>
 
-          <button id="leaderboardToggleBtn" class="w-7 h-7 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 hover:text-white flex items-center justify-center active:scale-95 transition cursor-pointer">
-            <i class="fa-solid fa-chart-simple text-[10px]"></i>
+          <button id="leaderboardToggleBtn" class="w-8 h-8 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 hover:text-white flex items-center justify-center text-sm cursor-pointer">
+            📊
           </button>
         </div>
       </div>
 
-      <!-- Progress Bar towards 30 Points -->
-      <div class="w-full bg-slate-900 h-1 rounded-full overflow-hidden border border-slate-800 mt-1">
-        <div id="scoreProgressBar" class="bg-gradient-to-r from-integral-500 via-indigo-500 to-integral-gold h-full w-0 transition-all duration-500"></div>
+      <div class="w-full bg-slate-900 rounded-full overflow-hidden border border-slate-800 mt-1.5" style="height: 6px;">
+        <div id="scoreProgressBar" class="h-full w-0" style="background: linear-gradient(to right, var(--alhummer-500), var(--indigo-500), var(--alhummer-gold)); transition: width 0.5s ease;"></div>
       </div>
     </header>
 
-    <!-- ==================== STREAMING_CHUNK:Constructing Main Viewport Content Body ==================== -->
-    <main class="flex-1 w-full mx-auto p-2 flex flex-col justify-between overflow-hidden gap-1.5 pb-10">
+    <!-- Main Dynamic Form Section (Hidden until briefing is accepted) -->
+    <main id="mainAppContent" class="flex-1 w-full mx-auto p-2 flex flex-col justify-between overflow-y-auto gap-2 pb-14 custom-scrollbar" style="display: none;">
       
-      <!-- Mission Persona / Scenario Dispatch Card -->
+      <!-- Customer Request Card -->
       <section class="glass-card rounded-xl p-2 relative overflow-hidden shrink-0">
         <div class="flex items-center justify-between gap-2">
-          <div class="flex items-center gap-2 min-w-0">
-            <div id="customerAvatar" class="w-8 h-8 rounded-lg bg-gradient-to-tr from-indigo-600 to-slate-800 border border-indigo-400/30 flex items-center justify-center text-white font-bold text-xs shadow-md shrink-0">
+          <div class="flex items-center gap-2">
+            <div id="customerAvatar" class="w-9 h-9 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center text-white font-bold text-sm shrink-0">
               HL
             </div>
-            <div class="min-w-0">
-              <div class="flex items-center gap-1 flex-wrap">
-                <h2 id="customerName" class="font-display text-xs font-bold text-white truncate">Holly Lawson</h2>
-                <span id="scenarioIndexBadge" class="text-[8px] bg-slate-800 text-integral-400 font-mono font-bold px-1.5 py-0.2 rounded-full border border-slate-700 shrink-0">
+            <div>
+              <div class="flex items-center gap-1.5">
+                <h2 id="customerName" class="text-sm font-bold text-white truncate">Holly Lawson</h2>
+                <span id="scenarioIndexBadge" class="text-nano bg-slate-800 text-alhummer-400 font-mono font-bold px-2 py-0.5 rounded-full border border-slate-700">
                   Claim 1/3
                 </span>
               </div>
-              <p class="text-[9px] text-slate-400 truncate">Policyholder Claims Request</p>
+              <p class="text-nano text-slate-400">Policyholder Claims Request</p>
             </div>
           </div>
 
-          <button id="viewPromptAgainBtn" class="text-[10px] bg-indigo-600/30 hover:bg-indigo-600/50 text-indigo-200 px-2.5 py-1 rounded-lg border border-indigo-500/40 font-bold cursor-pointer transition flex items-center gap-1 shrink-0 shadow-sm active:scale-95">
-            <i class="fa-solid fa-comment-dots text-integral-400 text-[10px]"></i> Prompt
+          <button id="viewPromptAgainBtn" class="text-nano bg-slate-800 hover:bg-slate-700 text-slate-200 px-2.5 py-1.5 rounded-lg border border-slate-700 font-bold cursor-pointer transition flex items-center gap-1">
+            💬 Prompt
           </button>
         </div>
       </section>
 
-      <!-- ==================== STREAMING_CHUNK:Rendering Interactive Claims Form ==================== -->
-      <section class="flex flex-col gap-1.5 flex-1 justify-around">
+      <!-- Selection Controls -->
+      <section class="flex flex-col gap-2 flex-1 justify-between">
         
-        <!-- Step 1: Select Vehicle -->
-        <div class="glass-card rounded-xl p-1.5">
-          <div class="text-[10px] font-semibold text-slate-200 mb-1 flex items-center justify-between px-0.5">
+        <!-- Step 1: Vehicle Category -->
+        <div class="glass-card rounded-xl p-2 flex flex-col justify-between shrink-0">
+          <div class="text-xs font-bold text-slate-200 mb-1 flex items-center justify-between px-1">
             <span>1. Vehicle Category</span>
-            <span id="carSelectedBadge" class="text-[9px] text-slate-400">None</span>
+            <span id="carSelectedBadge" class="text-xs text-slate-400">None</span>
           </div>
-          
-          <div class="grid grid-cols-4 gap-1" id="vehicleGrid">
-            <!-- Vehicle Cards rendered dynamically via JS -->
-          </div>
+          <div class="grid grid-cols-4 gap-1.5" id="vehicleGrid"></div>
         </div>
 
-        <!-- Step 2: Select Branch Location -->
-        <div class="glass-card rounded-xl p-1.5">
-          <div class="text-[10px] font-semibold text-slate-200 mb-1 flex items-center justify-between px-0.5">
+        <!-- Step 2: Pickup Branch -->
+        <div class="glass-card rounded-xl p-2 flex flex-col justify-between shrink-0">
+          <div class="text-xs font-bold text-slate-200 mb-1 flex items-center justify-between px-1">
             <span>2. Pickup Branch</span>
-            <span id="branchSelectedBadge" class="text-[9px] text-slate-400">None</span>
+            <span id="branchSelectedBadge" class="text-xs text-slate-400">None</span>
           </div>
-          
-          <div class="grid grid-cols-4 gap-1" id="branchGrid">
-            <!-- Branch Cards rendered dynamically via JS -->
-          </div>
+          <div class="grid grid-cols-4 gap-1.5" id="branchGrid"></div>
         </div>
 
-        <!-- Step 3: Select Date & Add-on -->
-        <div class="glass-card rounded-xl p-1.5 grid grid-cols-2 gap-1.5">
+        <!-- Step 3 & 4: Date & Add-on -->
+        <div class="glass-card rounded-xl p-2 grid grid-cols-2 gap-2 shrink-0">
           <div>
-            <label class="text-[9px] font-semibold text-slate-200 mb-0.5 block px-0.5">3. Start Date</label>
-            <input type="date" id="inputStartDate" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-1.5 py-1 text-[10px] text-white focus:outline-none focus:border-integral-500 font-mono">
+            <label class="text-xs font-bold text-slate-200 mb-1 block px-0.5">3. Start Date</label>
+            <input type="date" id="inputStartDate" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none font-mono">
           </div>
 
           <div>
-            <label class="text-[9px] font-semibold text-slate-200 mb-0.5 block px-0.5">4. Add-on Request</label>
-            <select id="selectAddon" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-1 py-1 text-[10px] text-white focus:outline-none focus:border-integral-500">
+            <label class="text-xs font-bold text-slate-200 mb-1 block px-0.5">4. Add-on Request</label>
+            <select id="selectAddon" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none">
               <option value="None">None</option>
               <option value="Child Car Seat">Child Car Seat</option>
               <option value="GPS Navigation">GPS Navigation</option>
@@ -299,182 +385,181 @@
           </div>
         </div>
 
-        <!-- Submit Dispatch Button -->
-        <button id="dispatchSubmitBtn" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-integral-500 via-indigo-600 to-integral-600 text-white font-display font-extrabold text-xs tracking-wide shadow-lg border border-integral-400 hover:scale-[1.01] active:scale-95 transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer">
-          <i class="fa-solid fa-car-on text-xs"></i>
-          <span>DISPATCH RENTAL CAR</span>
+        <!-- Dispatch Action Button -->
+        <button id="dispatchSubmitBtn" class="w-full py-2.5 rounded-xl bg-btn-primary font-extrabold text-sm tracking-wide shadow border border-alhummer-400 flex items-center justify-center gap-2 cursor-pointer shrink-0 my-1">
+          🚘 <span>DISPATCH RENTAL CAR</span>
         </button>
       </section>
     </main>
 
-    <!-- Bottom Quick Controls / Replay Briefing Bar -->
-    <footer class="absolute bottom-0 left-0 right-0 z-20 bg-slate-950/95 border-t border-slate-800/80 px-2.5 py-1.5 backdrop-blur-md">
-      <div class="flex items-center justify-between text-[9px] text-slate-400">
-        <button id="replayBriefingBtn" class="hover:text-integral-400 flex items-center gap-1 py-0.5 px-2 rounded-lg bg-slate-900 border border-slate-800 transition cursor-pointer">
-          <i class="fa-solid fa-film text-integral-400"></i>
-          <span>Replay Video</span>
+    <!-- Footer Toolbar -->
+    <footer class="absolute bottom-0 left-0 right-0 z-20 bg-slate-950 border-t border-slate-800 px-3 py-1.5">
+      <div class="flex items-center justify-between text-nano text-slate-400">
+        <button id="replayBriefingBtn" class="hover:text-alhummer-400 flex items-center gap-1 py-1 px-2.5 rounded-lg bg-slate-900 border border-slate-800 cursor-pointer font-medium">
+          🎬 <span>Replay Briefing</span>
         </button>
 
-        <button id="resetGameBtn" class="hover:text-red-400 flex items-center gap-1 py-0.5 px-2 rounded-lg bg-slate-900 border border-slate-800 transition cursor-pointer">
-          <i class="fa-solid fa-rotate-right"></i>
-          <span>Restart Game</span>
+        <button id="resetGameBtn" class="hover:text-red-400 flex items-center gap-1 py-1 px-2.5 rounded-lg bg-slate-900 border border-slate-800 cursor-pointer font-medium">
+          🔄 <span>Restart Game</span>
         </button>
       </div>
     </footer>
 
-    <!-- ==================== STREAMING_CHUNK:Claim Prompt Dialog Overlay Modal ==================== -->
-    <div id="claimPromptModal" class="absolute inset-0 z-50 flex items-center justify-center p-3 bg-slate-950/85 backdrop-blur-md transition-opacity duration-300 opacity-0 pointer-events-none">
-      <div class="glass-card w-full max-w-xs rounded-2xl p-4 border border-integral-500/40 text-center flex flex-col items-center gap-2.5 transform transition-all scale-95" id="claimPromptCard">
+    <!-- Claim Prompt Story Modal -->
+    <div id="claimPromptModal" class="absolute inset-0 z-50 flex items-center justify-center p-3 bg-slate-950" style="background-color: rgba(2, 6, 23, 0.88); backdrop-filter: blur(8px); transition: opacity 0.3s ease; opacity: 0; pointer-events: none;">
+      <div class="glass-card w-full max-w-xs rounded-2xl p-4 text-center flex flex-col items-center gap-3" id="claimPromptCard" style="border: 1px solid rgba(56, 189, 248, 0.3); transform: scale(0.95); transition: transform 0.3s ease;">
         
-        <div id="promptAvatar" class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-integral-500 to-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-integral-500/30">
+        <div id="promptAvatar" class="w-12 h-12 rounded-2xl bg-alhummer-500 flex items-center justify-center text-white font-bold text-lg shadow-lg" style="background: linear-gradient(to top right, var(--alhummer-500), var(--indigo-600));">
           H
         </div>
 
         <div>
-          <span class="text-[9px] font-mono font-bold text-integral-400 uppercase tracking-wider bg-integral-500/10 px-2.5 py-0.5 rounded-full border border-integral-500/20" id="promptClaimNumber">
+          <span class="text-nano font-mono font-bold text-alhummer-400 uppercase tracking-wider px-2.5 py-0.5 rounded-full border border-slate-700 bg-slate-900" id="promptClaimNumber">
             Claim 1 of 3
           </span>
-          <h2 class="font-display text-lg font-black text-white mt-0.5" id="promptCustomerName">Holly</h2>
+          <h2 class="text-lg font-bold text-white mt-1" id="promptCustomerName">Holly</h2>
         </div>
 
-        <div class="w-full bg-slate-900/90 p-3.5 rounded-xl border border-slate-800 text-white text-sm md:text-base leading-relaxed font-semibold text-left shadow-inner" id="promptStoryText">
+        <div class="w-full bg-slate-900 p-3.5 rounded-xl border border-slate-800 text-white text-lg font-bold leading-snug text-left shadow-inner" id="promptStoryText">
           "Hi! I'm Holly! I want an SUV near Airport Terminal for tomorrow! I have a little one and need a car seat!"
         </div>
 
-        <button id="closeClaimPromptBtn" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-integral-500 to-indigo-600 text-white font-display font-bold text-xs shadow-lg shadow-integral-500/30 hover:opacity-95 active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer">
-          <span>GOT IT! START CONFIG</span>
-          <i class="fa-solid fa-circle-arrow-right"></i>
+        <button id="closeClaimPromptBtn" class="w-full py-2.5 rounded-xl bg-btn-primary font-bold text-sm shadow flex items-center justify-center gap-2 cursor-pointer">
+          <span>GOT IT! START CONFIG</span> ➔
         </button>
       </div>
     </div>
 
-    <!-- ==================== STREAMING_CHUNK:Creating Success Confirmation Modal ==================== -->
-    <div id="successModal" class="absolute inset-0 z-50 flex items-center justify-center p-3 bg-slate-950/80 backdrop-blur-md transition-opacity duration-300 opacity-0 pointer-events-none">
-      <div class="glass-card w-full max-w-xs rounded-2xl p-4 border border-emerald-500/40 text-center flex flex-col items-center gap-2.5 transform transition-all scale-95" id="successModalCard">
+    <!-- Success Feedback Modal -->
+    <div id="successModal" class="absolute inset-0 z-50 flex items-center justify-center p-3 bg-slate-950" style="background-color: rgba(2, 6, 23, 0.85); backdrop-filter: blur(8px); transition: opacity 0.3s ease; opacity: 0; pointer-events: none;">
+      <div class="glass-card w-full max-w-xs rounded-2xl p-4 text-center flex flex-col items-center gap-2.5" id="successModalCard" style="border: 1px solid rgba(16, 185, 129, 0.4); transform: scale(0.95); transition: transform 0.3s ease;">
         
-        <div class="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center text-xl animate-bounce-gentle">
-          <i class="fa-solid fa-circle-check"></i>
+        <div class="w-12 h-12 rounded-full bg-slate-900 text-emerald-400 border border-slate-700 flex items-center justify-center text-xl animate-bounce">
+          ✔
         </div>
 
         <div>
-          <span class="text-[9px] font-mono font-bold text-emerald-400 uppercase tracking-wider bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+          <span class="text-nano font-mono font-bold text-emerald-400 uppercase tracking-wider bg-slate-900 px-2 py-0.5 rounded-full border border-slate-800">
             Claim Dispatched!
           </span>
-          <h2 class="font-display text-lg font-black text-white mt-0.5" id="successCarName">Midsize SUV</h2>
-          <p class="text-[11px] text-slate-300 mt-0.5" id="successQuote">"Thank you! My policyholder is back on the road!"</p>
+          <h2 class="text-lg font-bold text-white mt-1" id="successCarName">Midsize SUV</h2>
+          <p class="text-xs text-slate-300 mt-0.5" id="successQuote">"Thank you! My policyholder is back on the road!"</p>
         </div>
 
         <div class="w-full bg-slate-900 p-2.5 rounded-xl border border-slate-800 text-left text-xs space-y-1">
           <div class="flex justify-between"><span class="text-slate-400">Insured:</span> <span id="modalCustomer" class="font-semibold text-white">Holly</span></div>
-          <div class="flex justify-between"><span class="text-slate-400">Specs Matched:</span> <span id="modalSpecsCount" class="font-semibold text-integral-400">4 / 4 Correct</span></div>
-          <div class="flex justify-between"><span class="text-slate-400">Points Awarded:</span> <span id="modalPointsAwarded" class="font-bold text-integral-gold">+10 PTS</span></div>
+          <div class="flex justify-between"><span class="text-slate-400">Specs Matched:</span> <span id="modalSpecsCount" class="font-semibold text-alhummer-400">4 / 4 Correct</span></div>
+          <div class="flex justify-between"><span class="text-slate-400">Points Awarded:</span> <span id="modalPointsAwarded" class="font-bold text-alhummer-gold">+10 PTS</span></div>
         </div>
 
-        <button id="nextScenarioBtn" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-display font-bold text-xs shadow-lg shadow-emerald-500/20 hover:opacity-95 active:scale-95 transition cursor-pointer">
-          NEXT CLAIM TASK <i class="fa-solid fa-arrow-right ml-1"></i>
+        <button id="nextScenarioBtn" class="w-full py-2.5 rounded-xl bg-btn-primary font-bold text-xs shadow cursor-pointer">
+          NEXT CLAIM TASK ➔
         </button>
       </div>
     </div>
 
-    <!-- ==================== STREAMING_CHUNK:Creating Smart Assist / Rental Booth Victory Prize Modal ==================== -->
-    <div id="winModal" class="absolute inset-0 z-50 flex items-center justify-center p-3 bg-slate-950/90 backdrop-blur-lg transition-opacity duration-500 opacity-0 pointer-events-none">
-      <div class="glass-card w-full max-w-xs rounded-2xl p-4 border-2 border-integral-gold text-center flex flex-col items-center gap-2.5 transform transition-all scale-90 shadow-2xl shadow-integral-gold/20 max-h-[90%] overflow-y-auto" id="winModalCard">
-        <div class="relative">
-          <div class="w-14 h-14 rounded-full bg-gradient-to-tr from-integral-gold to-amber-500 text-slate-950 flex items-center justify-center text-2xl font-extrabold shadow-xl shadow-integral-gold/40 animate-pulse">
-            <i class="fa-solid fa-trophy"></i>
-          </div>
-          <div class="absolute -bottom-1.5 left-1/2 -translate-x-1/2 bg-slate-900 text-integral-gold text-[8px] font-mono font-bold px-2 py-0.2 rounded-full border border-integral-gold whitespace-nowrap" id="finalScoreBadge">
-            30 / 30 POINTS!
-          </div>
+    <!-- Win Completion Modal -->
+    <div id="winModal" class="absolute inset-0 z-50 flex items-center justify-center p-3 bg-slate-950" style="background-color: rgba(2, 6, 23, 0.9); backdrop-filter: blur(10px); transition: opacity 0.5s ease; opacity: 0; pointer-events: none;">
+      <div class="glass-card w-full max-w-xs rounded-2xl p-4 text-center flex flex-col items-center gap-2.5 shadow-2xl" id="winModalCard" style="border: 2px solid var(--alhummer-gold); transform: scale(0.9); transition: transform 0.3s ease; max-height: 90%; overflow-y: auto;">
+        
+        <div class="w-14 h-14 rounded-full flex items-center justify-center text-2xl font-extrabold shadow-xl animate-pulse" style="background: linear-gradient(to top right, var(--alhummer-gold), #f59e0b); color: #020617;">
+          🏆
         </div>
 
         <div>
-          <h2 class="font-display text-lg font-black text-white tracking-tight">GAME COMPLETED!</h2>
-          <p class="text-[10px] text-slate-300 mt-0.5 font-medium">
-            You finished all 3 claims for the Entegral Rental Experience!
+          <h2 class="text-lg font-bold text-white tracking-tight">GAME COMPLETED!</h2>
+          <p class="text-xs text-slate-300 mt-0.5">
+            You finished all 3 claims for the Al-Hummer Rental Experience!
           </p>
         </div>
 
-        <!-- Mandatory Instruction Banner -->
-        <div class="w-full bg-gradient-to-r from-integral-600/90 to-indigo-600/90 p-2.5 rounded-xl border border-integral-400 text-white shadow-xl">
-          <i class="fa-solid fa-bullhorn text-xs text-integral-gold mb-0.5"></i>
-          <p class="font-display text-xs font-extrabold leading-tight">
+        <!-- Prominent Large Score Banner -->
+        <div class="w-full bg-slate-900/90 border-2 border-alhummer-gold rounded-2xl p-3 my-1 text-center shadow-xl flex flex-col items-center justify-center">
+          <span class="text-nano font-mono uppercase tracking-widest text-slate-400 font-bold mb-0.5">FINAL SCORE</span>
+          <div class="text-3xl font-extrabold text-alhummer-gold tracking-tight" id="finalScoreBadge">
+            30 / 30 POINTS
+          </div>
+        </div>
+
+        <div class="w-full p-2.5 rounded-xl border text-white shadow" style="background: linear-gradient(to right, var(--alhummer-600), var(--indigo-600)); border-color: rgba(56, 189, 248, 0.5);">
+          📢
+          <p class="text-xs font-bold leading-tight mt-1">
             Go to the Smart Assist / Rental Booth to collect your prize and show them this screen on your phone!
           </p>
         </div>
 
-        <!-- Dynamic Prize Claim Code & Canvas QR Code -->
         <div class="w-full bg-slate-900 p-2.5 rounded-xl border border-slate-800 flex flex-col items-center gap-1.5">
-          <div class="text-[8px] text-slate-400 font-mono uppercase tracking-wider">Official Winner Verification Voucher</div>
+          <div class="text-nano text-slate-400 font-mono uppercase">Official Winner Verification Voucher</div>
           
-          <canvas id="qrCanvas" class="w-24 h-24 bg-white p-1 rounded-lg border border-slate-700 shadow-inner"></canvas>
+          <canvas id="qrCanvas" class="w-24 h-24 bg-white p-1 rounded-lg border border-slate-700" style="width: 96px; height: 96px;"></canvas>
 
-          <div class="bg-slate-950 px-2.5 py-0.5 rounded-lg border border-slate-800 text-integral-gold font-mono font-bold text-xs tracking-wider" id="prizeVoucherCode">
-            ENTEGRAL-BOOTH-8821
+          <div class="bg-slate-950 px-2.5 py-1 rounded-lg border border-slate-800 text-alhummer-gold font-mono font-bold text-xs tracking-wider" id="prizeVoucherCode">
+            AL-HUMMER-BOOTH-8821
           </div>
-          <span class="text-[8px] text-slate-500">Verified by Entegral Claims Engine • <span id="winTimeText">2026-07-24</span></span>
+          <span class="text-nano text-slate-500">Verified by Al-Hummer Claims Engine • <span id="winTimeText">2026-07-26</span></span>
         </div>
 
-        <button id="closeWinModalBtn" class="w-full py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs border border-slate-700 transition">
+        <button id="closeWinModalBtn" class="w-full py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs border border-slate-700 cursor-pointer">
           Play Again
         </button>
       </div>
     </div>
 
-    <!-- Leaderboard Drawer / Modal -->
-    <div id="leaderboardModal" class="absolute inset-0 z-40 bg-slate-950/80 backdrop-blur-md flex justify-end transition-opacity duration-300 opacity-0 pointer-events-none">
-      <div class="w-full max-w-[250px] bg-slate-900 h-full p-3.5 border-l border-slate-800 flex flex-col justify-between transform transition-transform duration-300 translate-x-full" id="leaderboardDrawer">
-        
+    <!-- Leaderboard Drawer -->
+    <div id="leaderboardModal" class="absolute inset-0 z-40 bg-slate-950 flex justify-end" style="background-color: rgba(2, 6, 23, 0.8); backdrop-filter: blur(6px); transition: opacity 0.3s ease; opacity: 0; pointer-events: none;">
+      <div class="w-full max-w-[250px] bg-slate-900 h-full p-3.5 border-l border-slate-800 flex flex-col justify-between" id="leaderboardDrawer" style="transform: translateX(100%); transition: transform 0.3s ease;">
         <div>
           <div class="flex items-center justify-between pb-2.5 border-b border-slate-800 mb-2.5">
-            <div class="flex items-center gap-2">
-              <i class="fa-solid fa-ranking-star text-integral-gold text-xs"></i>
-              <h3 class="font-display font-bold text-xs text-white">Live Booth Ranks</h3>
+            <div class="flex items-center gap-1.5">
+              🏆 <h3 class="font-bold text-xs text-white">Live Booth Ranks</h3>
             </div>
-            <button id="closeLeaderboardBtn" class="text-slate-400 hover:text-white p-1">
-              <i class="fa-solid fa-xmark text-xs"></i>
-            </button>
+            <button id="closeLeaderboardBtn" class="text-slate-400 hover:text-white p-1 cursor-pointer">✕</button>
           </div>
 
-          <div id="leaderboardList" class="flex flex-col gap-1.5 overflow-y-auto max-h-[60vh] custom-scrollbar">
-            <!-- Leaderboard Items rendered dynamically -->
-          </div>
+          <div id="leaderboardList" class="flex flex-col gap-1.5 overflow-y-auto custom-scrollbar" style="max-height: 60vh;"></div>
         </div>
 
         <div class="pt-2 border-t border-slate-800 text-center">
-          <p class="text-[8px] text-slate-500">Entegral Multi-User Event Platform</p>
+          <p class="text-nano text-slate-500">Al-Hummer Multi-User Event Platform</p>
         </div>
       </div>
     </div>
 
-  </div> <!-- End Mobile Shell Container -->
+  </div>
 
-  <!-- ==================== STREAMING_CHUNK:Initializing Application Logic & Firebase ==================== -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, collection, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+  <script>
+    // Global State
+    let aggregateScore = 0;
+    let currentScenarioIndex = 0;
+    let selectedVehicle = null;
+    let selectedBranch = null;
+    let SCENARIOS = [];
+    let videoTime = 0;
+    let isVideoPlaying = true;
+    let soundEnabled = true;
 
+    // Vehicle SVGs
     const VEHICLES = [
-      { id: 'Compact', name: 'Economy', icon: 'fa-car-side', color: 'text-sky-400' },
-      { id: 'Sedan', name: 'Sedan', icon: 'fa-car', color: 'text-indigo-400' },
-      { id: 'SUV', name: 'SUV', icon: 'fa-truck-pickup', color: 'text-emerald-400' },
-      { id: 'EV', name: 'EV Electric', icon: 'fa-charging-station', color: 'text-teal-400' },
-      { id: 'Minivan', name: 'Minivan', icon: 'fa-van-shuttle', color: 'text-purple-400' },
-      { id: 'Truck', name: 'Pickup', icon: 'fa-truck-monster', color: 'text-amber-400' },
-      { id: 'Luxury', name: 'Luxury', icon: 'fa-gem', color: 'text-rose-400' },
-      { id: 'Compact SUV', name: 'C-SUV', icon: 'fa-car-rear', color: 'text-cyan-400' }
+      { id: 'Compact', name: 'Economy', svg: `<svg class="icon-tile-svg" viewBox="0 0 64 36" fill="none"><rect x="2" y="2" width="60" height="32" rx="6" fill="#0284c7" fill-opacity="0.2"/><path d="M12 24h40M16 24a4 4 0 100-8 4 4 0 000 8zm32 0a4 4 0 100-8 4 4 0 000 8z" stroke="#38bdf8" stroke-width="2.5"/><path d="M14 16l6-8h22l8 8" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round"/><circle cx="16" cy="20" r="2.5" fill="#38bdf8"/><circle cx="48" cy="20" r="2.5" fill="#38bdf8"/></svg>` },
+      { id: 'Sedan', name: 'Sedan', svg: `<svg class="icon-tile-svg" viewBox="0 0 64 36" fill="none"><rect x="2" y="2" width="60" height="32" rx="6" fill="#4f46e5" fill-opacity="0.2"/><path d="M8 25h48M14 17l8-9h20l10 9" stroke="#818cf8" stroke-width="2.5" stroke-linecap="round"/><circle cx="16" cy="22" r="3.5" stroke="#818cf8" stroke-width="2" fill="#0f172a"/><circle cx="48" cy="22" r="3.5" stroke="#818cf8" stroke-width="2" fill="#0f172a"/><circle cx="16" cy="22" r="1.5" fill="#818cf8"/><circle cx="48" cy="22" r="1.5" fill="#818cf8"/></svg>` },
+      { id: 'SUV', name: 'SUV', svg: `<svg class="icon-tile-svg" viewBox="0 0 64 36" fill="none"><rect x="2" y="2" width="60" height="32" rx="6" fill="#059669" fill-opacity="0.2"/><path d="M6 25h52M10 18l5-10h28l9 10v5H10v-5z" stroke="#34d399" stroke-width="2.5" stroke-linejoin="round"/><circle cx="16" cy="23" r="4" stroke="#34d399" stroke-width="2" fill="#0f172a"/><circle cx="48" cy="23" r="4" stroke="#34d399" stroke-width="2" fill="#0f172a"/><circle cx="16" cy="23" r="1.5" fill="#34d399"/><circle cx="48" cy="23" r="1.5" fill="#34d399"/></svg>` },
+      { id: 'EV', name: 'EV Electric', svg: `<svg class="icon-tile-svg" viewBox="0 0 64 36" fill="none"><rect x="2" y="2" width="60" height="32" rx="6" fill="#0d9488" fill-opacity="0.2"/><path d="M12 24h40M16 16l6-7h20l6 7" stroke="#2dd4bf" stroke-width="2.5"/><circle cx="16" cy="21" r="3.5" fill="#2dd4bf"/><circle cx="48" cy="21" r="3.5" fill="#2dd4bf"/><path d="M30 6l-3 7h6l-3 7" stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>` },
+      { id: 'Minivan', name: 'Minivan', svg: `<svg class="icon-tile-svg" viewBox="0 0 64 36" fill="none"><rect x="2" y="2" width="60" height="32" rx="6" fill="#9333ea" fill-opacity="0.2"/><path d="M6 25h52M8 19l4-11h34l10 11v5H8v-5z" stroke="#c084fc" stroke-width="2.5" stroke-linejoin="round"/><circle cx="16" cy="23" r="3.5" fill="#c084fc"/><circle cx="48" cy="23" r="3.5" fill="#c084fc"/></svg>` },
+      { id: 'Truck', name: 'Pickup', svg: `<svg class="icon-tile-svg" viewBox="0 0 64 36" fill="none"><rect x="2" y="2" width="60" height="32" rx="6" fill="#d97706" fill-opacity="0.2"/><path d="M6 25h52M10 19l5-9h18v9H10zm23 0h23v6H33v-6z" stroke="#fbbf24" stroke-width="2.5" stroke-linejoin="round"/><circle cx="18" cy="23" r="4" fill="#fbbf24"/><circle cx="46" cy="23" r="4" fill="#fbbf24"/></svg>` },
+      { id: 'Luxury', name: 'Luxury', svg: `<svg class="icon-tile-svg" viewBox="0 0 64 36" fill="none"><rect x="2" y="2" width="60" height="32" rx="6" fill="#e11d48" fill-opacity="0.2"/><path d="M6 25h52M12 20l10-12h20l12 12" stroke="#fb7185" stroke-width="2.5" stroke-linecap="round"/><circle cx="18" cy="22" r="3.5" stroke="#fb7185" stroke-width="2" fill="#0f172a"/><circle cx="46" cy="22" r="3.5" stroke="#fb7185" stroke-width="2" fill="#0f172a"/><polygon points="32,8 35,13 29,13" fill="#fb7185"/></svg>` },
+      { id: 'Compact SUV', name: 'C-SUV', svg: `<svg class="icon-tile-svg" viewBox="0 0 64 36" fill="none"><rect x="2" y="2" width="60" height="32" rx="6" fill="#0891b2" fill-opacity="0.2"/><path d="M8 24h48M12 18l6-9h22l8 9v4H12v-4z" stroke="#22d3ee" stroke-width="2.5" stroke-linejoin="round"/><circle cx="16" cy="22" r="3.5" fill="#22d3ee"/><circle cx="48" cy="22" r="3.5" fill="#22d3ee"/></svg>` }
     ];
 
+    // Branch SVGs
     const BRANCHES = [
-      { id: 'Downtown Depot', name: 'Downtown', icon: 'fa-city' },
-      { id: 'Airport Terminal', name: 'Airport', icon: 'fa-plane-departure' },
-      { id: 'Westside Hub', name: 'Westside', icon: 'fa-building-columns' },
-      { id: 'Northside Depot', name: 'Northside', icon: 'fa-map-pin' },
-      { id: 'Metro Transit Center', name: 'Metro Hub', icon: 'fa-train' },
-      { id: 'Convention Hub', name: 'Convention', icon: 'fa-hotel' },
-      { id: 'Eastside Galleria', name: 'Eastside', icon: 'fa-store' },
-      { id: 'South Suburban', name: 'Suburban', icon: 'fa-house' }
+      { id: 'Downtown Depot', name: 'Downtown', svg: `<svg class="icon-tile-svg" viewBox="0 0 64 36" fill="none"><rect x="2" y="2" width="60" height="32" rx="6" fill="#0284c7" fill-opacity="0.2"/><path d="M14 30V10l12-4v24M26 30V14l12-2v18M38 30V6l12-2v26" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round"/><rect x="18" y="14" width="3" height="3" fill="#38bdf8"/><rect x="30" y="18" width="3" height="3" fill="#38bdf8"/><rect x="42" y="10" width="3" height="3" fill="#38bdf8"/></svg>` },
+      { id: 'Airport Terminal', name: 'Airport', svg: `<svg class="icon-tile-svg" viewBox="0 0 64 36" fill="none"><rect x="2" y="2" width="60" height="32" rx="6" fill="#4f46e5" fill-opacity="0.2"/><path d="M10 28h44M18 20l14-12 6 2-8 10 14 2 4-3 4 1-3 6h-31z" fill="#818cf8" stroke="#818cf8" stroke-width="1.5" stroke-linejoin="round"/></svg>` },
+      { id: 'Westside Hub', name: 'Westside', svg: `<svg class="icon-tile-svg" viewBox="0 0 64 36" fill="none"><rect x="2" y="2" width="60" height="32" rx="6" fill="#059669" fill-opacity="0.2"/><path d="M10 28h44M14 28V14l18-8 18 8v14" stroke="#34d399" stroke-width="2.5" stroke-linejoin="round"/><path d="M20 28V18h8v10M36 28V18h8v10" stroke="#34d399" stroke-width="2"/></svg>` },
+      { id: 'Northside Depot', name: 'Northside', svg: `<svg class="icon-tile-svg" viewBox="0 0 64 36" fill="none"><rect x="2" y="2" width="60" height="32" rx="6" fill="#d97706" fill-opacity="0.2"/><path d="M32 6c-6 0-11 5-11 11 0 8 11 15 11 15s11-7 11-15c0-6-5-11-11-11z" stroke="#fbbf24" stroke-width="2.5" fill="#0f172a"/><circle cx="32" cy="17" r="4" fill="#fbbf24"/></svg>` },
+      { id: 'Metro Transit Center', name: 'Metro Hub', svg: `<svg class="icon-tile-svg" viewBox="0 0 64 36" fill="none"><rect x="2" y="2" width="60" height="32" rx="6" fill="#9333ea" fill-opacity="0.2"/><rect x="18" y="6" width="28" height="20" rx="4" stroke="#c084fc" stroke-width="2.5" fill="#0f172a"/><path d="M22 12h20M18 20h28M22 28l-4 4M42 28l4 4" stroke="#c084fc" stroke-width="2.5" stroke-linecap="round"/><circle cx="25" cy="23" r="2" fill="#c084fc"/><circle cx="39" cy="23" r="2" fill="#c084fc"/></svg>` },
+      { id: 'Convention Hub', name: 'Convention', svg: `<svg class="icon-tile-svg" viewBox="0 0 64 36" fill="none"><rect x="2" y="2" width="60" height="32" rx="6" fill="#e11d48" fill-opacity="0.2"/><path d="M10 28h44M16 28V14a16 16 0 0132 0v14" stroke="#fb7185" stroke-width="2.5"/><path d="M24 28V18h16v10" stroke="#fb7185" stroke-width="2"/></svg>` },
+      { id: 'Eastside Galleria', name: 'Eastside', svg: `<svg class="icon-tile-svg" viewBox="0 0 64 36" fill="none"><rect x="2" y="2" width="60" height="32" rx="6" fill="#0d9488" fill-opacity="0.2"/><path d="M12 28V12l20-6 20 6v16H12z" stroke="#2dd4bf" stroke-width="2.5" stroke-linejoin="round"/><path d="M22 28V18h20v10" stroke="#2dd4bf" stroke-width="2"/></svg>` },
+      { id: 'South Suburban', name: 'Suburban', svg: `<svg class="icon-tile-svg" viewBox="0 0 64 36" fill="none"><rect x="2" y="2" width="60" height="32" rx="6" fill="#0891b2" fill-opacity="0.2"/><path d="M14 28V16l18-10 18 10v12H14z" stroke="#22d3ee" stroke-width="2.5" stroke-linejoin="round"/><rect x="26" y="20" width="12" height="8" fill="#22d3ee"/></svg>` }
     ];
 
     const ADDONS_POOL = [
@@ -488,38 +573,9 @@
       "Wi-Fi Hotspot"
     ];
 
-    const CUSTOMER_POOL = [
-      { name: "Holly Lawson", initials: "HL", bg: "from-pink-600 to-slate-800" },
-      { name: "Mike Miller", initials: "MM", bg: "from-indigo-600 to-slate-800" },
-      { name: "Sarah Jenkins", initials: "SJ", bg: "from-emerald-600 to-slate-800" },
-      { name: "Carlos Ramirez", initials: "CR", bg: "from-purple-600 to-slate-800" },
-      { name: "Amanda Vance", initials: "AV", bg: "from-sky-600 to-slate-800" },
-      { name: "David Chen", initials: "DC", bg: "from-amber-600 to-slate-800" },
-      { name: "Rachel Green", initials: "RG", bg: "from-rose-600 to-slate-800" },
-      { name: "Marcus Thorne", initials: "MT", bg: "from-teal-600 to-slate-800" },
-      { name: "Priya Patel", initials: "PP", bg: "from-fuchsia-600 to-slate-800" },
-      { name: "Ethan Brooks", initials: "EB", bg: "from-cyan-600 to-slate-800" },
-      { name: "Olivia Taylor", initials: "OT", bg: "from-violet-600 to-slate-800" },
-      { name: "Jackson Reed", initials: "JR", bg: "from-orange-600 to-slate-800" },
-      { name: "Elena Rostova", initials: "ER", bg: "from-red-600 to-slate-800" },
-      { name: "Brandon Lee", initials: "BL", bg: "from-blue-600 to-slate-800" },
-      { name: "Sophia Martinez", initials: "SM", bg: "from-emerald-700 to-slate-800" },
-      { name: "Tariq Al-Mansoor", initials: "TA", bg: "from-amber-700 to-slate-800" },
-      { name: "Chloe Dupont", initials: "CD", bg: "from-indigo-700 to-slate-800" },
-      { name: "Jordan Smith", initials: "JS", bg: "from-purple-700 to-slate-800" },
-      { name: "Hannah Abbott", initials: "HA", bg: "from-pink-700 to-slate-800" },
-      { name: "Kevin O'Connor", initials: "KO", bg: "from-cyan-700 to-slate-800" }
-    ];
+    const FIRST_NAMES = ["Holly", "Marcus", "Elena", "Devon", "Sophia", "Tariq", "Chloe", "Brandon"];
+    const LAST_NAMES = ["Lawson", "Vance", "Reyes", "Miller", "Chen", "Al-Mansoor", "Dupont", "Sorenson"];
 
-    let SCENARIOS = [];
-    let currentScenarioIndex = 0;
-    let aggregateScore = 0;
-    let selectedVehicle = null;
-    let selectedBranch = null;
-    let soundEnabled = true;
-    let currentUserId = 'User-' + Math.floor(1000 + Math.random() * 9000);
-
-    // Date Helper: Format date string as YYYY-MM-DD
     function getFormattedDate(offsetDays = 0) {
       const d = new Date();
       d.setDate(d.getDate() + offsetDays);
@@ -530,52 +586,53 @@
     }
 
     function generate3RandomScenarios() {
-      const shuffledCustomers = [...CUSTOMER_POOL].sort(() => 0.5 - Math.random());
-      
-      SCENARIOS = [0, 1, 2].map((idx) => {
-        const cust = shuffledCustomers[idx % shuffledCustomers.length];
-        const carObj = VEHICLES[Math.floor(Math.random() * VEHICLES.length)];
-        const branchObj = BRANCHES[Math.floor(Math.random() * BRANCHES.length)];
-        const addon = ADDONS_POOL[Math.floor(Math.random() * ADDONS_POOL.length)];
-        
-        // Random date offset relative to today (1 to 5 days in the future)
-        const dateOffset = Math.floor(Math.random() * 5) + 1;
-        const dateStr = getFormattedDate(dateOffset);
+      SCENARIOS = [];
+      const usedNames = new Set();
 
-        let datePhrase = dateOffset === 1 ? `starting tomorrow (${dateStr})` : `starting on ${dateStr}`;
+      for (let i = 0; i < 3; i++) {
+        let fn, ln, fullName;
+        do {
+          fn = FIRST_NAMES[Math.floor(Math.random() * FIRST_NAMES.length)];
+          ln = LAST_NAMES[Math.floor(Math.random() * LAST_NAMES.length)];
+          fullName = `${fn} ${ln}`;
+        } while (usedNames.has(fullName));
+        usedNames.add(fullName);
 
-        let addonPhrase = "";
-        if (addon === "Child Car Seat") addonPhrase = "I have a little one with me and require a child car seat!";
-        else if (addon === "GPS Navigation") addonPhrase = "I'm unfamiliar with the area and need GPS navigation.";
-        else if (addon === "Hand Controls") addonPhrase = "I require specialized hand controls installed.";
-        else if (addon === "Additional Driver") addonPhrase = "Please include additional driver coverage on this policy.";
-        else if (addon === "Toll Pass Unlimited") addonPhrase = "Include an unlimited toll pass for my highway commuting!";
-        else if (addon === "Ski Roof Rack") addonPhrase = "Please add a ski roof rack for my gear!";
-        else if (addon === "Bicycle Rack") addonPhrase = "Please attach a bicycle rack for my mountain bike!";
-        else if (addon === "Wi-Fi Hotspot") addonPhrase = "I need an in-car Wi-Fi hotspot pod to stay connected.";
+        const initials = `${fn[0]}${ln[0]}`;
+        const reqCarObj = VEHICLES[Math.floor(Math.random() * VEHICLES.length)];
+        const reqBranchObj = BRANCHES[Math.floor(Math.random() * BRANCHES.length)];
+        const reqAddon = ADDONS_POOL[Math.floor(Math.random() * ADDONS_POOL.length)];
+        const dateOffset = i + 1;
+        const reqDate = getFormattedDate(dateOffset);
 
-        const story = `"Hi! I'm ${cust.name}! I need a ${carObj.name} near ${branchObj.name} ${datePhrase}! ${addonPhrase}"`;
+        let dateText = dateOffset === 1 ? "tomorrow" : `in ${dateOffset} days (${reqDate})`;
 
-        return {
-          id: idx + 1,
-          customerName: cust.name,
-          initials: cust.initials,
-          bg: cust.bg,
+        const story = `"Hi! I'm ${fn}! I need a ${reqCarObj.name} vehicle from our ${reqBranchObj.name} branch starting ${dateText}. Please ensure it includes a ${reqAddon}!"`;
+        const quote = `"Thank you so much! My policyholder ${fn} is set up for success and ready to ride!"`;
+
+        SCENARIOS.push({
+          customerName: fullName,
+          initials: initials,
+          reqCar: reqCarObj.id,
+          reqCarName: reqCarObj.name,
+          reqBranch: reqBranchObj.id,
+          reqBranchName: reqBranchObj.name,
+          reqDate: reqDate,
+          reqAddon: reqAddon,
           story: story,
-          reqCar: carObj.id,
-          reqBranch: branchObj.id,
-          reqDate: dateStr,
-          reqAddon: addon,
-          quote: `Thank you, ${cust.name}! The rental arrangement is fantastic!`
-        };
-      });
+          quote: quote
+        });
+      }
     }
 
-    // Web Audio Synthesizer for SFX
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    // Audio Synthesizer
+    let audioCtx = null;
     function playSound(type) {
       if (!soundEnabled) return;
       try {
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
         if (audioCtx.state === 'suspended') {
           audioCtx.resume();
         }
@@ -584,210 +641,230 @@
         osc.connect(gain);
         gain.connect(audioCtx.destination);
 
+        const now = audioCtx.currentTime;
         if (type === 'click') {
           osc.type = 'sine';
-          osc.frequency.setValueAtTime(440, audioCtx.currentTime);
-          osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.05);
-          gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
-          osc.start();
-          osc.stop(audioCtx.currentTime + 0.05);
+          osc.frequency.setValueAtTime(600, now);
+          osc.frequency.exponentialRampToValueAtTime(300, now + 0.05);
+          gain.gain.setValueAtTime(0.15, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.05);
+          osc.start(now);
+          osc.stop(now + 0.05);
         } else if (type === 'success') {
           osc.type = 'triangle';
-          osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
-          osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1);
-          osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2);
-          osc.frequency.setValueAtTime(1046.50, audioCtx.currentTime + 0.3);
-          gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
-          osc.start();
-          osc.stop(audioCtx.currentTime + 0.5);
+          osc.frequency.setValueAtTime(440, now);
+          osc.frequency.exponentialRampToValueAtTime(880, now + 0.2);
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
+          osc.start(now);
+          osc.stop(now + 0.25);
         } else if (type === 'win') {
-          [523.25, 659.25, 783.99, 1046.50, 1318.51].forEach((freq, idx) => {
-            const o = audioCtx.createOscillator();
-            const g = audioCtx.createGain();
-            o.connect(g);
-            g.connect(audioCtx.destination);
-            o.frequency.value = freq;
-            g.gain.setValueAtTime(0.2, audioCtx.currentTime + idx * 0.12);
-            g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + idx * 0.12 + 0.4);
-            o.start(audioCtx.currentTime + idx * 0.12);
-            o.stop(audioCtx.currentTime + idx * 0.12 + 0.4);
-          });
+          osc.type = 'square';
+          osc.frequency.setValueAtTime(523.25, now);
+          osc.frequency.setValueAtTime(659.25, now + 0.1);
+          osc.frequency.setValueAtTime(783.99, now + 0.2);
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.4);
+          osc.start(now);
+          osc.stop(now + 0.4);
         }
       } catch (e) {
-        console.debug('Audio playback note:', e);
+        console.error(e);
       }
     }
 
-    const appId = typeof __app_id !== 'undefined' ? __app_id : 'entegral-rental-app';
-    let db = null;
-    let auth = null;
-
-    async function initFirebase() {
-      try {
-        if (typeof __firebase_config !== 'undefined' && __firebase_config) {
-          const firebaseConfig = JSON.parse(__firebase_config);
-          const app = initializeApp(firebaseConfig);
-          auth = getAuth(app);
-          db = getFirestore(app);
-
-          if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-            await signInWithCustomToken(auth, __initial_auth_token);
-          } else {
-            await signInAnonymously(auth);
-          }
-
-          if (auth.currentUser) {
-            currentUserId = 'Agent-' + auth.currentUser.uid.substring(0, 4).toUpperCase();
-          }
-
-          listenLeaderboard();
-        }
-      } catch (e) {
-        console.warn('Firebase sync initialized in local fallback mode:', e);
-      }
-    }
-
-    function syncScoreToCloud() {
-      if (!db || !auth || !auth.currentUser) return;
-      try {
-        const userRef = doc(db, 'artifacts', appId, 'public', 'data', 'leaderboard', auth.currentUser.uid);
-        setDoc(userRef, {
-          name: currentUserId,
-          score: aggregateScore,
-          timestamp: Date.now()
-        }, { merge: true });
-      } catch (err) {
-        console.debug('Score sync:', err);
-      }
-    }
-
-    function listenLeaderboard() {
-      if (!db) return;
-      try {
-        const lbCol = collection(db, 'artifacts', appId, 'public', 'data', 'leaderboard');
-        onSnapshot(lbCol, (snapshot) => {
-          const players = [];
-          snapshot.forEach(doc => players.push(doc.data()));
-          players.sort((a, b) => (b.score || 0) - (a.score || 0));
-          renderLeaderboardList(players);
-        }, (err) => console.debug('Leaderboard err:', err));
-      } catch (e) {
-        console.debug('Leaderboard snapshot:', e);
-      }
-    }
-
-    function renderLeaderboardList(players) {
-      const container = document.getElementById('leaderboardList');
-      if (!container) return;
-      
-      if (!players || players.length === 0) {
-        container.innerHTML = `
-          <div class="p-3 text-center text-xs text-slate-500">
-            Be the first on the booth leaderboard!
-          </div>
-        `;
-        return;
-      }
-
-      container.innerHTML = players.slice(0, 10).map((p, idx) => `
-        <div class="flex items-center justify-between p-2 rounded-xl ${p.name === currentUserId ? 'bg-integral-500/20 border border-integral-500/40' : 'bg-slate-950/60 border border-slate-800'} text-[11px]">
-          <div class="flex items-center gap-2">
-            <span class="w-4 h-4 rounded-full flex items-center justify-center font-mono font-bold text-[9px] ${idx === 0 ? 'bg-integral-gold text-slate-950' : idx === 1 ? 'bg-slate-300 text-slate-950' : idx === 2 ? 'bg-amber-700 text-white' : 'bg-slate-800 text-slate-400'}">
-              ${idx + 1}
-            </span>
-            <span class="font-medium text-slate-200 truncate max-w-[100px]">${p.name} ${p.name === currentUserId ? '(You)' : ''}</span>
-          </div>
-          <span class="font-mono font-bold text-integral-400">${p.score || 0} PTS</span>
-        </div>
-      `).join('');
-    }
-
-    let briefingAnimationId = null;
-    let videoTime = 0;
-    let isVideoPlaying = true;
-
+    // Briefing Video Canvas Renderer
+    let briefingAnimFrame = null;
     function renderBriefingCanvas() {
       const canvas = document.getElementById('briefingCanvas');
       if (!canvas) return;
       const ctx = canvas.getContext('2d');
-      canvas.width = canvas.clientWidth || 360;
-      canvas.height = canvas.clientHeight || 480;
 
-      function drawFrame() {
+      function resizeCanvas() {
+        if (!canvas.parentElement) return;
+        const rect = canvas.parentElement.getBoundingClientRect();
+        if (rect.width > 0 && rect.height > 0) {
+          canvas.width = rect.width;
+          canvas.height = rect.height;
+        }
+      }
+      resizeCanvas();
+
+      function draw() {
         if (!isVideoPlaying) return;
+
+        resizeCanvas();
+        const w = canvas.width || 320;
+        const h = canvas.height || 400;
+
         videoTime += 0.03;
         if (videoTime > 15) videoTime = 0;
 
-        document.getElementById('videoTimer').innerText = 
-          `00:${Math.floor(videoTime).toString().padStart(2, '0')} / 00:15`;
-
-        const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-        grad.addColorStop(0, '#0284c7');
-        grad.addColorStop(0.5, '#0f172a');
-        grad.addColorStop(1, '#020617');
-        ctx.fillStyle = grad;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        ctx.strokeStyle = 'rgba(56, 189, 248, 0.15)';
-        ctx.lineWidth = 1;
-        const spacing = 30;
-        for (let x = 0; x < canvas.width; x += spacing) {
-          ctx.beginPath();
-          ctx.moveTo(x, 0);
-          ctx.lineTo(x, canvas.height);
-          ctx.stroke();
-        }
-        for (let y = 0; y < canvas.height; y += spacing) {
-          ctx.beginPath();
-          ctx.moveTo(0, y);
-          ctx.lineTo(canvas.width, y);
-          ctx.stroke();
+        // Subtitle & Timer updates
+        const timerElem = document.getElementById('videoTimer');
+        if (timerElem) {
+          const sec = Math.floor(videoTime).toString().padStart(2, '0');
+          timerElem.innerText = `00:${sec} / 00:15`;
         }
 
-        const centerX = canvas.width / 2;
-        const centerY = canvas.height / 2;
-        const pulseRadius = (videoTime * 40) % (canvas.width / 1.5);
-        ctx.strokeStyle = 'rgba(14, 165, 233, 0.4)';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.arc(centerX, centerY, pulseRadius, 0, Math.PI * 2);
-        ctx.stroke();
-
-        ctx.fillStyle = 'rgba(56, 189, 248, 0.5)';
-        const bars = 24;
-        const barWidth = canvas.width / bars;
-        for (let i = 0; i < bars; i++) {
-          const h = Math.sin(videoTime * 4 + i) * 20 + 25;
-          ctx.fillRect(i * barWidth + 2, canvas.height - h - 60, barWidth - 4, h);
+        const progressElem = document.getElementById('videoProgressBar');
+        if (progressElem) {
+          progressElem.style.width = `${(videoTime / 15) * 100}%`;
         }
 
-        const subtext = document.getElementById('videoSubtext');
-        if (subtext) {
-          if (videoTime < 4) {
-            subtext.innerText = "🚨 INCOMING ACCIDENT CLAIM DISPATCH ALERT";
-          } else if (videoTime < 8) {
-            subtext.innerText = "Motorists in accidents need fast, precise replacement vehicles!";
-          } else if (videoTime < 12) {
-            subtext.innerText = "Match vehicle types, pickup branches, dates, and special requests.";
+        const subtextElem = document.getElementById('videoSubtext');
+        if (subtextElem) {
+          if (videoTime < 5) {
+            subtextElem.innerText = "Welcome to Al-Hummer Claims Emergency Dispatch Service.";
+          } else if (videoTime < 10) {
+            subtextElem.innerText = "Match policyholder details for category, branch, date & add-ons accurately.";
           } else {
-            subtext.innerText = "Reach 30 Points across 3 claims to claim your grand prize!";
+            subtextElem.innerText = "Dispatch rentals swiftly to maximize customer satisfaction & score points!";
           }
         }
 
-        briefingAnimationId = requestAnimationFrame(drawFrame);
+        // Draw Animated Cyber Video Screen
+        // Background
+        ctx.fillStyle = '#020617';
+        ctx.fillRect(0, 0, w, h);
+
+        const horizonY = h * 0.45;
+
+        // Digital Grid Lines Sky
+        ctx.strokeStyle = 'rgba(99, 102, 241, 0.15)';
+        ctx.lineWidth = 1;
+        const gridOffset = (videoTime * 25) % 20;
+        for (let gy = gridOffset; gy < horizonY; gy += 20) {
+          ctx.beginPath();
+          ctx.moveTo(0, gy);
+          ctx.lineTo(w, gy);
+          ctx.stroke();
+        }
+
+        // Perspective Cyber Road
+        ctx.fillStyle = '#0f172a';
+        ctx.beginPath();
+        ctx.moveTo(w * 0.1, h);
+        ctx.lineTo(w * 0.4, horizonY);
+        ctx.lineTo(w * 0.6, horizonY);
+        ctx.lineTo(w * 0.9, h);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.strokeStyle = '#0284c7';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        // Moving Highway Lane Markers
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 2;
+        const laneOffset = (videoTime * 120) % 30;
+        for (let y = horizonY; y < h; y += 15) {
+          const dy = y + laneOffset;
+          if (dy > horizonY && dy < h) {
+            const p = (dy - horizonY) / (h - horizonY);
+            const cx = w / 2;
+            const hw = (w * 0.4) * p;
+            ctx.beginPath();
+            ctx.moveTo(cx - hw * 0.08, dy);
+            ctx.lineTo(cx + hw * 0.08, dy);
+            ctx.stroke();
+          }
+        }
+
+        // Animated Driving Vehicle Representation
+        const carX = w / 2 + Math.sin(videoTime * 2) * 12;
+        const carY = h * 0.65;
+
+        // Shadow
+        ctx.fillStyle = 'rgba(14, 165, 233, 0.25)';
+        ctx.beginPath();
+        ctx.ellipse(carX, carY + 16, 40, 8, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // SUV Body
+        ctx.fillStyle = '#0ea5e9';
+        ctx.fillRect(carX - 35, carY - 12, 70, 24);
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(carX - 35, carY - 12, 70, 24);
+
+        // Cabin
+        ctx.fillStyle = '#1e293b';
+        ctx.beginPath();
+        ctx.moveTo(carX - 22, carY - 12);
+        ctx.lineTo(carX - 12, carY - 26);
+        ctx.lineTo(carX + 12, carY - 26);
+        ctx.lineTo(carX + 22, carY - 12);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // Glowing Headlights
+        ctx.fillStyle = '#fbbf24';
+        ctx.beginPath();
+        ctx.arc(carX - 28, carY + 2, 3.5, 0, Math.PI * 2);
+        ctx.arc(carX + 28, carY + 2, 3.5, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Headlight Beams
+        ctx.fillStyle = 'rgba(251, 191, 36, 0.12)';
+        ctx.beginPath();
+        ctx.moveTo(carX - 28, carY + 2);
+        ctx.lineTo(carX - 65, h);
+        ctx.lineTo(carX - 15, h);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.moveTo(carX + 28, carY + 2);
+        ctx.lineTo(carX + 15, h);
+        ctx.lineTo(carX + 65, h);
+        ctx.closePath();
+        ctx.fill();
+
+        // Wheels
+        ctx.fillStyle = '#0f172a';
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 1.5;
+        [-22, 22].forEach(ox => {
+          ctx.beginPath();
+          ctx.arc(carX + ox, carY + 12, 6, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+        });
+
+        // HUD Telemetry Overlays
+        ctx.fillStyle = '#38bdf8';
+        ctx.font = '10px monospace';
+        ctx.fillText('DISPATCH_SYS: ACTIVE', 12, 22);
+        ctx.fillText(`SPEED: ${Math.floor(52 + Math.sin(videoTime * 4) * 6)} MPH`, 12, 36);
+
+        // Reticle overlay
+        const rx = w * 0.82;
+        const ry = h * 0.22;
+        ctx.strokeStyle = 'rgba(56, 189, 248, 0.5)';
+        ctx.beginPath();
+        ctx.arc(rx, ry, 18, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(rx, ry, 24, videoTime * 2, videoTime * 2 + Math.PI);
+        ctx.stroke();
+
+        briefingAnimFrame = requestAnimationFrame(draw);
       }
 
-      drawFrame();
+      if (briefingAnimFrame) cancelAnimationFrame(briefingAnimFrame);
+      draw();
     }
 
     function renderVehiclesGrid() {
       const grid = document.getElementById('vehicleGrid');
+      if (!grid) return;
       grid.innerHTML = VEHICLES.map(v => `
-        <button data-car-id="${v.id}" class="car-option-btn glass-card-interactive p-1 rounded-lg flex flex-col items-center justify-center text-center gap-0.5 cursor-pointer">
-          <i class="fa-solid ${v.icon} text-sm ${v.color}"></i>
-          <span class="text-[9px] font-semibold text-slate-200 leading-none truncate w-full px-0.5">${v.name}</span>
+        <button data-car-id="${v.id}" class="car-option-btn glass-card-interactive p-1 rounded-xl flex flex-col items-center justify-between text-center h-full min-h-[64px]">
+          <div class="w-full flex-1 flex items-center justify-center p-0.5">${v.svg}</div>
+          <span class="text-nano font-bold text-slate-200 truncate w-full px-0.5 leading-tight mb-0.5">${v.name}</span>
         </button>
       `).join('');
 
@@ -796,21 +873,24 @@
           playSound('click');
           selectedVehicle = btn.getAttribute('data-car-id');
           document.querySelectorAll('.car-option-btn').forEach(b => {
-            b.classList.remove('border-integral-500', 'bg-integral-500/20', 'ring-2', 'ring-integral-500/50');
+            b.style.borderColor = 'rgba(56, 189, 248, 0.25)';
+            b.style.backgroundColor = 'rgba(30, 41, 59, 0.75)';
           });
-          btn.classList.add('border-integral-500', 'bg-integral-500/20', 'ring-2', 'ring-integral-500/50');
+          btn.style.borderColor = 'var(--alhummer-500)';
+          btn.style.backgroundColor = 'rgba(14, 165, 233, 0.35)';
           document.getElementById('carSelectedBadge').innerText = selectedVehicle;
-          document.getElementById('carSelectedBadge').className = 'text-[9px] text-integral-400 font-bold';
+          document.getElementById('carSelectedBadge').className = 'text-xs text-alhummer-400 font-bold';
         });
       });
     }
 
     function renderBranchesGrid() {
       const grid = document.getElementById('branchGrid');
+      if (!grid) return;
       grid.innerHTML = BRANCHES.map(b => `
-        <button data-branch-id="${b.id}" class="branch-option-btn glass-card-interactive p-1 rounded-lg flex flex-col items-center justify-center text-center gap-0.5 cursor-pointer">
-          <i class="fa-solid ${b.icon} text-integral-400 text-xs"></i>
-          <span class="text-[9px] font-semibold text-slate-200 leading-none truncate w-full px-0.5">${b.name}</span>
+        <button data-branch-id="${b.id}" class="branch-option-btn glass-card-interactive p-1 rounded-xl flex flex-col items-center justify-between text-center h-full min-h-[64px]">
+          <div class="w-full flex-1 flex items-center justify-center p-0.5">${b.svg}</div>
+          <span class="text-nano font-bold text-slate-200 truncate w-full px-0.5 leading-tight mb-0.5">${b.name}</span>
         </button>
       `).join('');
 
@@ -819,11 +899,13 @@
           playSound('click');
           selectedBranch = btn.getAttribute('data-branch-id');
           document.querySelectorAll('.branch-option-btn').forEach(b => {
-            b.classList.remove('border-integral-500', 'bg-integral-500/20', 'ring-2', 'ring-integral-500/50');
+            b.style.borderColor = 'rgba(56, 189, 248, 0.25)';
+            b.style.backgroundColor = 'rgba(30, 41, 59, 0.75)';
           });
-          btn.classList.add('border-integral-500', 'bg-integral-500/20', 'ring-2', 'ring-integral-500/50');
+          btn.style.borderColor = 'var(--alhummer-500)';
+          btn.style.backgroundColor = 'rgba(14, 165, 233, 0.35)';
           document.getElementById('branchSelectedBadge').innerText = selectedBranch;
-          document.getElementById('branchSelectedBadge').className = 'text-[9px] text-integral-400 font-bold';
+          document.getElementById('branchSelectedBadge').className = 'text-xs text-alhummer-400 font-bold';
         });
       });
     }
@@ -837,9 +919,9 @@
       const modal = document.getElementById('claimPromptModal');
       const card = document.getElementById('claimPromptCard');
       if (modal && card) {
-        modal.classList.remove('opacity-0', 'pointer-events-none');
-        card.classList.remove('scale-95');
-        card.classList.add('scale-100');
+        modal.style.opacity = '1';
+        modal.style.pointerEvents = 'auto';
+        card.style.transform = 'scale(1)';
       }
     }
 
@@ -848,9 +930,9 @@
       const modal = document.getElementById('claimPromptModal');
       const card = document.getElementById('claimPromptCard');
       if (modal && card) {
-        card.classList.remove('scale-100');
-        card.classList.add('scale-95');
-        modal.classList.add('opacity-0', 'pointer-events-none');
+        card.style.transform = 'scale(0.95)';
+        modal.style.opacity = '0';
+        modal.style.pointerEvents = 'none';
       }
     }
 
@@ -868,7 +950,6 @@
       document.getElementById('customerAvatar').innerText = sc.initials;
       document.getElementById('customerName').innerText = sc.customerName;
 
-      // Default the start date picker to tomorrow (today + 1 day)
       const startDateInput = document.getElementById('inputStartDate');
       const addonSelect = document.getElementById('selectAddon');
       if (startDateInput) startDateInput.value = getFormattedDate(1);
@@ -877,17 +958,17 @@
       selectedVehicle = null;
       selectedBranch = null;
       document.getElementById('carSelectedBadge').innerText = 'None';
-      document.getElementById('carSelectedBadge').className = 'text-[9px] text-slate-400';
+      document.getElementById('carSelectedBadge').className = 'text-nano text-slate-400';
       document.getElementById('branchSelectedBadge').innerText = 'None';
-      document.getElementById('branchSelectedBadge').className = 'text-[9px] text-slate-400';
+      document.getElementById('branchSelectedBadge').className = 'text-nano text-slate-400';
 
       document.querySelectorAll('.car-option-btn, .branch-option-btn').forEach(b => {
-        b.classList.remove('border-integral-500', 'bg-integral-500/20', 'ring-2', 'ring-integral-500/50');
+        b.style.borderColor = 'rgba(56, 189, 248, 0.25)';
+        b.style.backgroundColor = 'rgba(30, 41, 59, 0.75)';
       });
 
-      // Only automatically show the prompt overlay if requested and video is NOT currently active
       const videoModal = document.getElementById('videoModal');
-      const isVideoVisible = videoModal && !videoModal.classList.contains('hidden') && !videoModal.classList.contains('opacity-0');
+      const isVideoVisible = videoModal && videoModal.style.opacity !== '0';
 
       if (autoShowPrompt && !isVideoVisible) {
         setTimeout(() => {
@@ -951,6 +1032,11 @@
       const startDateVal = document.getElementById('inputStartDate').value;
       const addonVal = document.getElementById('selectAddon').value;
 
+      if (!selectedVehicle || !selectedBranch) {
+        alert("Please select both a Vehicle Category and a Pickup Branch before dispatching!");
+        return;
+      }
+
       const vehicleMatch = selectedVehicle === sc.reqCar;
       const branchMatch = selectedBranch === sc.reqBranch;
       const dateMatch = startDateVal === sc.reqDate;
@@ -968,36 +1054,24 @@
       const progressPercent = Math.min(100, (aggregateScore / 30) * 100);
       document.getElementById('scoreProgressBar').style.width = `${progressPercent}%`;
 
-      syncScoreToCloud();
-
-      // Show Success Modal
-      document.getElementById('successCarName').innerText = selectedVehicle ? selectedVehicle : 'Rental Car';
-      document.getElementById('successQuote').innerText = `"${sc.quote}"`;
+      document.getElementById('successCarName').innerText = selectedVehicle;
+      document.getElementById('successQuote').innerText = sc.quote;
       document.getElementById('modalCustomer').innerText = sc.customerName;
       document.getElementById('modalSpecsCount').innerText = `${matchedCount} / 4 Correct`;
       document.getElementById('modalPointsAwarded').innerText = `+${pointsEarned} PTS`;
 
-      const modal = document.getElementById('successModal');
-      modal.classList.remove('opacity-0', 'pointer-events-none');
-      document.getElementById('successModalCard').classList.remove('scale-95');
-      document.getElementById('successModalCard').classList.add('scale-100');
+      const successModal = document.getElementById('successModal');
+      const successCard = document.getElementById('successModalCard');
+      if (successModal && successCard) {
+        successModal.style.opacity = '1';
+        successModal.style.pointerEvents = 'auto';
+        successCard.style.transform = 'scale(1)';
+      }
+
+      saveScoreToLocalLeaderboard();
     }
 
-    function showWinModal() {
-      playSound('win');
-      triggerConfetti();
-
-      renderQRCanvas();
-
-      document.getElementById('finalScoreBadge').innerText = `${aggregateScore} / 30 POINTS!`;
-      document.getElementById('winTimeText').innerText = new Date().toLocaleTimeString();
-      const winModal = document.getElementById('winModal');
-      winModal.classList.remove('opacity-0', 'pointer-events-none');
-      document.getElementById('winModalCard').classList.remove('scale-90');
-      document.getElementById('winModalCard').classList.add('scale-100');
-    }
-
-    function renderQRCanvas() {
+    function renderQRCodeCanvas() {
       const canvas = document.getElementById('qrCanvas');
       if (!canvas) return;
       const ctx = canvas.getContext('2d');
@@ -1008,159 +1082,252 @@
       ctx.fillRect(0, 0, 120, 120);
 
       ctx.fillStyle = '#0f172a';
-      const tileSize = 6;
-      for (let r = 0; r < 20; r++) {
-        for (let c = 0; c < 20; c++) {
-          if (
-            (r < 6 && c < 6) || 
-            (r < 6 && c > 13) || 
-            (r > 13 && c < 6) || 
-            (r + c) % 3 === 0
-          ) {
-            ctx.fillRect(c * tileSize, r * tileSize, tileSize - 1, tileSize - 1);
+      
+      ctx.fillRect(10, 10, 30, 30);
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(15, 15, 20, 20);
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(20, 20, 10, 10);
+
+      ctx.fillRect(80, 10, 30, 30);
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(85, 15, 20, 20);
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(90, 20, 10, 10);
+
+      ctx.fillRect(10, 80, 30, 30);
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(15, 85, 20, 20);
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(20, 90, 10, 10);
+
+      for (let r = 0; r < 10; r++) {
+        for (let c = 0; c < 10; c++) {
+          if ((r < 4 && c < 4) || (r < 4 && c > 5) || (r > 5 && c < 4)) continue;
+          if (Math.random() > 0.4) {
+            ctx.fillRect(10 + c * 10, 10 + r * 10, 8, 8);
           }
         }
       }
     }
 
-    function showToast(msg) {
-      const toast = document.createElement('div');
-      toast.className = "fixed bottom-14 left-1/2 -translate-x-1/2 z-50 bg-slate-900 border border-integral-500/50 text-white text-[11px] px-3 py-2 rounded-full shadow-2xl backdrop-blur-md font-medium transition-all duration-300";
-      toast.innerHTML = `<i class="fa-solid fa-circle-exclamation text-integral-gold mr-1"></i> ${msg}`;
-      document.body.appendChild(toast);
-      setTimeout(() => toast.remove(), 2500);
+    function showWinModal() {
+      playSound('win');
+      triggerConfetti();
+
+      document.getElementById('finalScoreBadge').innerText = `${aggregateScore} / 30 POINTS`;
+      const codeNum = Math.floor(1000 + Math.random() * 9000);
+      document.getElementById('prizeVoucherCode').innerText = `AL-HUMMER-BOOTH-${codeNum}`;
+      document.getElementById('winTimeText').innerText = getFormattedDate(0);
+
+      renderQRCodeCanvas();
+
+      const winModal = document.getElementById('winModal');
+      const winCard = document.getElementById('winModalCard');
+      if (winModal && winCard) {
+        winModal.style.opacity = '1';
+        winModal.style.pointerEvents = 'auto';
+        winCard.style.transform = 'scale(1)';
+      }
+
+      saveScoreToLocalLeaderboard();
     }
 
-    function closeVideoModal() {
-      playSound('click');
-      sessionStorage.setItem('entegral_video_played', 'true');
-      const videoModal = document.getElementById('videoModal');
-      if (videoModal) {
-        videoModal.classList.add('opacity-0', 'pointer-events-none', 'hidden');
-      }
-      isVideoPlaying = false;
-      if (briefingAnimationId) cancelAnimationFrame(briefingAnimationId);
+    function saveScoreToLocalLeaderboard() {
+      const localData = localStorage.getItem('alhummer_scores');
+      let scores = localData ? JSON.parse(localData) : [
+        { name: "Agent Sarah M.", score: 30, date: "Today" },
+        { name: "Agent Alex K.", score: 30, date: "Today" },
+        { name: "Agent David P.", score: 20, date: "Yesterday" },
+        { name: "Agent Lisa T.", score: 10, date: "Yesterday" }
+      ];
 
-      // Trigger first claim prompt modal after video is closed
-      if (SCENARIOS.length > 0) {
-        openClaimPromptModal(SCENARIOS[currentScenarioIndex], currentScenarioIndex);
-      }
-    }
-
-    function initApp() {
-      initFirebase();
-      renderVehiclesGrid();
-      renderBranchesGrid();
-      generate3RandomScenarios();
-
-      // Set initial default start date picker value to tomorrow's date
-      const startDateInput = document.getElementById('inputStartDate');
-      if (startDateInput) startDateInput.value = getFormattedDate(1);
-      
-      const videoModal = document.getElementById('videoModal');
-      const videoClosed = sessionStorage.getItem('entegral_video_played');
-
-      if (!videoClosed) {
-        // Play video briefing first; do not open claim prompt yet
-        loadScenario(0, false);
-        if (videoModal) videoModal.classList.remove('hidden', 'opacity-0', 'pointer-events-none');
-        renderBriefingCanvas();
-      } else {
-        if (videoModal) videoModal.classList.add('opacity-0', 'pointer-events-none', 'hidden');
-        loadScenario(0, true);
-      }
-
-      document.getElementById('skipVideoBtn')?.addEventListener('click', closeVideoModal);
-      document.getElementById('startBriefingBtn')?.addEventListener('click', closeVideoModal);
-
-      document.getElementById('closeClaimPromptBtn')?.addEventListener('click', closeClaimPromptModal);
-      document.getElementById('viewPromptAgainBtn')?.addEventListener('click', () => {
-        playSound('click');
-        openClaimPromptModal(SCENARIOS[currentScenarioIndex], currentScenarioIndex);
-      });
-
-      document.getElementById('replayBriefingBtn')?.addEventListener('click', () => {
-        playSound('click');
-        if (videoModal) {
-          videoModal.classList.remove('hidden', 'opacity-0', 'pointer-events-none');
+      if (aggregateScore > 0) {
+        const existingIndex = scores.findIndex(s => s.name === "You (Current Session)");
+        if (existingIndex >= 0) {
+          scores[existingIndex].score = Math.max(scores[existingIndex].score, aggregateScore);
+        } else {
+          scores.push({ name: "You (Current Session)", score: aggregateScore, date: "Just now" });
         }
-        isVideoPlaying = true;
-        renderBriefingCanvas();
-      });
+      }
+
+      scores.sort((a, b) => b.score - a.score);
+      localStorage.setItem('alhummer_scores', JSON.stringify(scores));
+
+      const listContainer = document.getElementById('leaderboardList');
+      if (listContainer) {
+        listContainer.innerHTML = scores.map((item, idx) => `
+          <div class="flex items-center justify-between p-2 rounded-lg ${item.name.includes("You") ? 'bg-alhummer-500 border border-alhummer-400' : 'bg-slate-800'} text-xs">
+            <div class="flex items-center gap-2 truncate">
+              <span class="font-mono font-bold ${idx === 0 ? 'text-alhummer-gold' : 'text-slate-400'}">#${idx + 1}</span>
+              <span class="text-white font-medium truncate">${item.name}</span>
+            </div>
+            <span class="font-bold text-alhummer-400 font-mono">${item.score} pts</span>
+          </div>
+        `).join('');
+      }
+    }
+
+    function bindEventListeners() {
+      const closeBriefingVideoAndStart = () => {
+        playSound('click');
+        const modal = document.getElementById('videoModal');
+        const mainContent = document.getElementById('mainAppContent');
+        
+        if (modal) {
+          modal.style.opacity = '0';
+          modal.style.pointerEvents = 'none';
+          setTimeout(() => {
+            modal.style.display = 'none';
+          }, 400);
+        }
+        
+        // Reveal selections once briefing is accepted
+        if (mainContent) {
+          mainContent.style.display = 'flex';
+        }
+
+        isVideoPlaying = false;
+        openClaimPromptModal(SCENARIOS[currentScenarioIndex], currentScenarioIndex);
+      };
+
+      document.getElementById('startBriefingBtn')?.addEventListener('click', closeBriefingVideoAndStart);
+      document.getElementById('skipVideoBtn')?.addEventListener('click', closeBriefingVideoAndStart);
 
       document.getElementById('playPauseVideoBtn')?.addEventListener('click', () => {
+        playSound('click');
         isVideoPlaying = !isVideoPlaying;
-        const playIcon = document.getElementById('playIcon');
-        if (playIcon) playIcon.className = isVideoPlaying ? 'fa-solid fa-pause text-xs' : 'fa-solid fa-play text-xs';
+        const icon = document.getElementById('playIcon');
+        if (icon) icon.innerText = isVideoPlaying ? '⏸' : '▶';
         if (isVideoPlaying) renderBriefingCanvas();
       });
 
       document.getElementById('soundToggleVideoBtn')?.addEventListener('click', () => {
         soundEnabled = !soundEnabled;
-        const soundIcon = document.getElementById('soundIcon');
-        if (soundIcon) soundIcon.className = soundEnabled ? 'fa-solid fa-volume-high text-xs' : 'fa-solid fa-volume-xmark text-xs';
+        const icon = document.getElementById('soundIcon');
+        if (icon) icon.innerText = soundEnabled ? '🔊' : '🔇';
       });
+
+      document.getElementById('viewPromptAgainBtn')?.addEventListener('click', () => {
+        playSound('click');
+        openClaimPromptModal(SCENARIOS[currentScenarioIndex], currentScenarioIndex);
+      });
+
+      document.getElementById('closeClaimPromptBtn')?.addEventListener('click', closeClaimPromptModal);
 
       document.getElementById('dispatchSubmitBtn')?.addEventListener('click', handleDispatchSubmit);
 
       document.getElementById('nextScenarioBtn')?.addEventListener('click', () => {
         playSound('click');
         const modal = document.getElementById('successModal');
-        if (modal) modal.classList.add('opacity-0', 'pointer-events-none');
-        
-        if (currentScenarioIndex + 1 >= 3) {
-          showWinModal();
-        } else {
-          loadScenario(currentScenarioIndex + 1, true);
+        const card = document.getElementById('successModalCard');
+        if (modal && card) {
+          card.style.transform = 'scale(0.95)';
+          modal.style.opacity = '0';
+          modal.style.pointerEvents = 'none';
         }
-      });
-
-      document.getElementById('closeWinModalBtn')?.addEventListener('click', () => {
-        playSound('click');
-        const winModal = document.getElementById('winModal');
-        if (winModal) winModal.classList.add('opacity-0', 'pointer-events-none');
-        
-        aggregateScore = 0;
-        document.getElementById('aggregateScoreText').innerText = 0;
-        document.getElementById('scoreProgressBar').style.width = '0%';
-        generate3RandomScenarios();
-        loadScenario(0, true);
+        loadScenario(currentScenarioIndex + 1);
       });
 
       document.getElementById('leaderboardToggleBtn')?.addEventListener('click', () => {
         playSound('click');
+        saveScoreToLocalLeaderboard();
         const modal = document.getElementById('leaderboardModal');
         const drawer = document.getElementById('leaderboardDrawer');
-        if (modal) modal.classList.remove('opacity-0', 'pointer-events-none');
-        if (drawer) drawer.classList.remove('translate-x-full');
+        if (modal && drawer) {
+          modal.style.opacity = '1';
+          modal.style.pointerEvents = 'auto';
+          drawer.style.transform = 'translateX(0)';
+        }
       });
 
       document.getElementById('closeLeaderboardBtn')?.addEventListener('click', () => {
         playSound('click');
         const modal = document.getElementById('leaderboardModal');
         const drawer = document.getElementById('leaderboardDrawer');
-        if (drawer) drawer.classList.add('translate-x-full');
-        setTimeout(() => {
-          if (modal) modal.classList.add('opacity-0', 'pointer-events-none');
-        }, 300);
+        if (modal && drawer) {
+          drawer.style.transform = 'translateX(100%)';
+          modal.style.opacity = '0';
+          modal.style.pointerEvents = 'none';
+        }
+      });
+
+      document.getElementById('replayBriefingBtn')?.addEventListener('click', () => {
+        playSound('click');
+        const modal = document.getElementById('videoModal');
+        const mainContent = document.getElementById('mainAppContent');
+        
+        // Hide main selection form while briefing video plays
+        if (mainContent) {
+          mainContent.style.display = 'none';
+        }
+
+        if (modal) {
+          modal.style.display = 'flex';
+          modal.style.opacity = '1';
+          modal.style.pointerEvents = 'auto';
+        }
+        videoTime = 0;
+        isVideoPlaying = true;
+        renderBriefingCanvas();
       });
 
       document.getElementById('resetGameBtn')?.addEventListener('click', () => {
         playSound('click');
         aggregateScore = 0;
-        document.getElementById('aggregateScoreText').innerText = 0;
+        document.getElementById('aggregateScoreText').innerText = '0';
+        document.getElementById('scoreProgressBar').style.width = '0%';
+        
+        // Reset and show briefing video cleanly
+        const modal = document.getElementById('videoModal');
+        const mainContent = document.getElementById('mainAppContent');
+        if (mainContent) mainContent.style.display = 'none';
+        if (modal) {
+          modal.style.display = 'flex';
+          modal.style.opacity = '1';
+          modal.style.pointerEvents = 'auto';
+        }
+        videoTime = 0;
+        isVideoPlaying = true;
+        generate3RandomScenarios();
+        loadScenario(0, false);
+        renderBriefingCanvas();
+      });
+
+      document.getElementById('resetGameBtn')?.addEventListener('click', () => {
+        playSound('click');
+        aggregateScore = 0;
+        document.getElementById('aggregateScoreText').innerText = '0';
         document.getElementById('scoreProgressBar').style.width = '0%';
         generate3RandomScenarios();
         loadScenario(0, true);
-        showToast("New game started!");
+      });
+
+      document.getElementById('closeWinModalBtn')?.addEventListener('click', () => {
+        playSound('click');
+        const winModal = document.getElementById('winModal');
+        if (winModal) {
+          winModal.style.opacity = '0';
+          winModal.style.pointerEvents = 'none';
+        }
+        aggregateScore = 0;
+        document.getElementById('aggregateScoreText').innerText = '0';
+        document.getElementById('scoreProgressBar').style.width = '0%';
+        generate3RandomScenarios();
+        loadScenario(0, true);
       });
     }
 
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initApp);
-    } else {
-      initApp();
-    }
+    // App Initialization
+    window.addEventListener('load', () => {
+      generate3RandomScenarios();
+      renderVehiclesGrid();
+      renderBranchesGrid();
+      renderBriefingCanvas();
+      bindEventListeners();
+      loadScenario(0, false);
+      saveScoreToLocalLeaderboard();
+    });
   </script>
 </body>
 </html>
