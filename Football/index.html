@@ -1,0 +1,1906 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-950 text-slate-100">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fantasy Football Auction Draft Hub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0fdf4',
+              500: '#22c55e',
+              600: '#16a34a',
+              700: '#15803d',
+              900: '#14532d',
+            },
+            accent: {
+              gold: '#f59e0b',
+              amber: '#d97706',
+              cyan: '#06b6d4'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 25px rgba(245, 158, 11, 0.4); }
+      50% { box-shadow: 0 0 50px rgba(245, 158, 11, 0.8); }
+    }
+    .auction-glow {
+      animation: pulse-glow 2.5s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body class="h-full flex flex-col overflow-hidden antialiased bg-slate-950 text-slate-100">
+
+  <!-- Top Navigation Bar -->
+  <header class="bg-slate-900 border-b border-slate-800 px-3 py-2 flex-shrink-0">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+      <div class="flex items-center space-x-2">
+        <div class="bg-gradient-to-tr from-emerald-600 to-emerald-400 p-1.5 rounded-lg shadow-md shadow-emerald-950/50">
+          <i class="fa-solid font-black fa-football text-slate-950 text-base"></i>
+        </div>
+        <div>
+          <h1 class="text-base font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-200 to-emerald-400 bg-clip-text text-transparent leading-none">
+            AUCTION DRAFT CENTRAL
+          </h1>
+          <p class="text-[10px] text-slate-400 font-medium flex items-center gap-1.5 mt-0.5">
+            <span id="sync-badge" class="inline-flex items-center px-1.5 py-0.2 rounded text-[9px] font-semibold bg-emerald-950 text-emerald-400 border border-emerald-800/50">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse mr-1"></span>
+              <span id="sync-mode-text">GAS & Local Persist</span>
+            </span>
+          </p>
+        </div>
+      </div>
+
+      <!-- View Selector / Mode Toggles -->
+      <div class="flex items-center space-x-1 bg-slate-950 p-1 rounded-xl border border-slate-800">
+        <button id="btn-view-master" onclick="switchView('master')" class="px-3 py-1 rounded-lg text-xs font-semibold transition-all duration-200 flex items-center space-x-1.5 bg-emerald-600 text-white shadow">
+          <i class="fa-solid fa-list-check"></i>
+          <span>Master Draft Board</span>
+        </button>
+        <button id="btn-view-stage" onclick="switchView('stage')" class="px-3 py-1 rounded-lg text-xs font-semibold transition-all duration-200 flex items-center space-x-1.5 text-slate-400 hover:text-white hover:bg-slate-800">
+          <i class="fa-solid fa-gavel text-amber-400"></i>
+          <span>Auction Big Display</span>
+        </button>
+        <button id="btn-view-teams" onclick="switchView('teams')" class="px-3 py-1 rounded-lg text-xs font-semibold transition-all duration-200 flex items-center space-x-1.5 text-slate-400 hover:text-white hover:bg-slate-800">
+          <i class="fa-solid fa-users"></i>
+          <span>Team Rosters</span>
+        </button>
+      </div>
+
+      <!-- Action Utilities -->
+      <div class="flex items-center space-x-1">
+        <button id="btn-sim-toggle" onclick="toggleSimulation()" title="Start Auto-Draft Simulation" class="px-3 py-1 text-xs bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold rounded-lg shadow transition flex items-center gap-1.5">
+          <i id="sim-icon" class="fa-solid fa-play"></i>
+          <span id="sim-btn-text">Start Mock Draft</span>
+        </button>
+
+        <div id="sim-controls" class="hidden flex items-center space-x-1 bg-slate-950 p-0.5 rounded-lg border border-slate-800">
+          <button onclick="stepSimulation()" title="Step 1 Tick" class="px-2 py-1 text-[11px] bg-slate-800 hover:bg-slate-700 text-amber-400 font-bold rounded">
+            <i class="fa-solid fa-forward-step"></i>
+          </button>
+
+          <div class="flex items-center bg-slate-800 rounded px-1.5 py-0.5 space-x-1 border border-slate-700" title="Adjust Simulation Speed (0.1s increments)">
+            <span id="sim-speed-display" class="text-[10px] font-mono font-bold text-slate-200">1.0s</span>
+            <div class="flex flex-col -space-y-0.5">
+              <button onclick="adjustSimSpeed(-0.1)" title="Faster (-0.1s)" class="text-[8px] text-slate-400 hover:text-amber-400 leading-none p-0.5">
+                <i class="fa-solid fa-chevron-up"></i>
+              </button>
+              <button onclick="adjustSimSpeed(0.1)" title="Slower (+0.1s)" class="text-[8px] text-slate-400 hover:text-amber-400 leading-none p-0.5">
+                <i class="fa-solid fa-chevron-down"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <button onclick="openCsvModal()" title="Import CSV Players" class="px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 text-emerald-400 font-semibold rounded-lg border border-slate-700 transition flex items-center gap-1">
+          <i class="fa-solid fa-file-csv"></i>
+          <span>Import CSV</span>
+        </button>
+        <button onclick="exportDraftData()" title="Backup Data / JSON" class="p-1.5 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition text-xs">
+          <i class="fa-solid fa-download"></i>
+        </button>
+        <button onclick="triggerResetModal()" title="Reset Draft State" class="p-1.5 text-slate-400 hover:text-red-400 hover:bg-slate-800 rounded-lg transition text-xs">
+          <i class="fa-solid fa-rotate-left"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Quick Ticker / Non-Scrolling Wrapped Team Grid Bar -->
+  <section class="bg-slate-900/90 border-b border-slate-800 px-3 py-1.5 flex-shrink-0">
+    <div id="team-ticker-container" class="grid grid-cols-2 sm:grid-cols-5 lg:grid-cols-10 gap-1.5 w-full">
+      <!-- Generated via JS -->
+    </div>
+  </section>
+
+  <!-- MAIN CONTENT AREA -->
+  <main class="flex-1 overflow-hidden relative p-4">
+
+    <!-- VIEW 1: MASTER DRAFT BOARD & NOMINATION LIST -->
+    <div id="view-master" class="h-full flex flex-col gap-4">
+      <!-- Search & Filters -->
+      <div class="bg-slate-900 p-3.5 rounded-xl border border-slate-800 flex flex-wrap items-center justify-between gap-3 flex-shrink-0">
+        <div class="flex flex-wrap items-center gap-2 flex-1 min-w-[300px]">
+          <div class="relative flex-1 min-w-[200px]">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
+            <input type="text" id="search-input" onkeyup="filterPlayers()" placeholder="Search player, team, rank..." class="w-full bg-slate-950 text-slate-200 placeholder-slate-500 text-xs rounded-lg pl-9 pr-3 py-2 border border-slate-800 focus:outline-none focus:border-emerald-500">
+          </div>
+
+          <!-- Position Filter Pills -->
+          <div class="flex space-x-1 bg-slate-950 p-1 rounded-lg border border-slate-800" id="pos-filter-group">
+            <button onclick="setPosFilter('ALL')" class="pos-filter-btn px-2.5 py-1 rounded text-xs font-bold bg-emerald-600 text-white">ALL</button>
+            <button onclick="setPosFilter('QB')" class="pos-filter-btn px-2.5 py-1 rounded text-xs font-bold text-slate-400 hover:text-white">QB</button>
+            <button onclick="setPosFilter('RB')" class="pos-filter-btn px-2.5 py-1 rounded text-xs font-bold text-slate-400 hover:text-white">RB</button>
+            <button onclick="setPosFilter('WR')" class="pos-filter-btn px-2.5 py-1 rounded text-xs font-bold text-slate-400 hover:text-white">WR</button>
+            <button onclick="setPosFilter('TE')" class="pos-filter-btn px-2.5 py-1 rounded text-xs font-bold text-slate-400 hover:text-white">TE</button>
+            <button onclick="setPosFilter('DEF')" class="pos-filter-btn px-2.5 py-1 rounded text-xs font-bold text-slate-400 hover:text-white">DEF</button>
+            <button onclick="setPosFilter('K')" class="pos-filter-btn px-2.5 py-1 rounded text-xs font-bold text-slate-400 hover:text-white">K</button>
+          </div>
+
+          <!-- Status Filter -->
+          <select id="status-filter" onchange="filterPlayers()" class="bg-slate-950 text-slate-300 text-xs rounded-lg px-3 py-2 border border-slate-800 focus:outline-none focus:border-emerald-500">
+            <option value="AVAILABLE">Available Only</option>
+            <option value="DRAFTED">Drafted Only</option>
+            <option value="ALL">All Players</option>
+          </select>
+        </div>
+
+        <div class="text-xs text-slate-400 flex items-center space-x-4">
+          <span>Available: <strong id="count-available" class="text-emerald-400 font-bold">0</strong></span>
+          <span>Drafted: <strong id="count-drafted" class="text-amber-400 font-bold">0</strong></span>
+        </div>
+      </div>
+
+      <!-- Players Table -->
+      <div class="flex-1 bg-slate-900 border border-slate-800 rounded-xl overflow-hidden flex flex-col">
+        <div class="overflow-x-auto overflow-y-auto flex-1 custom-scrollbar">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead class="sticky top-0 bg-slate-950 text-slate-400 font-semibold uppercase tracking-wider border-b border-slate-800 z-10 select-none">
+              <tr>
+                <th onclick="handleTableSort('name')" class="py-3 px-4 cursor-pointer hover:text-emerald-400 transition">
+                  Player Name <span id="sort-icon-name"><i class="fa-solid fa-sort text-slate-600 ml-1 opacity-50"></i></span>
+                </th>
+                <th onclick="handleTableSort('pos')" class="py-3 px-3 cursor-pointer hover:text-emerald-400 transition">
+                  Pos <span id="sort-icon-pos"><i class="fa-solid fa-sort text-slate-600 ml-1 opacity-50"></i></span>
+                </th>
+                <th onclick="handleTableSort('posRank')" class="py-3 px-3 cursor-pointer hover:text-emerald-400 transition">
+                  Rank <span id="sort-icon-posRank"><i class="fa-solid fa-sort text-slate-600 ml-1 opacity-50"></i></span>
+                </th>
+                <th onclick="handleTableSort('team')" class="py-3 px-3 cursor-pointer hover:text-emerald-400 transition">
+                  NFL Team <span id="sort-icon-team"><i class="fa-solid fa-sort text-slate-600 ml-1 opacity-50"></i></span>
+                </th>
+                <th onclick="handleTableSort('bye')" class="py-3 px-3 text-center cursor-pointer hover:text-emerald-400 transition">
+                  Bye Wk <span id="sort-icon-bye"><i class="fa-solid fa-sort text-slate-600 ml-1 opacity-50"></i></span>
+                </th>
+                <th onclick="handleTableSort('projBid')" class="py-3 px-3 text-right cursor-pointer hover:text-emerald-400 transition">
+                  Proj. Bid <span id="sort-icon-projBid"><i class="fa-solid fa-sort text-slate-600 ml-1 opacity-50"></i></span>
+                </th>
+                <th onclick="handleTableSort('status')" class="py-3 px-3 text-center cursor-pointer hover:text-emerald-400 transition">
+                  Draft Status / Owner <span id="sort-icon-status"><i class="fa-solid fa-sort text-slate-600 ml-1 opacity-50"></i></span>
+                </th>
+                <th class="py-3 px-4 text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody id="player-table-body" class="divide-y divide-slate-800/60 text-slate-200">
+              <!-- Rendered via Javascript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW 2: BIG SCREEN AUCTION DISPLAY & NOMINATION STAGE -->
+    <div id="view-stage" class="h-full hidden flex flex-col justify-center items-center relative">
+      <div class="absolute inset-0 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 opacity-90 -z-10"></div>
+
+      <!-- ACTIVE AUCTION CARD -->
+      <div id="auction-stage-active" class="w-full max-w-4xl bg-slate-900/95 border-2 border-amber-500/80 rounded-2xl p-6 sm:p-8 shadow-2xl backdrop-blur-md auction-glow flex flex-col gap-6">
+        
+        <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+          <div class="flex items-center space-x-2 text-amber-400 font-bold text-xs uppercase tracking-widest">
+            <span class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping"></span>
+            <span>Live Auction In Progress</span>
+          </div>
+          <div id="stage-nom-by" class="text-slate-400 text-xs italic">
+            Nominated on Board
+          </div>
+        </div>
+
+        <!-- Player Info Section -->
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+          <div class="md:col-span-7 flex flex-col justify-center">
+            <div class="flex items-center space-x-2 mb-2">
+              <span id="stage-pos-badge" class="px-2.5 py-1 rounded text-xs font-black bg-blue-600 text-white">RB</span>
+              <span id="stage-pos-rank" class="px-2.5 py-1 rounded text-xs font-bold bg-slate-800 text-slate-300">RB1</span>
+              <span id="stage-bye-badge" class="px-2.5 py-1 rounded text-xs font-bold bg-purple-950 text-purple-300 border border-purple-800">Bye Week 6</span>
+            </div>
+            <h2 id="stage-player-name" class="text-3xl sm:text-5xl font-black text-white tracking-tight leading-none mb-2">
+              Player Name
+            </h2>
+            <div class="flex items-center space-x-3 text-slate-400 font-medium text-sm sm:text-base">
+              <span id="stage-nfl-team" class="text-slate-200 font-bold">Team</span>
+              <span>&bull;</span>
+              <span>Projected Value: <strong id="stage-proj-bid" class="text-emerald-400 font-extrabold">$0</strong></span>
+            </div>
+          </div>
+
+          <!-- Current High Bid Display -->
+          <div class="md:col-span-5 bg-slate-950 p-5 rounded-2xl border border-slate-800 flex flex-col items-center justify-center text-center">
+            <span class="text-xs uppercase tracking-wider text-slate-400 font-semibold mb-1">Current Winning Bid</span>
+            <div id="stage-current-bid" class="text-5xl sm:text-6xl font-black text-amber-400 tracking-tight my-1">
+              $1
+            </div>
+            <span id="stage-high-bidder" class="text-sm font-bold text-emerald-400 mt-1 bg-emerald-950/60 px-3 py-1 rounded-full border border-emerald-800">
+              Team 1
+            </span>
+          </div>
+        </div>
+
+        <!-- Bidding Controls / Interactive Deck -->
+        <div class="bg-slate-950/80 p-5 rounded-xl border border-slate-800/80 flex flex-col gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
+            
+            <!-- Select Bidding Team -->
+            <div class="sm:col-span-6 flex flex-col gap-1">
+              <label class="text-[11px] font-bold uppercase text-slate-400">High Bidder Team</label>
+              <select id="stage-team-select" onchange="autoUpdateBidder()" class="w-full bg-slate-900 text-white font-bold text-sm rounded-lg px-3 py-2.5 border border-slate-700 focus:outline-none focus:border-amber-500">
+                <!-- Populated via JS -->
+              </select>
+            </div>
+
+            <!-- Custom Bid Amount -->
+            <div class="sm:col-span-6 flex flex-col gap-1">
+              <label class="text-[11px] font-bold uppercase text-slate-400">Set Exact Bid Amount ($)</label>
+              <div class="flex space-x-2">
+                <input type="number" id="stage-bid-input" min="1" max="100" oninput="autoUpdateBidAmount()" class="w-full bg-slate-900 text-white font-black text-lg text-center rounded-lg border border-slate-700 focus:outline-none focus:border-amber-500" value="1">
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Increment Buttons -->
+          <div class="flex flex-wrap items-center justify-between gap-2 border-t border-slate-800/80 pt-3">
+            <span class="text-xs font-semibold text-slate-400">Quick Bids:</span>
+            <div class="flex flex-wrap gap-2">
+              <button onclick="incrementBid(1)" class="px-3.5 py-2 bg-slate-800 hover:bg-amber-600 hover:text-slate-950 text-slate-200 font-extrabold rounded-lg text-xs transition border border-slate-700 shadow">+ $1</button>
+              <button onclick="incrementBid(2)" class="px-3.5 py-2 bg-slate-800 hover:bg-amber-600 hover:text-slate-950 text-slate-200 font-extrabold rounded-lg text-xs transition border border-slate-700 shadow">+ $2</button>
+              <button onclick="incrementBid(5)" class="px-3.5 py-2 bg-slate-800 hover:bg-amber-600 hover:text-slate-950 text-slate-200 font-extrabold rounded-lg text-xs transition border border-slate-700 shadow">+ $5</button>
+              <button onclick="incrementBid(10)" class="px-3.5 py-2 bg-slate-800 hover:bg-amber-600 hover:text-slate-950 text-slate-200 font-extrabold rounded-lg text-xs transition border border-slate-700 shadow">+ $10</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stage Actions (Sold / Cancel) -->
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
+          <button onclick="cancelAuction()" class="w-full sm:w-auto px-5 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-xl text-xs transition border border-slate-700">
+            <i class="fa-solid fa-xmark mr-1.5"></i> Cancel Nomination
+          </button>
+          <div class="w-full sm:w-auto flex items-center space-x-2">
+            <button onclick="playGavelSound()" class="px-4 py-3 bg-slate-800 hover:bg-slate-700 text-amber-400 font-bold rounded-xl text-xs transition border border-slate-700" title="Sound Gavel Effect">
+              <i class="fa-solid fa-gavel"></i>
+            </button>
+            <button onclick="finalizeAuctionWinner()" class="flex-1 sm:flex-none px-8 py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-sm uppercase tracking-wider rounded-xl shadow-lg transition transform active:scale-95">
+              <i class="fa-solid fa-check mr-2"></i> SOLD! Assign Player
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- INACTIVE STAGE PLACEHOLDER -->
+      <div id="auction-stage-empty" class="text-center p-12 bg-slate-900/60 border border-slate-800 rounded-3xl max-w-md hidden">
+        <div class="w-20 h-20 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4 text-amber-500 text-3xl shadow-inner">
+          <i class="fa-solid fa-gavel"></i>
+        </div>
+        <h3 class="text-xl font-bold text-white mb-2">No Player Currently on the Block</h3>
+        <p class="text-slate-400 text-xs mb-6 leading-relaxed">
+          Switch to the Master Draft Board view to nominate a player for auction, or wait for another window to initiate a bid!
+        </p>
+        <button onclick="switchView('master')" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow transition">
+          Go to Player List
+        </button>
+      </div>
+    </div>
+
+    <!-- VIEW 3: TEAM ROSTERS VIEW -->
+    <div id="view-teams" class="h-full hidden flex flex-col gap-4">
+      <div id="selected-team-card" class="flex-1 bg-slate-900 border border-slate-800 rounded-xl overflow-hidden flex flex-col p-4 custom-scrollbar overflow-y-auto">
+        <!-- Rendered via JS -->
+      </div>
+    </div>
+
+  </main>
+
+  <!-- MODAL: Custom Notification / Confirm / Input -->
+  <div id="app-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-xl w-full p-6 sm:p-8 shadow-2xl flex flex-col gap-5">
+      <div class="flex items-center space-x-3">
+        <div id="modal-icon-bg" class="w-12 h-12 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-xl flex-shrink-0">
+          <i id="modal-icon" class="fa-solid fa-circle-info"></i>
+        </div>
+        <div>
+          <h3 id="modal-title" class="text-xl font-black text-white">Notice</h3>
+          <p id="modal-subtitle" class="text-xs text-slate-400">Auction System</p>
+        </div>
+      </div>
+      <div id="modal-message" class="text-slate-300 text-xs leading-relaxed">
+        Message body text...
+      </div>
+      
+      <div id="modal-input-container" class="hidden">
+        <label class="text-[11px] font-bold uppercase text-slate-400 mb-1 block">New Team Name</label>
+        <input type="text" id="modal-input" class="w-full bg-slate-950 text-white font-semibold text-sm rounded-lg px-3 py-2 border border-slate-700 focus:outline-none focus:border-emerald-500" placeholder="Enter team name...">
+      </div>
+
+      <div class="flex justify-end space-x-2 pt-2 border-t border-slate-800">
+        <button id="modal-cancel-btn" onclick="closeModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-lg hidden">
+          Cancel
+        </button>
+        <button id="modal-confirm-btn" onclick="closeModal()" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-lg shadow">
+          OK
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: CSV Import -->
+  <div id="csv-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-xl w-full p-6 shadow-2xl flex flex-col gap-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div class="flex items-center space-x-2.5">
+          <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-base">
+            <i class="fa-solid fa-file-csv"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-white">Import Custom Player CSV</h3>
+            <p class="text-[11px] text-slate-400">Load your own rankings and expected auction bids</p>
+          </div>
+        </div>
+        <button onclick="closeCsvModal()" class="text-slate-400 hover:text-white text-base">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="flex flex-col gap-3">
+        <div>
+          <label class="text-[11px] font-bold uppercase text-slate-400 mb-1 block">Upload CSV File</label>
+          <input type="file" id="csv-file-input" accept=".csv, .txt" onchange="handleCsvFileUpload(event)" class="w-full bg-slate-950 text-xs text-slate-300 rounded-lg p-2 border border-slate-800 focus:outline-none file:mr-3 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-emerald-600 file:text-white hover:file:bg-emerald-500 cursor-pointer">
+        </div>
+
+        <div class="text-center text-[10px] uppercase tracking-wider text-slate-500 font-bold">- OR Paste CSV Text -</div>
+
+        <div>
+          <label class="text-[11px] font-bold uppercase text-slate-400 mb-1 block">Raw CSV Content</label>
+          <textarea id="csv-text-input" rows="6" placeholder="Name,Pos,PosRank,Team,Bye,ProjBid
+Patrick Mahomes,QB,QB1,KC,6,28
+Christian McCaffrey,RB,RB1,SF,9,58
+CeeDee Lamb,WR,WR1,DAL,7,55" class="w-full bg-slate-950 text-xs font-mono text-slate-200 rounded-lg p-2.5 border border-slate-800 focus:outline-none focus:border-emerald-500 custom-scrollbar"></textarea>
+        </div>
+
+        <div class="bg-slate-950/60 p-2.5 rounded-lg border border-slate-800/80 text-[11px] text-slate-400 leading-relaxed">
+          <span class="font-bold text-slate-200">Supported Headers:</span> <code class="text-emerald-400">Name</code>, <code class="text-emerald-400">Pos</code>, <code class="text-emerald-400">Rank</code>, <code class="text-emerald-400">Team</code>, <code class="text-emerald-400">Bye</code>, <code class="text-emerald-400">ProjBid</code>.
+        </div>
+      </div>
+
+      <div class="flex justify-between items-center pt-2 border-t border-slate-800">
+        <button onclick="downloadCsvTemplate()" class="text-slate-400 hover:text-emerald-400 text-xs font-semibold flex items-center gap-1.5">
+          <i class="fa-solid fa-download"></i>
+          <span>Sample CSV</span>
+        </button>
+        <div class="flex space-x-2">
+          <button onclick="closeCsvModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-lg">
+            Cancel
+          </button>
+          <button onclick="processCsvImport()" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-lg shadow">
+            Import Players
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ========================================================================
+       FANTASY FOOTBALL AUCTION DRAFT APP STATE & PERSISTENCE
+       ======================================================================== */
+
+    // Constants
+    const NUM_TEAMS = 10;
+    const TOTAL_BUDGET = 100;
+    const ROSTER_SIZE = 17;
+    const MIN_BID = 1;
+    const STORAGE_KEY = 'FF_AUCTION_DRAFT_STATE_2026';
+    const CHANNEL_NAME = 'FF_AUCTION_BROADCAST_CHANNEL';
+
+    // Check Google Apps Script environment availability
+    const IS_GAS = typeof google !== 'undefined' && google.script && typeof google.script.run !== 'undefined';
+
+    // Broadcast Channel for Dual-Window Real-Time Sync
+    let broadcastChannel = null;
+    try {
+      broadcastChannel = new BroadcastChannel(CHANNEL_NAME);
+    } catch (e) {
+      console.warn('BroadcastChannel fallback enabled.');
+    }
+
+    // Default Seed Initial Players List
+    const SEED_PLAYERS = [
+      // QB
+      { id: 'p1', name: 'Patrick Mahomes', pos: 'QB', posRank: 'QB1', team: 'KC', bye: 6, projBid: 28 },
+      { id: 'p2', name: 'Josh Allen', pos: 'QB', posRank: 'QB2', team: 'BUF', bye: 12, projBid: 26 },
+      { id: 'p3', name: 'Lamar Jackson', pos: 'QB', posRank: 'QB3', team: 'BAL', bye: 14, projBid: 24 },
+      { id: 'p4', name: 'Jalen Hurts', pos: 'QB', posRank: 'QB4', team: 'PHI', bye: 5, projBid: 22 },
+      { id: 'p5', name: 'C.J. Stroud', pos: 'QB', posRank: 'QB5', team: 'HOU', bye: 14, projBid: 18 },
+      { id: 'p6', name: 'Joe Burrow', pos: 'QB', posRank: 'QB6', team: 'CIN', bye: 12, projBid: 16 },
+
+      // RB
+      { id: 'p20', name: 'Christian McCaffrey', pos: 'RB', posRank: 'RB1', team: 'SF', bye: 9, projBid: 58 },
+      { id: 'p21', name: 'Bijan Robinson', pos: 'RB', posRank: 'RB2', team: 'ATL', bye: 12, projBid: 48 },
+      { id: 'p22', name: 'Breece Hall', pos: 'RB', posRank: 'RB3', team: 'NYJ', bye: 12, projBid: 46 },
+      { id: 'p23', name: 'Jahmyr Gibbs', pos: 'RB', posRank: 'RB4', team: 'DET', bye: 5, projBid: 42 },
+      { id: 'p24', name: 'Saquon Barkley', pos: 'RB', posRank: 'RB5', team: 'PHI', bye: 5, projBid: 40 },
+
+      // WR
+      { id: 'p50', name: 'CeeDee Lamb', pos: 'WR', posRank: 'WR1', team: 'DAL', bye: 7, projBid: 55 },
+      { id: 'p51', name: 'Tyreek Hill', pos: 'WR', posRank: 'WR2', team: 'MIA', bye: 6, projBid: 52 },
+      { id: 'p52', name: 'Justin Jefferson', pos: 'WR', posRank: 'WR3', team: 'MIN', bye: 6, projBid: 50 },
+      { id: 'p53', name: "Ja'Marr Chase", pos: 'WR', posRank: 'WR4', team: 'CIN', bye: 12, projBid: 48 },
+      { id: 'p54', name: 'Amon-Ra St. Brown', pos: 'WR', posRank: 'WR5', team: 'DET', bye: 5, projBid: 46 },
+
+      // TE
+      { id: 'p80', name: 'Travis Kelce', pos: 'TE', posRank: 'TE1', team: 'KC', bye: 6, projBid: 28 },
+      { id: 'p81', name: 'Sam LaPorta', pos: 'TE', posRank: 'TE2', team: 'DET', bye: 5, projBid: 26 },
+
+      // DEF & K
+      { id: 'p95', name: 'San Francisco 49ers', pos: 'DEF', posRank: 'DEF1', team: 'SF', bye: 9, projBid: 4 },
+      { id: 'p110', name: 'Justin Tucker', pos: 'K', posRank: 'K1', team: 'BAL', bye: 14, projBid: 3 }
+    ];
+
+    // Main App State Structure
+    let appState = {
+      activeView: 'master',
+      activePosFilter: 'ALL',
+      activeStatusFilter: 'AVAILABLE',
+      searchQuery: '',
+      selectedTeamId: 't1',
+      sortColumn: 'projBid',
+      sortDirection: 'desc',
+
+      teams: Array.from({ length: NUM_TEAMS }, (_, i) => ({
+        id: `t${i + 1}`,
+        name: `Team ${i + 1}`,
+        budgetSpent: 0,
+        roster: [],
+        aiAdvisorEnabled: i === 0
+      })),
+
+      players: JSON.parse(JSON.stringify(SEED_PLAYERS)).map(p => ({
+        ...p,
+        draftedBy: null,
+        winningBid: 0
+      })),
+
+      activeAuction: null
+    };
+
+    // Simulation Engine State
+    let simState = {
+      isRunning: false,
+      speedMs: 1000,
+      timer: null,
+      nominationIndex: 0
+    };
+
+    function renderAll() {
+      renderTeamTicker();
+      if (appState.activeView === 'master') renderPlayerTable();
+      if (appState.activeView === 'stage') renderAuctionStage();
+      if (appState.activeView === 'teams') renderTeamRosters();
+      updateViewTabs();
+      updateSimUI();
+    }
+
+    function switchView(viewName) {
+      appState.activeView = viewName;
+      ['master', 'stage', 'teams'].forEach(v => {
+        const el = document.getElementById(`view-${v}`);
+        if (el) {
+          if (v === viewName) el.classList.remove('hidden');
+          else el.classList.add('hidden');
+        }
+      });
+      updateViewTabs();
+      renderAll();
+    }
+
+    function updateViewTabs() {
+      const views = ['master', 'stage', 'teams'];
+      views.forEach(v => {
+        const btn = document.getElementById(`btn-view-${v}`);
+        if (btn) {
+          if (v === appState.activeView) {
+            btn.className = "px-3 py-1 rounded-lg text-xs font-semibold transition-all duration-200 flex items-center space-x-1.5 bg-emerald-600 text-white shadow";
+          } else {
+            btn.className = "px-3 py-1 rounded-lg text-xs font-semibold transition-all duration-200 flex items-center space-x-1.5 text-slate-400 hover:text-white hover:bg-slate-800";
+          }
+        }
+      });
+    }
+
+    function saveState(broadcast = true) {
+      const stateStr = JSON.stringify(appState);
+      
+      try {
+        localStorage.setItem(STORAGE_KEY, stateStr);
+        if (broadcast && broadcastChannel) {
+          broadcastChannel.postMessage({ type: 'STATE_UPDATE', state: appState });
+        }
+      } catch (err) {
+        console.error('Error saving local state:', err);
+      }
+
+      if (IS_GAS) {
+        try {
+          google.script.run
+            .withFailureHandler(err => console.error('GAS save failed:', err))
+            .saveDraftState(stateStr);
+        } catch (e) {
+          console.warn('GAS Save invocation error:', e);
+        }
+      }
+
+      renderAll();
+    }
+
+    function getMaxBidForTeam(teamId) {
+      const team = appState.teams.find(t => t.id === teamId);
+      if (!team) return 0;
+      
+      const remainingBudget = TOTAL_BUDGET - team.budgetSpent;
+      const emptySpots = ROSTER_SIZE - team.roster.length;
+      
+      if (emptySpots <= 0) return 0;
+      const reserveMoney = Math.max(0, emptySpots - 1);
+      return Math.max(0, remainingBudget - reserveMoney);
+    }
+
+    function loadState() {
+      if (IS_GAS) {
+        const badge = document.getElementById('sync-mode-text');
+        if (badge) badge.textContent = 'GAS Property Service Active';
+        
+        try {
+          google.script.run
+            .withSuccessHandler(savedJson => {
+              if (savedJson) {
+                try {
+                  const parsed = JSON.parse(savedJson);
+                  appState = { ...appState, ...parsed };
+                  renderAll();
+                } catch (e) {
+                  console.error('Error parsing GAS state:', e);
+                }
+              }
+            })
+            .getDraftState();
+        } catch (e) {
+          console.warn('GAS load invocation error:', e);
+        }
+      }
+
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          appState = { ...appState, ...parsed };
+        }
+      } catch (err) {
+        console.error('Error loading local state:', err);
+      }
+    }
+
+    function openCsvModal() {
+      document.getElementById('csv-modal').classList.remove('hidden');
+    }
+
+    function closeCsvModal() {
+      document.getElementById('csv-modal').classList.add('hidden');
+    }
+
+    function handleCsvFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById('csv-text-input').value = e.target.result;
+      };
+      reader.readAsText(file);
+    }
+
+    function downloadCsvTemplate() {
+      const csvContent = "data:text/csv;charset=utf-8," + 
+        "Name,Pos,PosRank,Team,Bye,ProjBid\n" +
+        "Patrick Mahomes,QB,QB1,KC,6,28\n" +
+        "Christian McCaffrey,RB,RB1,SF,9,58\n" +
+        "CeeDee Lamb,WR,WR1,DAL,7,55\n" +
+        "Travis Kelce,TE,TE1,KC,6,28\n" +
+        "San Francisco 49ers,DEF,DEF1,SF,9,4\n" +
+        "Justin Tucker,K,K1,BAL,14,3";
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", "Fantasy_Auction_Template.csv");
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    }
+
+    function processCsvImport() {
+      const text = document.getElementById('csv-text-input').value.trim();
+      if (!text) {
+        showModal('Import Empty', 'Please upload or paste CSV text first!');
+        return;
+      }
+
+      const lines = text.split(/\r?\n/).filter(line => line.trim().length > 0);
+      if (lines.length < 2) {
+        showModal('Invalid Format', 'CSV must include a header row and at least one player row.');
+        return;
+      }
+
+      const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+      
+      const idxName = headers.findIndex(h => h.includes('name') || h.includes('player'));
+      const idxPos = headers.findIndex(h => h.includes('pos') && !h.includes('rank'));
+      const idxRank = headers.findIndex(h => h.includes('rank'));
+      const idxTeam = headers.findIndex(h => h.includes('team') || h.includes('nfl'));
+      const idxBye = headers.findIndex(h => h.includes('bye'));
+      const idxBid = headers.findIndex(h => h.includes('bid') || h.includes('price') || h.includes('proj') || h.includes('value'));
+
+      if (idxName === -1) {
+        showModal('Header Missing', 'Could not detect "Name" header column in CSV.');
+        return;
+      }
+
+      const newPlayers = [];
+      for (let i = 1; i < lines.length; i++) {
+        const cols = lines[i].match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || lines[i].split(',');
+        const cleanCols = cols.map(c => c.replace(/^"|"$/g, '').trim());
+
+        const pName = cleanCols[idxName] || '';
+        if (!pName) continue;
+
+        const pPos = idxPos > -1 ? cleanCols[idxPos].toUpperCase() : 'WR';
+        const pRank = idxRank > -1 ? cleanCols[idxRank].toUpperCase() : `${pPos}1`;
+        const pTeam = idxTeam > -1 ? cleanCols[idxTeam].toUpperCase() : 'FA';
+        const pBye = idxBye > -1 ? parseInt(cleanCols[idxBye], 10) || 7 : 7;
+        const pBid = idxBid > -1 ? parseInt(cleanCols[idxBid], 10) || 1 : 1;
+
+        newPlayers.push({
+          id: `p_csv_${Date.now()}_${i}`,
+          name: pName,
+          pos: pPos,
+          posRank: pRank,
+          team: pTeam,
+          bye: pBye,
+          projBid: pBid,
+          draftedBy: null,
+          winningBid: 0
+        });
+      }
+
+      if (newPlayers.length === 0) {
+        showModal('Import Error', 'No valid player rows found in CSV.');
+        return;
+      }
+
+      appState.players = newPlayers;
+      saveState(true);
+      closeCsvModal();
+      showModal('Import Successful!', `Successfully imported ${newPlayers.length} players into the draft board.`);
+    }
+
+    function renderTeamTicker() {
+      const container = document.getElementById('team-ticker-container');
+      if (!container) return;
+      
+      container.innerHTML = appState.teams.map(t => {
+        const remBudget = TOTAL_BUDGET - t.budgetSpent;
+        const rosterCount = t.roster.length;
+        const maxBid = getMaxBidForTeam(t.id);
+        const isSelected = t.id === appState.selectedTeamId && appState.activeView === 'teams';
+
+        return `
+          <div onclick="selectTeamView('${t.id}')" class="cursor-pointer ${isSelected ? 'bg-emerald-950/80 border-emerald-500/80 ring-1 ring-emerald-500' : 'bg-slate-950 hover:bg-slate-800 border-slate-800'} border p-1.5 rounded-lg flex flex-col justify-between transition leading-none select-none">
+            <div class="flex items-center justify-between gap-1 mb-1">
+              <span class="text-[11px] font-extrabold ${isSelected ? 'text-emerald-400' : 'text-white'} truncate max-w-[80px]">${t.name}</span>
+              <span class="text-[10px] text-slate-400 font-mono">${rosterCount}/17</span>
+            </div>
+            <div class="flex items-center justify-between text-[10px]">
+              <span class="text-amber-400 font-bold">$${remBudget}</span>
+              <span class="text-emerald-400 font-semibold" title="Max Allowed Single Bid">Max $${maxBid}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function filterPlayers() {
+      const searchInput = document.getElementById('search-input');
+      if (searchInput) appState.searchQuery = searchInput.value.toLowerCase().trim();
+      
+      const statusFilter = document.getElementById('status-filter');
+      if (statusFilter) appState.activeStatusFilter = statusFilter.value;
+      
+      renderPlayerTable();
+    }
+
+    function setPosFilter(pos) {
+      appState.activePosFilter = pos;
+      const buttons = document.querySelectorAll('#pos-filter-group .pos-filter-btn');
+      buttons.forEach(btn => {
+        if (btn.textContent.trim() === pos) {
+          btn.className = "pos-filter-btn px-2.5 py-1 rounded text-xs font-bold bg-emerald-600 text-white";
+        } else {
+          btn.className = "pos-filter-btn px-2.5 py-1 rounded text-xs font-bold text-slate-400 hover:text-white";
+        }
+      });
+      renderPlayerTable();
+    }
+
+    function handleTableSort(col) {
+      if (appState.sortColumn === col) {
+        appState.sortDirection = appState.sortDirection === 'asc' ? 'desc' : 'asc';
+      } else {
+        appState.sortColumn = col;
+        appState.sortDirection = col === 'projBid' ? 'desc' : 'asc';
+      }
+      renderPlayerTable();
+    }
+
+    function renderPlayerTable() {
+      const tbody = document.getElementById('player-table-body');
+      if (!tbody) return;
+
+      let filtered = appState.players.filter(p => {
+        if (appState.activePosFilter !== 'ALL' && p.pos !== appState.activePosFilter) return false;
+        if (appState.activeStatusFilter === 'AVAILABLE' && p.draftedBy) return false;
+        if (appState.activeStatusFilter === 'DRAFTED' && !p.draftedBy) return false;
+        if (appState.searchQuery) {
+          const matchName = p.name.toLowerCase().includes(appState.searchQuery);
+          const matchTeam = p.team.toLowerCase().includes(appState.searchQuery);
+          const matchRank = p.posRank.toLowerCase().includes(appState.searchQuery);
+          if (!matchName && !matchTeam && !matchRank) return false;
+        }
+        return true;
+      });
+
+      if (appState.sortColumn) {
+        filtered.sort((a, b) => {
+          let valA, valB;
+          if (appState.sortColumn === 'name') {
+            valA = a.name.toLowerCase();
+            valB = b.name.toLowerCase();
+          } else if (appState.sortColumn === 'pos') {
+            valA = a.pos;
+            valB = b.pos;
+          } else if (appState.sortColumn === 'posRank') {
+            const numA = parseInt(a.posRank.replace(/\D/g, ''), 10) || 99;
+            const numB = parseInt(b.posRank.replace(/\D/g, ''), 10) || 99;
+            if (a.pos !== b.pos) {
+              return a.pos.localeCompare(b.pos) * (appState.sortDirection === 'asc' ? 1 : -1);
+            }
+            valA = numA;
+            valB = numB;
+          } else if (appState.sortColumn === 'team') {
+            valA = a.team;
+            valB = b.team;
+          } else if (appState.sortColumn === 'bye') {
+            valA = a.bye;
+            valB = b.bye;
+          } else if (appState.sortColumn === 'projBid') {
+            valA = a.projBid;
+            valB = b.projBid;
+          } else if (appState.sortColumn === 'status') {
+            valA = a.draftedBy ? (appState.teams.find(t => t.id === a.draftedBy)?.name || '') : 'AVAILABLE';
+            valB = b.draftedBy ? (appState.teams.find(t => t.id === b.draftedBy)?.name || '') : 'AVAILABLE';
+          }
+
+          if (valA < valB) return appState.sortDirection === 'asc' ? -1 : 1;
+          if (valA > valB) return appState.sortDirection === 'asc' ? 1 : -1;
+          return 0;
+        });
+      }
+
+      const cols = ['name', 'pos', 'posRank', 'team', 'bye', 'projBid', 'status'];
+      cols.forEach(col => {
+        const iconSpan = document.getElementById(`sort-icon-${col}`);
+        if (iconSpan) {
+          if (appState.sortColumn === col) {
+            iconSpan.innerHTML = appState.sortDirection === 'asc'
+              ? '<i class="fa-solid fa-arrow-up-short-wide text-emerald-400 ml-1"></i>'
+              : '<i class="fa-solid fa-arrow-down-wide-short text-emerald-400 ml-1"></i>';
+          } else {
+            iconSpan.innerHTML = '<i class="fa-solid fa-sort text-slate-600 ml-1 opacity-50"></i>';
+          }
+        }
+      });
+
+      const totalAvail = appState.players.filter(p => !p.draftedBy).length;
+      const totalDrafted = appState.players.filter(p => p.draftedBy).length;
+      
+      const countAvailEl = document.getElementById('count-available');
+      const countDraftedEl = document.getElementById('count-drafted');
+      if (countAvailEl) countAvailEl.textContent = totalAvail;
+      if (countDraftedEl) countDraftedEl.textContent = totalDrafted;
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="8" class="text-center py-8 text-slate-500 italic">
+              No players match your search criteria.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(p => {
+        const isDrafted = !!p.draftedBy;
+        const ownerTeam = isDrafted ? appState.teams.find(t => t.id === p.draftedBy) : null;
+        
+        let posBg = 'bg-slate-800 text-slate-300';
+        if (p.pos === 'QB') posBg = 'bg-red-950 text-red-300 border border-red-800/50';
+        if (p.pos === 'RB') posBg = 'bg-emerald-950 text-emerald-300 border border-emerald-800/50';
+        if (p.pos === 'WR') posBg = 'bg-blue-950 text-blue-300 border border-blue-800/50';
+        if (p.pos === 'TE') posBg = 'bg-amber-950 text-amber-300 border border-amber-800/50';
+        if (p.pos === 'DEF') posBg = 'bg-purple-950 text-purple-300 border border-purple-800/50';
+
+        return `
+          <tr class="hover:bg-slate-800/40 transition">
+            <td class="py-3 px-4 font-bold text-white flex items-center space-x-2">
+              <span>${p.name}</span>
+            </td>
+            <td class="py-3 px-3">
+              <span class="px-2 py-0.5 rounded text-[10px] font-black ${posBg}">${p.pos}</span>
+            </td>
+            <td class="py-3 px-3 font-semibold text-slate-400">${p.posRank}</td>
+            <td class="py-3 px-3 font-medium text-slate-300">${p.team}</td>
+            <td class="py-3 px-3 text-center text-slate-400">Wk ${p.bye}</td>
+            <td class="py-3 px-3 text-right font-extrabold text-emerald-400">$${p.projBid}</td>
+            <td class="py-3 px-3 text-center">
+              ${isDrafted ? `
+                <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-950 text-amber-300 border border-amber-800/60 inline-flex items-center space-x-1">
+                  <span>${ownerTeam?.name}</span>
+                  <span class="text-amber-400 font-extrabold">($${p.winningBid})</span>
+                </span>
+              ` : `
+                <span class="text-slate-500 italic">Available</span>
+              `}
+            </td>
+            <td class="py-3 px-4 text-center">
+              ${isDrafted ? `
+                <button onclick="removeDraftedPlayer('${p.draftedBy}', '${p.id}')" class="px-2.5 py-1 text-[11px] font-semibold text-red-400 hover:text-white hover:bg-red-900/50 rounded transition">
+                  <i class="fa-solid fa-undo mr-1"></i> Undo
+                </button>
+              ` : `
+                <button onclick="nominatePlayer('${p.id}')" class="px-3 py-1 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-[11px] rounded-lg shadow transition">
+                  <i class="fa-solid fa-gavel mr-1"></i> Nominate
+                </button>
+              `}
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderAuctionStage() {
+      const stageActive = document.getElementById('auction-stage-active');
+      const stageEmpty = document.getElementById('auction-stage-empty');
+
+      if (!stageActive || !stageEmpty) return;
+
+      if (!appState.activeAuction) {
+        stageActive.classList.add('hidden');
+        stageEmpty.classList.remove('hidden');
+        return;
+      }
+
+      stageActive.classList.remove('hidden');
+      stageEmpty.classList.add('hidden');
+
+      const auction = appState.activeAuction;
+      const player = appState.players.find(p => p.id === auction.playerId);
+      const currentHighBidder = appState.teams.find(t => t.id === auction.highBidderTeamId);
+
+      if (!player) return;
+
+      document.getElementById('stage-player-name').textContent = player.name;
+      document.getElementById('stage-pos-badge').textContent = player.pos;
+      document.getElementById('stage-pos-rank').textContent = player.posRank;
+      document.getElementById('stage-bye-badge').textContent = `Bye Week ${player.bye}`;
+      document.getElementById('stage-nfl-team').textContent = player.team;
+      document.getElementById('stage-proj-bid').textContent = `$${player.projBid}`;
+
+      document.getElementById('stage-current-bid').textContent = `$${auction.currentBid}`;
+      document.getElementById('stage-high-bidder').textContent = currentHighBidder ? `${currentHighBidder.name}` : 'No Bidder';
+
+      const teamSelect = document.getElementById('stage-team-select');
+      if (teamSelect) {
+        teamSelect.innerHTML = appState.teams.map(t => {
+          const maxBid = getMaxBidForTeam(t.id);
+          const isCurrent = t.id === auction.highBidderTeamId;
+          const isDisabled = maxBid < auction.currentBid && !isCurrent;
+
+          return `
+            <option value="${t.id}" ${isCurrent ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}>
+              ${t.name} (Max Bid: $${maxBid}) ${isDisabled ? '- Budget Exceeded' : ''}
+            </option>
+          `;
+        }).join('');
+      }
+
+      const bidInput = document.getElementById('stage-bid-input');
+      if (bidInput && document.activeElement !== bidInput) {
+        bidInput.value = auction.currentBid;
+      }
+
+      renderStageAiRecommendations(player);
+    }
+
+    function getAiRecommendationForTeam(team, player) {
+      const maxBid = getMaxBidForTeam(team.id);
+      const remainingBudget = TOTAL_BUDGET - team.budgetSpent;
+      const emptySpots = ROSTER_SIZE - team.roster.length;
+
+      if (emptySpots <= 0) {
+        return {
+          action: 'PASS',
+          badgeText: 'ROSTER FULL',
+          badgeBg: 'bg-red-950 text-red-300 border-red-800',
+          icon: 'fa-circle-xmark',
+          recommendedMaxBid: 0,
+          reason: 'Roster is already full (17/17 players).'
+        };
+      }
+
+      if (maxBid <= 0) {
+        return {
+          action: 'PASS',
+          badgeText: 'NO BUDGET',
+          badgeBg: 'bg-red-950 text-red-300 border-red-800',
+          icon: 'fa-ban',
+          recommendedMaxBid: 0,
+          reason: 'No remaining flexible budget available.'
+        };
+      }
+
+      const posList = team.roster.map(r => {
+        const p = appState.players.find(x => x.id === r.playerId);
+        return p ? p.pos : null;
+      }).filter(Boolean);
+
+      const qbCount = posList.filter(p => p === 'QB').length;
+      const rbCount = posList.filter(p => p === 'RB').length;
+      const wrCount = posList.filter(p => p === 'WR').length;
+      const teCount = posList.filter(p => p === 'TE').length;
+      const defCount = posList.filter(p => p === 'DEF').length;
+      const kCount = posList.filter(p => p === 'K').length;
+
+      if (player.pos === 'QB' && qbCount >= 1) {
+        const existingQb = team.roster.find(r => {
+          const p = appState.players.find(x => x.id === r.playerId);
+          return p && p.pos === 'QB';
+        });
+        const qbName = existingQb ? appState.players.find(x => x.id === existingQb.playerId)?.name : 'QB1';
+        return {
+          action: 'PASS',
+          badgeText: 'DO NOT BID',
+          badgeBg: 'bg-red-950 text-red-300 border-red-800',
+          icon: 'fa-hand',
+          recommendedMaxBid: 1,
+          reason: `Already has starter (${qbName}). Do not spend budget on 2nd QB.`
+        };
+      }
+
+      if (player.pos === 'TE' && teCount >= 1) {
+        return {
+          action: 'PASS',
+          badgeText: 'DO NOT BID',
+          badgeBg: 'bg-red-950 text-red-300 border-red-800',
+          icon: 'fa-hand',
+          recommendedMaxBid: 1,
+          reason: 'TE starter filled. Reserve cash for RB/WR depth.'
+        };
+      }
+
+      if ((player.pos === 'DEF' && defCount >= 1) || (player.pos === 'K' && kCount >= 1)) {
+        return {
+          action: 'PASS',
+          badgeText: 'DO NOT BID',
+          badgeBg: 'bg-red-950 text-red-300 border-red-800',
+          icon: 'fa-hand',
+          recommendedMaxBid: 1,
+          reason: `Already drafted a ${player.pos}. Save remaining budget.`
+        };
+      }
+
+      let needLevel = 'MEDIUM';
+      let targetBid = player.projBid || 1;
+
+      if (player.pos === 'RB') {
+        if (rbCount === 0) needLevel = 'MUST_HAVE';
+        else if (rbCount === 1) needLevel = 'HIGH';
+        else if (rbCount >= 4) needLevel = 'LOW';
+      } else if (player.pos === 'WR') {
+        if (wrCount === 0) needLevel = 'MUST_HAVE';
+        else if (wrCount === 1) needLevel = 'HIGH';
+        else if (wrCount >= 5) needLevel = 'LOW';
+      } else if (player.pos === 'QB' && qbCount === 0) {
+        needLevel = 'HIGH';
+      } else if (player.pos === 'TE' && teCount === 0) {
+        needLevel = 'HIGH';
+      }
+
+      if (needLevel === 'MUST_HAVE') {
+        targetBid = Math.round(targetBid * 1.1);
+      } else if (needLevel === 'HIGH') {
+        targetBid = Math.round(targetBid * 1.0);
+      } else if (needLevel === 'MEDIUM') {
+        targetBid = Math.round(targetBid * 0.75);
+      } else {
+        targetBid = Math.min(targetBid, 2);
+      }
+
+      const reservedCashPerSpot = Math.max(0, emptySpots - 1);
+      const safeMaxBid = Math.max(1, remainingBudget - reservedCashPerSpot);
+      const finalMaxBid = Math.min(targetBid, maxBid, safeMaxBid);
+
+      if (finalMaxBid <= 1 && targetBid > 5) {
+        return {
+          action: 'CAUTIOUS',
+          badgeText: 'LOW BUDGET CAUTION',
+          badgeBg: 'bg-amber-950 text-amber-300 border-amber-800',
+          icon: 'fa-triangle-exclamation',
+          recommendedMaxBid: Math.min(1, maxBid),
+          reason: `High value target ($${player.projBid} proj), but budget limits max bid to $${maxBid}.`
+        };
+      }
+
+      if (needLevel === 'MUST_HAVE' || needLevel === 'HIGH') {
+        return {
+          action: 'TARGET',
+          badgeText: `HIGH NEED (${player.pos})`,
+          badgeBg: 'bg-emerald-950 text-emerald-300 border-emerald-800',
+          icon: 'fa-circle-check',
+          recommendedMaxBid: finalMaxBid,
+          reason: `Core position need. Willing to bid up to $${finalMaxBid} (Proj: $${player.projBid}).`
+        };
+      }
+
+      return {
+        action: 'CAUTIOUS',
+        badgeText: 'DEPTH / VALUE BID',
+        badgeBg: 'bg-blue-950 text-blue-300 border-blue-800',
+        icon: 'fa-scale-balanced',
+        recommendedMaxBid: finalMaxBid,
+        reason: `Value depth pick. Recommend stopping at $${finalMaxBid}.`
+      };
+    }
+
+    function renderStageAiRecommendations(player) {
+      let container = document.getElementById('stage-ai-recommendations-container');
+      
+      if (!container) {
+        const stageCard = document.getElementById('auction-stage-active');
+        if (!stageCard) return;
+
+        const aiSection = document.createElement('div');
+        aiSection.id = 'stage-ai-recommendations-container';
+        aiSection.className = 'border-t border-slate-800 pt-4 flex flex-col gap-3';
+        
+        const actionRow = stageCard.lastElementChild;
+        stageCard.insertBefore(aiSection, actionRow);
+        container = aiSection;
+      }
+
+      const aiEnabledTeams = appState.teams.filter(t => t.aiAdvisorEnabled);
+
+      if (aiEnabledTeams.length === 0) {
+        container.innerHTML = `
+          <div class="bg-slate-950/60 p-3 rounded-xl border border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
+            <div class="flex items-center space-x-2">
+              <i class="fa-solid fa-robot text-amber-400"></i>
+              <span>AI Bidding Assistant is turned OFF. Enable it on any team's Roster page to view custom bid advice.</span>
+            </div>
+            <button onclick="switchView('teams')" class="text-xs font-bold text-emerald-400 hover:underline">
+              Team Rosters &rarr;
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = `
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-extrabold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+            <i class="fa-solid fa-brain text-amber-400 animate-pulse"></i>
+            <span>AI Draft Assistant Recommendations (${aiEnabledTeams.length} Team${aiEnabledTeams.length > 1 ? 's' : ''})</span>
+          </span>
+          <span class="text-[10px] text-slate-500 italic">Auto-calculates roster needs & maximum cash</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+          ${aiEnabledTeams.map(t => {
+            const rec = getAiRecommendationForTeam(t, player);
+            const isLeading = appState.activeAuction && appState.activeAuction.highBidderTeamId === t.id;
+
+            return `
+              <div class="bg-slate-950 p-3 rounded-xl border border-slate-800/90 flex flex-col justify-between gap-2 shadow-inner">
+                <div class="flex items-center justify-between gap-2">
+                  <div class="flex items-center space-x-2">
+                    <span class="font-extrabold text-xs text-white">${t.name}</span>
+                    ${isLeading ? '<span class="text-[9px] font-black uppercase px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30">High Bidder</span>' : ''}
+                  </div>
+                  <span class="px-2 py-0.5 rounded text-[10px] font-black border flex items-center gap-1 ${rec.badgeBg}">
+                    <i class="fa-solid ${rec.icon}"></i>
+                    <span>${rec.badgeText}</span>
+                  </span>
+                </div>
+
+                <p class="text-[11px] text-slate-300 leading-tight">
+                  ${rec.reason}
+                </p>
+
+                <div class="flex items-center justify-between border-t border-slate-900 pt-2 text-[11px]">
+                  <span class="text-slate-400 font-medium">
+                    Rec. Max Bid: <strong class="text-amber-400 font-extrabold">$${rec.recommendedMaxBid}</strong>
+                  </span>
+                  
+                  <button onclick="applyAiRecommendedBid('${t.id}', ${rec.recommendedMaxBid})" class="px-2.5 py-1 bg-slate-800 hover:bg-emerald-600 hover:text-white text-emerald-400 rounded-lg font-bold text-[10px] border border-slate-700 transition flex items-center gap-1">
+                    <i class="fa-solid fa-angles-up"></i>
+                    <span>Set Bid ($${rec.recommendedMaxBid})</span>
+                  </button>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    function applyAiRecommendedBid(teamId, recBid) {
+      if (!appState.activeAuction) return;
+      const team = appState.teams.find(t => t.id === teamId);
+      if (!team) return;
+
+      const maxAllowed = getMaxBidForTeam(team.id);
+      const finalBid = Math.max(1, Math.min(recBid, maxAllowed));
+
+      appState.activeAuction.highBidderTeamId = teamId;
+      appState.activeAuction.currentBid = finalBid;
+      saveState(true);
+    }
+
+    function toggleTeamAiAdvisor(teamId) {
+      const team = appState.teams.find(t => t.id === teamId);
+      if (team) {
+        team.aiAdvisorEnabled = !team.aiAdvisorEnabled;
+        saveState(true);
+      }
+    }
+
+    function renderTeamRosters() {
+      const cardContainer = document.getElementById('selected-team-card');
+
+      if (!cardContainer) return;
+
+      const team = appState.teams.find(t => t.id === appState.selectedTeamId) || appState.teams[0];
+      const maxBid = getMaxBidForTeam(team.id);
+      const remainingBudget = TOTAL_BUDGET - team.budgetSpent;
+
+      const startersSlots = ['QB', 'RB1', 'RB2', 'WR1', 'WR2', 'FLEX', 'TE', 'DEF', 'K'];
+
+      cardContainer.innerHTML = `
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-slate-800 pb-4 mb-4 gap-4">
+          <div>
+            <div class="flex items-center space-x-3">
+              <h2 class="text-2xl font-black text-white">${team.name}</h2>
+              <button onclick="editTeamName('${team.id}')" title="Rename Team" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-lg border border-slate-700 text-xs font-semibold flex items-center space-x-1.5 transition">
+                <i class="fa-solid fa-pen-to-square text-amber-400"></i>
+                <span>Edit Name</span>
+              </button>
+
+              <label class="flex items-center space-x-2 bg-slate-950 hover:bg-slate-800/80 px-3 py-1 rounded-lg border border-slate-800 cursor-pointer transition select-none">
+                <input type="checkbox" onchange="toggleTeamAiAdvisor('${team.id}')" ${team.aiAdvisorEnabled ? 'checked' : ''} class="w-4 h-4 rounded border-slate-700 text-emerald-500 focus:ring-emerald-500 bg-slate-900 cursor-pointer">
+                <span class="text-xs font-bold ${team.aiAdvisorEnabled ? 'text-amber-400' : 'text-slate-400'} flex items-center gap-1">
+                  <i class="fa-solid fa-robot"></i>
+                  <span>AI Draft Assistant</span>
+                </span>
+              </label>
+            </div>
+            <p class="text-xs text-slate-400 mt-1">
+              Roster Size: <strong class="text-slate-200">${team.roster.length} / 17</strong> &bull;
+              Total Spent: <strong class="text-amber-400">$${team.budgetSpent}</strong> &bull;
+              AI Advisory: <strong class="${team.aiAdvisorEnabled ? 'text-emerald-400' : 'text-slate-500'}">${team.aiAdvisorEnabled ? 'ON' : 'OFF'}</strong>
+            </p>
+          </div>
+
+          <div class="flex items-center space-x-4 bg-slate-950 p-3 rounded-xl border border-slate-800">
+            <div class="text-center px-2">
+              <span class="text-[10px] font-bold uppercase text-slate-500 block">Remaining Cash</span>
+              <span class="text-xl font-black text-emerald-400">$${remainingBudget}</span>
+            </div>
+            <div class="h-8 w-px bg-slate-800"></div>
+            <div class="text-center px-2">
+              <span class="text-[10px] font-bold uppercase text-slate-500 block">Max Allowed Bid</span>
+              <span class="text-xl font-black text-amber-400">$${maxBid}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-6">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center space-x-2">
+            <i class="fa-solid fa-star text-amber-400"></i>
+            <span>Starting Lineup (9 Players)</span>
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2.5">
+            ${startersSlots.map(slotKey => {
+              let actualSlot = slotKey;
+              if (slotKey.startsWith('RB')) actualSlot = 'RB';
+              if (slotKey.startsWith('WR')) actualSlot = 'WR';
+
+              const matchedItems = team.roster.filter(r => r.slot === actualSlot || (actualSlot === 'RB' && r.slot === 'RB') || (actualSlot === 'WR' && r.slot === 'WR'));
+              
+              let item = null;
+              if (slotKey === 'RB1') item = matchedItems[0];
+              else if (slotKey === 'RB2') item = matchedItems[1];
+              else if (slotKey === 'WR1') item = matchedItems[0];
+              else if (slotKey === 'WR2') item = matchedItems[1];
+              else item = team.roster.find(r => r.slot === slotKey);
+
+              const player = item ? appState.players.find(p => p.id === item.playerId) : null;
+
+              return `
+                <div class="bg-slate-950 p-3 rounded-xl border ${player ? 'border-slate-800' : 'border-dashed border-slate-800/60'} flex items-center justify-between">
+                  <div class="flex items-center space-x-3">
+                    <span class="w-10 h-7 rounded bg-slate-900 border border-slate-800 text-slate-400 font-extrabold text-[10px] flex items-center justify-center">
+                      ${slotKey}
+                    </span>
+                    <div>
+                      ${player ? `
+                        <div class="font-bold text-xs text-white">${player.name}</div>
+                        <div class="text-[10px] text-slate-400">${player.posRank} &bull; ${player.team} &bull; Bye Wk ${player.bye}</div>
+                      ` : `
+                        <div class="text-xs text-slate-600 font-medium italic">Empty Slot</div>
+                      `}
+                    </div>
+                  </div>
+                  ${player ? `
+                    <div class="text-right flex items-center space-x-2">
+                      <span class="text-xs font-black text-amber-400">$${item.winningBid}</span>
+                      <button onclick="removeDraftedPlayer('${team.id}', '${player.id}')" class="text-slate-500 hover:text-red-400 text-xs p-1">
+                        <i class="fa-solid fa-xmark"></i>
+                      </button>
+                    </div>
+                  ` : ''}
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+
+        <div>
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center space-x-2">
+            <i class="fa-solid fa-couch text-blue-400"></i>
+            <span>Bench Roster (${team.roster.filter(r => r.slot === 'BENCH').length} / 8 Spots)</span>
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2.5">
+            ${team.roster.filter(r => r.slot === 'BENCH').map(item => {
+              const player = appState.players.find(p => p.id === item.playerId);
+              if (!player) return '';
+              return `
+                <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 flex items-center justify-between">
+                  <div>
+                    <div class="flex items-center space-x-1.5">
+                      <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-800 text-slate-300">${player.pos}</span>
+                      <span class="font-bold text-xs text-white">${player.name}</span>
+                    </div>
+                    <div class="text-[10px] text-slate-400 mt-0.5">${player.team} &bull; Bye ${player.bye}</div>
+                  </div>
+                  <div class="flex items-center space-x-2">
+                    <span class="text-xs font-extrabold text-amber-400">$${item.winningBid}</span>
+                    <button onclick="removeDraftedPlayer('${team.id}', '${player.id}')" class="text-slate-500 hover:text-red-400 text-xs p-1">
+                      <i class="fa-solid fa-xmark"></i>
+                    </button>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+            ${Array.from({ length: Math.max(0, 8 - team.roster.filter(r => r.slot === 'BENCH').length) }).map(() => `
+              <div class="bg-slate-950/40 p-3 rounded-xl border border-dashed border-slate-800/50 flex items-center text-slate-600 text-xs italic">
+                Empty Bench Spot
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function selectTeamView(teamId) {
+      appState.selectedTeamId = teamId;
+      appState.activeView = 'teams';
+      saveState(true);
+    }
+
+    function editTeamName(teamId) {
+      const team = appState.teams.find(t => t.id === teamId);
+      if (!team) return;
+
+      showModal(
+        'Rename Team',
+        `Update name for ${team.name}:`,
+        true,
+        () => {
+          const inputVal = document.getElementById('modal-input').value;
+          if (inputVal && inputVal.trim()) {
+            team.name = inputVal.trim();
+            saveState(true);
+          }
+        },
+        true,
+        team.name
+      );
+    }
+
+    function removeDraftedPlayer(teamId, playerId) {
+      const team = appState.teams.find(t => t.id === teamId);
+      const player = appState.players.find(p => p.id === playerId);
+
+      if (!team || !player) return;
+
+      showModal(
+        'Undo Draft Pick',
+        `Are you sure you want to remove ${player.name} from ${team.name}?`,
+        true,
+        () => {
+          const idx = team.roster.findIndex(r => r.playerId === playerId);
+          if (idx !== -1) {
+            const item = team.roster[idx];
+            team.budgetSpent -= item.winningBid;
+            team.roster.splice(idx, 1);
+          }
+
+          player.draftedBy = null;
+          player.winningBid = 0;
+
+          saveState(true);
+        }
+      );
+    }
+
+    function exportDraftData() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appState, null, 2));
+      const dlAnchorElem = document.createElement('a');
+      dlAnchorElem.setAttribute("href", dataStr);
+      dlAnchorElem.setAttribute("download", `Fantasy_Auction_Draft_Backup_${new Date().toISOString().slice(0,10)}.json`);
+      document.body.appendChild(dlAnchorElem);
+      dlAnchorElem.click();
+      dlAnchorElem.remove();
+    }
+
+    function triggerResetModal() {
+      showModal(
+        'Reset Entire Draft Board?',
+        'This will clear all drafted players, reset budgets, and restore the initial state. This action cannot be undone.',
+        true,
+        () => {
+          stopSimulation();
+          appState.teams.forEach(t => {
+            t.budgetSpent = 0;
+            t.roster = [];
+          });
+          appState.players.forEach(p => {
+            p.draftedBy = null;
+            p.winningBid = 0;
+          });
+          appState.activeAuction = null;
+          saveState(true);
+        }
+      );
+    }
+
+    function calculateTeamValuation(team, player) {
+      if (team.roster.length >= ROSTER_SIZE) return 0;
+      
+      const maxAllowed = getMaxBidForTeam(team.id);
+      if (maxAllowed < 1) return 0;
+
+      const posCounts = {
+        QB: team.roster.filter(r => { const p = appState.players.find(x => x.id === r.playerId); return p && p.pos === 'QB'; }).length,
+        RB: team.roster.filter(r => { const p = appState.players.find(x => x.id === r.playerId); return p && p.pos === 'RB'; }).length,
+        WR: team.roster.filter(r => { const p = appState.players.find(x => x.id === r.playerId); return p && p.pos === 'WR'; }).length,
+        TE: team.roster.filter(r => { const p = appState.players.find(x => x.id === r.playerId); return p && p.pos === 'TE'; }).length,
+        DEF: team.roster.filter(r => { const p = appState.players.find(x => x.id === r.playerId); return p && p.pos === 'DEF'; }).length,
+        K: team.roster.filter(r => { const p = appState.players.find(x => x.id === r.playerId); return p && p.pos === 'K'; }).length
+      };
+
+      const seedVal = parseInt(team.id.replace('t', ''), 10);
+      const teamMultiplier = 0.9 + ((seedVal % 5) * 0.05);
+      let valuation = Math.round((player.projBid || 1) * teamMultiplier);
+
+      if (player.pos === 'QB') {
+        if (posCounts.QB >= 1) {
+          if (valuation > 15) return 0; 
+          valuation = Math.min(valuation, 1);
+        }
+      } else if (player.pos === 'TE') {
+        if (posCounts.TE >= 1) {
+          if (valuation > 15) return 0;
+          valuation = Math.min(valuation, 1);
+        }
+      } else if (player.pos === 'DEF' || player.pos === 'K') {
+        if (posCounts[player.pos] >= 1) return 0;
+        valuation = Math.min(valuation, 3);
+      } else if (player.pos === 'RB') {
+        if (posCounts.RB >= 4) valuation = Math.min(valuation, 2);
+        else if (posCounts.RB >= 2) valuation = Math.round(valuation * 0.75);
+      } else if (player.pos === 'WR') {
+        if (posCounts.WR >= 5) valuation = Math.min(valuation, 2);
+        else if (posCounts.WR >= 3) valuation = Math.round(valuation * 0.8);
+      }
+
+      const maxCeiling = Math.max(1, Math.round((player.projBid || 1) * 1.15));
+      valuation = Math.min(valuation, maxCeiling);
+
+      return Math.min(valuation, maxAllowed);
+    }
+
+    function simStep() {
+      const allTeamsFull = appState.teams.every(t => t.roster.length >= ROSTER_SIZE);
+      const availablePlayers = appState.players.filter(p => !p.draftedBy);
+
+      if (allTeamsFull || availablePlayers.length === 0) {
+        stopSimulation();
+        showModal('Mock Draft Complete!', 'All teams have completed their rosters. You can now review the final rosters and draft values!');
+        return;
+      }
+
+      // 1. If NO player currently on auction block: NOMINATE a player
+      if (!appState.activeAuction) {
+        const sortedAvail = [...availablePlayers].sort((a, b) => b.projBid - a.projBid);
+        const topPool = sortedAvail.slice(0, Math.min(12, sortedAvail.length));
+        
+        const randomIndex = Math.floor(Math.pow(Math.random(), 1.5) * topPool.length);
+        const nominatedPlayer = topPool[randomIndex] || sortedAvail[0];
+
+        let nomTeam = appState.teams.find(t => t.roster.length < ROSTER_SIZE && getMaxBidForTeam(t.id) >= 1);
+        if (!nomTeam) {
+          stopSimulation();
+          showModal('Mock Draft Ended', 'No teams have remaining budget to nominate players.');
+          return;
+        }
+
+        const proj = nominatedPlayer.projBid || 1;
+        const maxNomTeamBid = getMaxBidForTeam(nomTeam.id);
+        const startBid = Math.max(1, Math.min(Math.floor(proj * 0.55), maxNomTeamBid));
+
+        appState.activeAuction = {
+          playerId: nominatedPlayer.id,
+          currentBid: startBid,
+          highBidderTeamId: nomTeam.id,
+          noBidCounter: 0
+        };
+
+        if (appState.activeView !== 'stage') switchView('stage');
+        saveState(true);
+        return;
+      }
+
+      // 2. If auction IS ACTIVE: Evaluate bids
+      const auction = appState.activeAuction;
+      const player = appState.players.find(p => p.id === auction.playerId);
+      if (!player) {
+        appState.activeAuction = null;
+        return;
+      }
+
+      const candidateBidders = [];
+      appState.teams.forEach(t => {
+        if (t.id === auction.highBidderTeamId) return;
+        
+        const valuation = calculateTeamValuation(t, player);
+        const maxBid = getMaxBidForTeam(t.id);
+        const minNextBid = auction.currentBid + 1;
+
+        if (valuation >= minNextBid && maxBid >= minNextBid) {
+          candidateBidders.push({ team: t, valuation });
+        }
+      });
+
+      if (candidateBidders.length > 0) {
+        candidateBidders.sort((a, b) => b.valuation - a.valuation);
+        const selected = candidateBidders[Math.floor(Math.random() * Math.min(3, candidateBidders.length))];
+
+        const diff = selected.valuation - auction.currentBid;
+        let increment = 1;
+        if (diff >= 15) {
+          increment = Math.floor(diff * 0.4);
+        } else if (diff >= 6) {
+          increment = Math.floor(diff * 0.3);
+        } else if (diff >= 3) {
+          increment = 2;
+        } else {
+          increment = 1;
+        }
+        increment = Math.max(1, increment);
+
+        const maxAllowed = getMaxBidForTeam(selected.team.id);
+        const newBid = Math.min(auction.currentBid + increment, selected.valuation, maxAllowed);
+
+        auction.currentBid = newBid;
+        auction.highBidderTeamId = selected.team.id;
+        auction.noBidCounter = 0;
+        saveState(true);
+      } else {
+        auction.noBidCounter = (auction.noBidCounter || 0) + 1;
+        if (auction.noBidCounter >= 1) {
+          finalizeAuctionWinner();
+        }
+      }
+    }
+
+    function toggleSimulation() {
+      if (simState.isRunning) {
+        stopSimulation();
+      } else {
+        startSimulation();
+      }
+    }
+
+    function startSimulation() {
+      simState.isRunning = true;
+      updateSimUI();
+      if (!simState.timer) {
+        simState.timer = setInterval(() => {
+          simStep();
+        }, simState.speedMs);
+      }
+    }
+
+    function stopSimulation() {
+      simState.isRunning = false;
+      if (simState.timer) {
+        clearInterval(simState.timer);
+        simState.timer = null;
+      }
+      updateSimUI();
+    }
+
+    function stepSimulation() {
+      stopSimulation();
+      simStep();
+    }
+
+    function adjustSimSpeed(deltaSec) {
+      let currentSec = Math.round(simState.speedMs / 100) / 10;
+      let newSec = Math.round((currentSec + deltaSec) * 10) / 10;
+      
+      if (newSec < 0.1) newSec = 0.1;
+      if (newSec > 5.0) newSec = 5.0;
+
+      simState.speedMs = Math.round(newSec * 1000);
+
+      const display = document.getElementById('sim-speed-display');
+      if (display) {
+        display.textContent = newSec.toFixed(1) + 's';
+      }
+
+      if (simState.isRunning) {
+        stopSimulation();
+        startSimulation();
+      }
+    }
+
+    function toggleSimSpeed() {
+      adjustSimSpeed(-0.1);
+    }
+
+    function updateSimUI() {
+      const toggleBtn = document.getElementById('btn-sim-toggle');
+      const icon = document.getElementById('sim-icon');
+      const btnText = document.getElementById('sim-btn-text');
+      const controls = document.getElementById('sim-controls');
+
+      if (toggleBtn && icon && btnText && controls) {
+        if (simState.isRunning) {
+          toggleBtn.className = "px-3 py-1 text-xs bg-red-600 hover:bg-red-500 text-white font-extrabold rounded-lg shadow transition flex items-center gap-1.5 animate-pulse";
+          icon.className = "fa-solid fa-pause";
+          btnText.textContent = "Pause Mock";
+          controls.classList.remove('hidden');
+        } else {
+          toggleBtn.className = "px-3 py-1 text-xs bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold rounded-lg shadow transition flex items-center gap-1.5";
+          icon.className = "fa-solid fa-play";
+          btnText.textContent = "Start Mock Draft";
+          controls.classList.remove('hidden');
+        }
+      }
+    }
+
+    let modalConfirmCallback = null;
+    let autoCloseTimer = null;
+
+    function showModal(title, message, isConfirm = false, onConfirm = null, showInput = false, defaultInputVal = '', autoCloseMs = 0) {
+      if (autoCloseTimer) {
+        clearTimeout(autoCloseTimer);
+        autoCloseTimer = null;
+      }
+
+      document.getElementById('modal-title').textContent = title;
+      
+      const msgEl = document.getElementById('modal-message');
+      if (typeof message === 'string' && (message.startsWith('<') || message.includes('class='))) {
+        msgEl.innerHTML = message;
+      } else {
+        msgEl.textContent = message;
+      }
+      
+      const cancelBtn = document.getElementById('modal-cancel-btn');
+      const inputContainer = document.getElementById('modal-input-container');
+      const modalInput = document.getElementById('modal-input');
+
+      if (showInput) {
+        inputContainer.classList.remove('hidden');
+        modalInput.value = defaultInputVal;
+      } else {
+        inputContainer.classList.add('hidden');
+      }
+
+      if (isConfirm) {
+        cancelBtn.classList.remove('hidden');
+        modalConfirmCallback = onConfirm;
+      } else {
+        cancelBtn.classList.add('hidden');
+        modalConfirmCallback = null;
+      }
+
+      document.getElementById('app-modal').classList.remove('hidden');
+      if (showInput) {
+        setTimeout(() => modalInput.focus(), 100);
+      }
+
+      if (autoCloseMs > 0) {
+        autoCloseTimer = setTimeout(() => {
+          closeModal();
+        }, autoCloseMs);
+      }
+    }
+
+    function closeModal() {
+      if (autoCloseTimer) {
+        clearTimeout(autoCloseTimer);
+        autoCloseTimer = null;
+      }
+
+      document.getElementById('app-modal').classList.add('hidden');
+      if (modalConfirmCallback) {
+        const cb = modalConfirmCallback;
+        modalConfirmCallback = null;
+        cb();
+      }
+    }
+
+    if (broadcastChannel) {
+      broadcastChannel.onmessage = function(event) {
+        if (event.data && event.data.type === 'STATE_UPDATE' && event.data.state) {
+          appState = event.data.state;
+          renderAll();
+        }
+      };
+    }
+
+    function nominatePlayer(playerId) {
+      const player = appState.players.find(p => p.id === playerId);
+      if (!player) return;
+      if (player.draftedBy) {
+        showModal('Already Drafted', `${player.name} has already been drafted!`);
+        return;
+      }
+
+      const defaultTeam = appState.teams.find(t => t.roster.length < ROSTER_SIZE && getMaxBidForTeam(t.id) >= MIN_BID) || appState.teams[0];
+      
+      appState.activeAuction = {
+        playerId: player.id,
+        currentBid: 1,
+        highBidderTeamId: defaultTeam ? defaultTeam.id : 't1',
+        noBidCounter: 0
+      };
+
+      switchView('stage');
+      saveState(true);
+    }
+
+    function autoUpdateBidder() {
+      if (!appState.activeAuction) return;
+      const select = document.getElementById('stage-team-select');
+      if (select) {
+        const selectedTeamId = select.value;
+        const maxBid = getMaxBidForTeam(selectedTeamId);
+        if (appState.activeAuction.currentBid > maxBid) {
+          showModal('Insufficient Budget', `Selected team only has max bid of $${maxBid}.`);
+          select.value = appState.activeAuction.highBidderTeamId;
+          return;
+        }
+        appState.activeAuction.highBidderTeamId = selectedTeamId;
+        saveState(true);
+      }
+    }
+
+    function autoUpdateBidAmount() {
+      if (!appState.activeAuction) return;
+      const input = document.getElementById('stage-bid-input');
+      if (input) {
+        let val = parseInt(input.value, 10);
+        if (isNaN(val) || val < 1) val = 1;
+        
+        const teamId = appState.activeAuction.highBidderTeamId;
+        const maxAllowed = getMaxBidForTeam(teamId);
+        if (val > maxAllowed) {
+          val = maxAllowed;
+          input.value = val;
+        }
+
+        appState.activeAuction.currentBid = val;
+        saveState(true);
+      }
+    }
+
+    function incrementBid(amount) {
+      if (!appState.activeAuction) return;
+      const teamId = appState.activeAuction.highBidderTeamId;
+      const maxAllowed = getMaxBidForTeam(teamId);
+      const newBid = Math.min(appState.activeAuction.currentBid + amount, maxAllowed);
+      appState.activeAuction.currentBid = Math.max(1, newBid);
+      saveState(true);
+    }
+
+    function cancelAuction() {
+      appState.activeAuction = null;
+      saveState(true);
+    }
+
+    function playGavelSound() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(150, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(30, ctx.currentTime + 0.15);
+
+        gain.gain.setValueAtTime(1, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start();
+        osc.stop(ctx.currentTime + 0.15);
+      } catch (e) {
+        console.warn('AudioContext not supported or blocked:', e);
+      }
+    }
+
+    function finalizeAuctionWinner() {
+      if (!appState.activeAuction) return;
+
+      const auction = appState.activeAuction;
+      const player = appState.players.find(p => p.id === auction.playerId);
+      const team = appState.teams.find(t => t.id === auction.highBidderTeamId);
+
+      if (!player || !team) {
+        appState.activeAuction = null;
+        saveState(true);
+        return;
+      }
+
+      const maxAllowed = getMaxBidForTeam(team.id);
+      if (auction.currentBid > maxAllowed) {
+        showModal('Exceeds Max Bid', `${team.name} cannot afford $${auction.currentBid} (Max Allowed: $${maxAllowed}).`);
+        return;
+      }
+
+      if (team.roster.length >= ROSTER_SIZE) {
+        showModal('Roster Full', `${team.name} already has a full roster (${ROSTER_SIZE} players).`);
+        return;
+      }
+
+      let targetSlot = 'BENCH';
+      const pos = player.pos;
+
+      if (pos === 'QB') {
+        if (!team.roster.some(r => r.slot === 'QB')) targetSlot = 'QB';
+      } else if (pos === 'RB') {
+        const rbCount = team.roster.filter(r => r.slot === 'RB').length;
+        if (rbCount < 2) targetSlot = 'RB';
+        else if (!team.roster.some(r => r.slot === 'FLEX')) targetSlot = 'FLEX';
+      } else if (pos === 'WR') {
+        const wrCount = team.roster.filter(r => r.slot === 'WR').length;
+        if (wrCount < 2) targetSlot = 'WR';
+        else if (!team.roster.some(r => r.slot === 'FLEX')) targetSlot = 'FLEX';
+      } else if (pos === 'TE') {
+        if (!team.roster.some(r => r.slot === 'TE')) targetSlot = 'TE';
+        else if (!team.roster.some(r => r.slot === 'FLEX')) targetSlot = 'FLEX';
+      } else if (pos === 'DEF') {
+        if (!team.roster.some(r => r.slot === 'DEF')) targetSlot = 'DEF';
+      } else if (pos === 'K') {
+        if (!team.roster.some(r => r.slot === 'K')) targetSlot = 'K';
+      }
+
+      team.roster.push({
+        playerId: player.id,
+        winningBid: auction.currentBid,
+        slot: targetSlot
+      });
+      team.budgetSpent += auction.currentBid;
+
+      player.draftedBy = team.id;
+      player.winningBid = auction.currentBid;
+
+      playGavelSound();
+
+      const winningMessage = `
+        <div class="text-center py-2">
+          <div class="text-3xl font-black text-amber-400 mb-1">$${auction.currentBid}</div>
+          <div class="text-lg font-bold text-white mb-2"><strong>${player.name}</strong> (${player.pos})</div>
+          <div class="inline-block bg-emerald-950 text-emerald-300 font-bold px-3 py-1 rounded-full border border-emerald-800 text-xs">
+            Assigned to ${team.name}
+          </div>
+        </div>
+      `;
+
+      appState.activeAuction = null;
+      saveState(true);
+
+      // Always show winning popup (auto-closes after 1.8s for smooth mock draft flow)
+      showModal('SOLD!', winningMessage, false, null, false, '', 1800);
+    }
+
+    // Page Initialization
+    window.addEventListener('DOMContentLoaded', () => {
+      loadState();
+      renderAll();
+    });
+  </script>
+</body>
+</html>
