@@ -1892,9 +1892,14 @@ CeeDee Lamb,WR,WR1,DAL,7,55" class="w-full bg-slate-950 text-xs font-mono text-s
       appState.activeAuction = null;
       saveState(true);
 
-      // Always show winning popup (auto-closes after 1.8s for smooth mock draft flow)
-      showModal('SOLD!', winningMessage, false, null, false, '', 1800);
+      // Always show winning popup (auto-closes after a few seconds for smooth mock draft flow)
+      showModal('SOLD!', winningMessage, true, 
+      () => {
+        switchView('master');
+      },
+      false, '', 3000);
     }
+    
 
     // Page Initialization
     window.addEventListener('DOMContentLoaded', () => {
